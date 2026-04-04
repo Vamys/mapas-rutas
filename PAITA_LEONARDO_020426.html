@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+    <style>
+        /* Estilo general del contenedor de búsqueda */
+        .leaflet-control-search {
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+            border-radius: 25px !important;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .leaflet-control-search .search-input {
+            padding: 8px 15px !important;
+            border-radius: 25px !important;
+            border: 1px solid #eee !important;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .leaflet-control-search.search-exp .search-input {
+            width: 250px !important;
+        }
+        .leaflet-control-search .search-button {
+            background-color: #fff !important;
+            border-radius: 50% !important;
+            width: 34px !important;
+            height: 34px !important;
+        }
+
+        /* Estilo para el Control de Capas (Vendedores) */
+        .leaflet-control-layers {
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            border-radius: 12px !important;
+            padding: 10px !important;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .leaflet-control-layers-toggle {
+            width: 40px !important;
+            height: 40px !important;
+            background-size: 25px !important;
+        }
+
+        /* Estilo para los botones de Zoom */
+        .leaflet-bar {
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        }
+        .leaflet-bar a {
+            background-color: white !important;
+            color: #333 !important;
+            border: 1px solid #f0f0f0 !important;
+        }
+        .leaflet-bar a:first-child { border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; }
+        .leaflet-bar a:last-child { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; }
+
+        /* Mejora de los tooltips */
+        .leaflet-tooltip {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border: none !important;
+            border-radius: 6px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 600;
+        }
+        /* Mejora del listado de resultados del buscador */
+        .leaflet-control-search .search-tip {
+            padding: 8px !important;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px !important;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .leaflet-control-search .search-tip:hover {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+        .leaflet-control-search .search-tooltip {
+            max-height: 300px !important;
+            overflow-y: auto !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            border: none !important;
+            background: white !important;
+        }
+    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_a3875549b73f7c31b9c00df7406513ef {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.css"/>
+</head>
+<body>
+    
+    
+    <div id="nav-panel" style="
+        position: fixed; 
+        bottom: 20px; 
+        left: 20px; 
+        width: 300px; 
+        background: white; 
+        z-index: 9999; 
+        border-radius: 15px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        font-family: 'Segoe UI', sans-serif;
+        padding: 15px;
+        display: none;
+    ">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; font-size: 16px; color: #333;">🚀 Rutas de Navegación</h3>
+            <button onclick="document.getElementById('nav-panel').style.display='none'" style="border: none; background: none; cursor: pointer; font-size: 20px;">×</button>
+        </div>
+        <div id="nav-links-container" style="max-height: 400px; overflow-y: auto;">
+            <!-- Se llenará dinámicamente -->
+        </div>
+    </div>
+
+    <button id="nav-toggle" style="
+        position: fixed; 
+        bottom: 20px; 
+        left: 20px; 
+        z-index: 9998; 
+        background: #4285F4; 
+        color: white; 
+        border: none; 
+        border-radius: 50px; 
+        padding: 12px 20px; 
+        font-weight: bold; 
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        font-family: 'Segoe UI', sans-serif;
+    " onclick="toggleNavPanel()">
+        🗺️ VER RUTAS GOOGLE MAPS
+    </button>
+
+    <script>
+        var infoRutas = {"LEONARDO VIERA CHAVEZ": [{"nombre": "Tramo 1 (MARIA NELLY CIEZA CORONADO ... DIANA ELIZABET PE\u00d1A TOCTO)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.0909986,-81.112956&waypoints=-5.0906258%2C-81.1128793%7C-5.0912796%2C-81.1129071%7C-5.0906452%2C-81.115962%7C-5.090737%2C-81.1159924%7C-5.0930554%2C-81.1148497%7C-5.0918939%2C-81.1106854%7C-5.0928701%2C-81.1107056%7C-5.0928176%2C-81.1139302%7C-5.0906258%2C-81.1128793"}, {"nombre": "Tramo 2 (ROSA ELVIRA PALACIOS HUAMAN ... YULI LILIANA CRUZ HIJUELA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.0899405,-81.1130671&waypoints=-5.0909221%2C-81.1128813%7C-5.0906563%2C-81.1125713%7C-5.0908462%2C-81.1125974%7C-5.0907721%2C-81.1124608%7C-5.0912796%2C-81.1129071"}]};
+        
+        function toggleNavPanel() {
+            var panel = document.getElementById('nav-panel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                renderRutas();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function renderRutas() {
+            var container = document.getElementById('nav-links-container');
+            container.innerHTML = '';
+            
+            for (var vendedor in infoRutas) {
+                var section = document.createElement('div');
+                section.style.marginBottom = '15px';
+                section.innerHTML = '<strong style="color: #666; font-size: 13px; display: block; margin-bottom: 5px;">👤 ' + vendedor + '</strong>';
+                
+                infoRutas[vendedor].forEach(function(link) {
+                    var a = document.createElement('a');
+                    a.href = link.url;
+                    a.target = '_blank';
+                    a.className = 'nav-link-btn';
+                    a.innerHTML = link.nombre;
+                    a.style.display = 'block';
+                    a.style.background = '#f1f3f4';
+                    a.style.color = '#1a73e8';
+                    a.style.padding = '8px 12px';
+                    a.style.borderRadius = '8px';
+                    a.style.marginBottom = '5px';
+                    a.style.textDecoration = 'none';
+                    a.style.fontSize = '12px';
+                    a.style.fontWeight = '600';
+                    a.onmouseover = function() { this.style.background = '#e8f0fe'; };
+                    a.onmouseout = function() { this.style.background = '#f1f3f4'; };
+                    section.appendChild(a);
+                });
+                container.appendChild(section);
+            }
+        }
+    </script>
+    
+    
+    <a href="index.html" style="
+        position: fixed; top: 15px; left: 50px; z-index: 9998;
+        background: white; color: #333; border: 2px solid #ccc;
+        border-radius: 8px; padding: 8px 15px; font-weight: bold;
+        cursor: pointer; text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        font-family: 'Segoe UI', sans-serif; font-size: 13px;
+    ">&#8592; VOLVER AL MENU</a>
+
+    <script>
+        // nombre_bodega -> referencia al Leaflet Marker
+        window._entregaMarkers = {};
+        // Marcador cuyo popup esta abierto ahora mismo
+        window._markerActual = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var map = document.querySelector('.folium-map')._leaflet_map;
+
+            // ── Aplicar estado visual de entregado ──────────────────────────
+            function marcarVisual(marker, entregado) {
+                if (!marker || !marker._icon) return;
+                if (entregado) {
+                    // Poner en escala de grises y mas opaco con check verde encima
+                    marker._icon.style.filter = 'grayscale(100%) brightness(0.5)';
+                    marker._icon.style.opacity = '0.6';
+                } else {
+                    marker._icon.style.filter  = '';
+                    marker._icon.style.opacity = '1';
+                }
+            }
+
+            // ── Re-aplicar estados guardados (despues de zoom/mover) ────────
+            function reAplicarEstados() {
+                for (var nombre in window._entregaMarkers) {
+                    if (localStorage.getItem('_ent_' + nombre)) {
+                        marcarVisual(window._entregaMarkers[nombre], true);
+                    }
+                }
+            }
+            // MarkerCluster regenera los iconos al hacer zoom: re-aplicar
+            map.on('zoomend moveend', function() {
+                setTimeout(reAplicarEstados, 150);
+            });
+
+            // ── Al abrir popup: registrar marcador y actualizar boton ───────
+            map.on('popupopen', function(e) {
+                window._markerActual = e.popup._source;
+                var wrapper = e.popup._wrapper;
+                if (!wrapper) return;
+
+                var span = wrapper.querySelector('.bodega-nombre');
+                var btn  = wrapper.querySelector('.btn-entregado');
+                if (!span || !btn) return;
+
+                var nombre = span.textContent.trim();
+
+                // Registrar referencia del marcador por nombre
+                window._entregaMarkers[nombre] = window._markerActual;
+
+                // Sincronizar texto del boton con el estado real
+                var yaEntregado = !!localStorage.getItem('_ent_' + nombre);
+                actualizarBoton(btn, yaEntregado);
+            });
+
+            // ── Actualizar apariencia del boton ─────────────────────────────
+            function actualizarBoton(btn, entregado) {
+                if (entregado) {
+                    btn.textContent  = '✔ ENTREGADO - Toca para deshacer';
+                    btn.style.background = '#2ecc71';
+                    btn.style.color      = 'white';
+                    btn.style.border     = 'none';
+                } else {
+                    btn.textContent  = '☐ MARCAR ENTREGADO';
+                    btn.style.background = '#f8f9fa';
+                    btn.style.color      = '#333';
+                    btn.style.border     = '1px solid #ccc';
+                }
+            }
+
+            // ── Funcion global llamada por onclick del boton ─────────────────
+            window.toggleEntregado = function(btn) {
+                var marker = window._markerActual;
+                var wrapper = document.querySelector('.leaflet-popup-content-wrapper');
+                if (!wrapper) return;
+                var span = wrapper.querySelector('.bodega-nombre');
+                if (!span) return;
+
+                var nombre = span.textContent.trim();
+                var key    = '_ent_' + nombre;
+                var ahora  = !!localStorage.getItem(key);
+
+                // Invertir estado
+                var nuevo = !ahora;
+                if (nuevo) {
+                    localStorage.setItem(key, '1');
+                } else {
+                    localStorage.removeItem(key);
+                }
+
+                // Actualizar visual del pin
+                if (marker) {
+                    window._entregaMarkers[nombre] = marker;
+                    marcarVisual(marker, nuevo);
+                }
+
+                // Actualizar boton
+                actualizarBoton(btn, nuevo);
+            };
+
+            // Aplicar estados guardados al cargar
+            setTimeout(reAplicarEstados, 1200);
+            setTimeout(reAplicarEstados, 3000);
+        });
+    </script>
+    
+    
+            <div class="folium-map" id="map_a3875549b73f7c31b9c00df7406513ef" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_a3875549b73f7c31b9c00df7406513ef = L.map(
+                "map_a3875549b73f7c31b9c00df7406513ef",
+                {
+                    center: [-5.0912478624999995, -81.11313949999999],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_53362ded3c0d3ac946356e15becfb99b = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_53362ded3c0d3ac946356e15becfb99b.addTo(map_a3875549b73f7c31b9c00df7406513ef);
+        
+    
+            var feature_group_5567fe1a8ad4879326d1c170b0d8a1d0 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_7bf57c70c0b918e3e1333514445c2b26 = L.markerClusterGroup(
+                {
+  "spiderfyOnMaxZoom": true,
+  "disableClusteringAtZoom": 17,
+  "maxClusterRadius": 60,
+}
+            );
+        
+    
+            var marker_b40bfb271a12beff70d1a48a6e8c2daa = L.marker(
+                [-5.0906258, -81.1128793],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_47b9943c9cc779a879b408cf30e996a9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6c60af204fca6b30b60c6e82ebc42162 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_de7ebaa3ee7d433c7fcc9c14c43b7aef = $(`<div id="html_de7ebaa3ee7d433c7fcc9c14c43b7aef" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">MARIA NELLY CIEZA CORONADO</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         MARIA NELLY CIEZA CORONADO                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223384                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0906258,-81.1128793','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_6c60af204fca6b30b60c6e82ebc42162.setContent(html_de7ebaa3ee7d433c7fcc9c14c43b7aef);
+            
+        
+
+        marker_b40bfb271a12beff70d1a48a6e8c2daa.bindPopup(popup_6c60af204fca6b30b60c6e82ebc42162)
+        ;
+
+        
+    
+    
+            marker_b40bfb271a12beff70d1a48a6e8c2daa.bindTooltip(
+                `<div>
+                     MARIA NELLY CIEZA CORONADO - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b40bfb271a12beff70d1a48a6e8c2daa.setIcon(icon_47b9943c9cc779a879b408cf30e996a9);
+            
+    
+            var marker_71cd26cd3296454b78acece4e7d6af3c = L.marker(
+                [-5.0912796, -81.1129071],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_7e52c25340bb5e3428ac34ff1ba0d4b7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c80f22349ca817e4412c62f445fed0ea = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_541a3c43023b90783ed8eb6372949dcf = $(`<div id="html_541a3c43023b90783ed8eb6372949dcf" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223546                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0912796,-81.1129071','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_c80f22349ca817e4412c62f445fed0ea.setContent(html_541a3c43023b90783ed8eb6372949dcf);
+            
+        
+
+        marker_71cd26cd3296454b78acece4e7d6af3c.bindPopup(popup_c80f22349ca817e4412c62f445fed0ea)
+        ;
+
+        
+    
+    
+            marker_71cd26cd3296454b78acece4e7d6af3c.bindTooltip(
+                `<div>
+                     NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_71cd26cd3296454b78acece4e7d6af3c.setIcon(icon_7e52c25340bb5e3428ac34ff1ba0d4b7);
+            
+    
+            var marker_a2b77a2497202964386f53a876f00119 = L.marker(
+                [-5.0906452, -81.115962],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_3662a8f8c365c1ca930124eddc3887c8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2e4bafc74ad3acbefe5c7eff07b15ffc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f7006b54a8c4c546ac67dcdab39c9c83 = $(`<div id="html_f7006b54a8c4c546ac67dcdab39c9c83" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">Rosa Bayona Ruiz</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         Rosa Bayona Ruiz                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223076                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0906452,-81.115962','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_2e4bafc74ad3acbefe5c7eff07b15ffc.setContent(html_f7006b54a8c4c546ac67dcdab39c9c83);
+            
+        
+
+        marker_a2b77a2497202964386f53a876f00119.bindPopup(popup_2e4bafc74ad3acbefe5c7eff07b15ffc)
+        ;
+
+        
+    
+    
+            marker_a2b77a2497202964386f53a876f00119.bindTooltip(
+                `<div>
+                     Rosa Bayona Ruiz - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a2b77a2497202964386f53a876f00119.setIcon(icon_3662a8f8c365c1ca930124eddc3887c8);
+            
+    
+            var marker_eb517ebb909210ff5cc45bbcca3dcc41 = L.marker(
+                [-5.090737, -81.1159924],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_291dce8e696871566ff4335fef4145cc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8fd9f9c353f56e38daf1d72dbc2ae619 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8ba04fe7c3fbc74f499df1eb15b12efd = $(`<div id="html_8ba04fe7c3fbc74f499df1eb15b12efd" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">CORONADO CHECA PEDRO MIGUEL</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         CORONADO CHECA PEDRO MIGUEL                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223081                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.090737,-81.1159924','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_8fd9f9c353f56e38daf1d72dbc2ae619.setContent(html_8ba04fe7c3fbc74f499df1eb15b12efd);
+            
+        
+
+        marker_eb517ebb909210ff5cc45bbcca3dcc41.bindPopup(popup_8fd9f9c353f56e38daf1d72dbc2ae619)
+        ;
+
+        
+    
+    
+            marker_eb517ebb909210ff5cc45bbcca3dcc41.bindTooltip(
+                `<div>
+                     CORONADO CHECA PEDRO MIGUEL - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_eb517ebb909210ff5cc45bbcca3dcc41.setIcon(icon_291dce8e696871566ff4335fef4145cc);
+            
+    
+            var marker_1c6f393322f49e9f9bd42eefa44502e0 = L.marker(
+                [-5.0930554, -81.1148497],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_af10618d0a1ecce2dfedcf14af41a80d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_56ec1a61f1c5b5dc5b9c9e987563d6e8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_05fed54f89897834724d8507108b5e31 = $(`<div id="html_05fed54f89897834724d8507108b5e31" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">RIOS CARRERA CRISTOBAL</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         RIOS CARRERA CRISTOBAL                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223104                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0930554,-81.1148497','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_56ec1a61f1c5b5dc5b9c9e987563d6e8.setContent(html_05fed54f89897834724d8507108b5e31);
+            
+        
+
+        marker_1c6f393322f49e9f9bd42eefa44502e0.bindPopup(popup_56ec1a61f1c5b5dc5b9c9e987563d6e8)
+        ;
+
+        
+    
+    
+            marker_1c6f393322f49e9f9bd42eefa44502e0.bindTooltip(
+                `<div>
+                     RIOS CARRERA CRISTOBAL - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1c6f393322f49e9f9bd42eefa44502e0.setIcon(icon_af10618d0a1ecce2dfedcf14af41a80d);
+            
+    
+            var marker_59a6ed58c83297ff11b5b2be22f951a3 = L.marker(
+                [-5.0918939, -81.1106854],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_f3aa8ebc7417a6193b6213a17bdb0596 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_262f6fd352eba14fcbaa7c9e9ef9024e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bf014758cfe3f544979e16dacc77c22b = $(`<div id="html_bf014758cfe3f544979e16dacc77c22b" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">ERNA SILVA EUSEBIA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         ERNA SILVA EUSEBIA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223151                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0918939,-81.1106854','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_262f6fd352eba14fcbaa7c9e9ef9024e.setContent(html_bf014758cfe3f544979e16dacc77c22b);
+            
+        
+
+        marker_59a6ed58c83297ff11b5b2be22f951a3.bindPopup(popup_262f6fd352eba14fcbaa7c9e9ef9024e)
+        ;
+
+        
+    
+    
+            marker_59a6ed58c83297ff11b5b2be22f951a3.bindTooltip(
+                `<div>
+                     ERNA SILVA EUSEBIA - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_59a6ed58c83297ff11b5b2be22f951a3.setIcon(icon_f3aa8ebc7417a6193b6213a17bdb0596);
+            
+    
+            var marker_4f5c356f649b3dc3f7fa7ca87f93f22a = L.marker(
+                [-5.0928701, -81.1107056],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_e9d05b142407a54f3b77ceed235a1937 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5c1ebf92c29741daf3f6051f3db3a3d8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_91236bfca3a89d65b26616b14262f676 = $(`<div id="html_91236bfca3a89d65b26616b14262f676" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">GABRIELA SANTIAGO AYALA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         GABRIELA SANTIAGO AYALA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223182                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0928701,-81.1107056','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_5c1ebf92c29741daf3f6051f3db3a3d8.setContent(html_91236bfca3a89d65b26616b14262f676);
+            
+        
+
+        marker_4f5c356f649b3dc3f7fa7ca87f93f22a.bindPopup(popup_5c1ebf92c29741daf3f6051f3db3a3d8)
+        ;
+
+        
+    
+    
+            marker_4f5c356f649b3dc3f7fa7ca87f93f22a.bindTooltip(
+                `<div>
+                     GABRIELA SANTIAGO AYALA - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4f5c356f649b3dc3f7fa7ca87f93f22a.setIcon(icon_e9d05b142407a54f3b77ceed235a1937);
+            
+    
+            var marker_ff90213ea490526a57be234c41ee2b3f = L.marker(
+                [-5.0928176, -81.1139302],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_4726855037cddb4f1ec4f11391db9cb6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cb4d5b71b031bbce4519d7e5a5584684 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a5ecb207fcc845784dec375bad3c6251 = $(`<div id="html_a5ecb207fcc845784dec375bad3c6251" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">RAMOS CISNEROS SOCORRO</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         RAMOS CISNEROS SOCORRO                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223220                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0928176,-81.1139302','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_cb4d5b71b031bbce4519d7e5a5584684.setContent(html_a5ecb207fcc845784dec375bad3c6251);
+            
+        
+
+        marker_ff90213ea490526a57be234c41ee2b3f.bindPopup(popup_cb4d5b71b031bbce4519d7e5a5584684)
+        ;
+
+        
+    
+    
+            marker_ff90213ea490526a57be234c41ee2b3f.bindTooltip(
+                `<div>
+                     RAMOS CISNEROS SOCORRO - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ff90213ea490526a57be234c41ee2b3f.setIcon(icon_4726855037cddb4f1ec4f11391db9cb6);
+            
+    
+            var marker_c80d9455544505a33437368ff39da2b1 = L.marker(
+                [-5.0906258, -81.1128793],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_641c7da847a80cee07967f6f5553f515 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5a28f1788ab9e8fafbeccfdbcc69c320 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_40c4093e0dfff8ec9eb7ae537b23b9de = $(`<div id="html_40c4093e0dfff8ec9eb7ae537b23b9de" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">MARIA NELLY CIEZA CORONADO</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         MARIA NELLY CIEZA CORONADO                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223283                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0906258,-81.1128793','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_5a28f1788ab9e8fafbeccfdbcc69c320.setContent(html_40c4093e0dfff8ec9eb7ae537b23b9de);
+            
+        
+
+        marker_c80d9455544505a33437368ff39da2b1.bindPopup(popup_5a28f1788ab9e8fafbeccfdbcc69c320)
+        ;
+
+        
+    
+    
+            marker_c80d9455544505a33437368ff39da2b1.bindTooltip(
+                `<div>
+                     MARIA NELLY CIEZA CORONADO - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c80d9455544505a33437368ff39da2b1.setIcon(icon_641c7da847a80cee07967f6f5553f515);
+            
+    
+            var marker_3d63cd4ce22a99e28cd5bd1fc1fbf104 = L.marker(
+                [-5.0909986, -81.112956],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_ab88aaa70d0d79a9210e0cae5f8951e3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d997eddb3c96daa00c8b06962bcfbb54 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4a78226d4a95a4eda5443b7b342d4934 = $(`<div id="html_4a78226d4a95a4eda5443b7b342d4934" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">DIANA ELIZABET PEÑA TOCTO</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         DIANA ELIZABET PEÑA TOCTO                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223331                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0909986,-81.112956','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_d997eddb3c96daa00c8b06962bcfbb54.setContent(html_4a78226d4a95a4eda5443b7b342d4934);
+            
+        
+
+        marker_3d63cd4ce22a99e28cd5bd1fc1fbf104.bindPopup(popup_d997eddb3c96daa00c8b06962bcfbb54)
+        ;
+
+        
+    
+    
+            marker_3d63cd4ce22a99e28cd5bd1fc1fbf104.bindTooltip(
+                `<div>
+                     DIANA ELIZABET PEÑA TOCTO - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3d63cd4ce22a99e28cd5bd1fc1fbf104.setIcon(icon_ab88aaa70d0d79a9210e0cae5f8951e3);
+            
+    
+            var marker_8f52e4d2e97dbff833abc5f99bf7c088 = L.marker(
+                [-5.0909221, -81.1128813],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_9f285ed0bdd7779e0d00e63ff8a7a4c1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4ae63c7c45ce66486f419ca883a5feb6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fc860708434ad4f0ce270b4f95c4d0c9 = $(`<div id="html_fc860708434ad4f0ce270b4f95c4d0c9" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">ROSA ELVIRA PALACIOS HUAMAN</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         ROSA ELVIRA PALACIOS HUAMAN                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223336                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0909221,-81.1128813','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_4ae63c7c45ce66486f419ca883a5feb6.setContent(html_fc860708434ad4f0ce270b4f95c4d0c9);
+            
+        
+
+        marker_8f52e4d2e97dbff833abc5f99bf7c088.bindPopup(popup_4ae63c7c45ce66486f419ca883a5feb6)
+        ;
+
+        
+    
+    
+            marker_8f52e4d2e97dbff833abc5f99bf7c088.bindTooltip(
+                `<div>
+                     ROSA ELVIRA PALACIOS HUAMAN - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8f52e4d2e97dbff833abc5f99bf7c088.setIcon(icon_9f285ed0bdd7779e0d00e63ff8a7a4c1);
+            
+    
+            var marker_f70ea3d43fceba7a6511419f20320972 = L.marker(
+                [-5.0906563, -81.1125713],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_1a6dcfceabdc5512a90c225d47d12a0d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_372d5b91398f6ce92d93aa426a5641db = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a8b08961dc9995c197e038d06999f5de = $(`<div id="html_a8b08961dc9995c197e038d06999f5de" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">SANTAMARIA SANTISTEBAN JUAN</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         SANTAMARIA SANTISTEBAN JUAN                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223470                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0906563,-81.1125713','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_372d5b91398f6ce92d93aa426a5641db.setContent(html_a8b08961dc9995c197e038d06999f5de);
+            
+        
+
+        marker_f70ea3d43fceba7a6511419f20320972.bindPopup(popup_372d5b91398f6ce92d93aa426a5641db)
+        ;
+
+        
+    
+    
+            marker_f70ea3d43fceba7a6511419f20320972.bindTooltip(
+                `<div>
+                     SANTAMARIA SANTISTEBAN JUAN - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f70ea3d43fceba7a6511419f20320972.setIcon(icon_1a6dcfceabdc5512a90c225d47d12a0d);
+            
+    
+            var marker_8649baec68037ff8639ac0dfc0e82ef4 = L.marker(
+                [-5.0908462, -81.1125974],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_5c5dc5eba2ced3d54e5e927c5234e1e7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_83c3be5f9ec8a95de698f3e54035069c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6924234a7412d88b7642cf4dca70e9d3 = $(`<div id="html_6924234a7412d88b7642cf4dca70e9d3" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">JULIA ANTON RUIZ</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         JULIA ANTON RUIZ                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223483                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0908462,-81.1125974','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_83c3be5f9ec8a95de698f3e54035069c.setContent(html_6924234a7412d88b7642cf4dca70e9d3);
+            
+        
+
+        marker_8649baec68037ff8639ac0dfc0e82ef4.bindPopup(popup_83c3be5f9ec8a95de698f3e54035069c)
+        ;
+
+        
+    
+    
+            marker_8649baec68037ff8639ac0dfc0e82ef4.bindTooltip(
+                `<div>
+                     JULIA ANTON RUIZ - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8649baec68037ff8639ac0dfc0e82ef4.setIcon(icon_5c5dc5eba2ced3d54e5e927c5234e1e7);
+            
+    
+            var marker_e2c17db41079a9dd749c14859501baaf = L.marker(
+                [-5.0907721, -81.1124608],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_d84e333708cd4ace2d7bb61940000a51 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fe5dc789af331d9a60cce82b5ffcf885 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_61b1360d144accd6e04c75e4377fb344 = $(`<div id="html_61b1360d144accd6e04c75e4377fb344" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">PAOLA MIRELLA MAZA ALVARADO</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         PAOLA MIRELLA MAZA ALVARADO                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223516                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0907721,-81.1124608','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_fe5dc789af331d9a60cce82b5ffcf885.setContent(html_61b1360d144accd6e04c75e4377fb344);
+            
+        
+
+        marker_e2c17db41079a9dd749c14859501baaf.bindPopup(popup_fe5dc789af331d9a60cce82b5ffcf885)
+        ;
+
+        
+    
+    
+            marker_e2c17db41079a9dd749c14859501baaf.bindTooltip(
+                `<div>
+                     PAOLA MIRELLA MAZA ALVARADO - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e2c17db41079a9dd749c14859501baaf.setIcon(icon_d84e333708cd4ace2d7bb61940000a51);
+            
+    
+            var marker_d321ef8add7fe525efbd6ebeb967b0e0 = L.marker(
+                [-5.0912796, -81.1129071],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_ccf770f8e2e201cbb8cb28f0ab66620d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9d4dc3fdd9fe775d30135eaca303ecff = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d2b86d15a487500064283a33b4087dad = $(`<div id="html_d2b86d15a487500064283a33b4087dad" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223544                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0912796,-81.1129071','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_9d4dc3fdd9fe775d30135eaca303ecff.setContent(html_d2b86d15a487500064283a33b4087dad);
+            
+        
+
+        marker_d321ef8add7fe525efbd6ebeb967b0e0.bindPopup(popup_9d4dc3fdd9fe775d30135eaca303ecff)
+        ;
+
+        
+    
+    
+            marker_d321ef8add7fe525efbd6ebeb967b0e0.bindTooltip(
+                `<div>
+                     NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d321ef8add7fe525efbd6ebeb967b0e0.setIcon(icon_ccf770f8e2e201cbb8cb28f0ab66620d);
+            
+    
+            var marker_6fa80c479938e2aa88c3826aed8e97b1 = L.marker(
+                [-5.0899405, -81.1130671],
+                {
+}
+            ).addTo(marker_cluster_7bf57c70c0b918e3e1333514445c2b26);
+        
+    
+            var icon_de85dc41b32a463a1f9c7be896300fcb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0e2040f3ca6ee626f3c82273d0e6e856 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8387c4d7ac7554cf3175230ccb91c85a = $(`<div id="html_8387c4d7ac7554cf3175230ccb91c85a" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">YULI LILIANA CRUZ HIJUELA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         YULI LILIANA CRUZ HIJUELA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: LEONARDO VIERA CHAVEZ                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223658                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0899405,-81.1130671','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_0e2040f3ca6ee626f3c82273d0e6e856.setContent(html_8387c4d7ac7554cf3175230ccb91c85a);
+            
+        
+
+        marker_6fa80c479938e2aa88c3826aed8e97b1.bindPopup(popup_0e2040f3ca6ee626f3c82273d0e6e856)
+        ;
+
+        
+    
+    
+            marker_6fa80c479938e2aa88c3826aed8e97b1.bindTooltip(
+                `<div>
+                     YULI LILIANA CRUZ HIJUELA - LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6fa80c479938e2aa88c3826aed8e97b1.setIcon(icon_de85dc41b32a463a1f9c7be896300fcb);
+            
+    
+            marker_cluster_7bf57c70c0b918e3e1333514445c2b26.addTo(feature_group_5567fe1a8ad4879326d1c170b0d8a1d0);
+        
+    
+            feature_group_5567fe1a8ad4879326d1c170b0d8a1d0.addTo(map_a3875549b73f7c31b9c00df7406513ef);
+        
+    
+            var feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1 = L.featureGroup(
+                {
+}
+            );
+        
+    
+        function geo_json_68a22f0c9f7f01590d1814f9157d9117_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_68a22f0c9f7f01590d1814f9157d9117_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_68a22f0c9f7f01590d1814f9157d9117 = L.geoJson(null, {
+                onEachFeature: geo_json_68a22f0c9f7f01590d1814f9157d9117_onEachFeature,
+            
+                pointToLayer: geo_json_68a22f0c9f7f01590d1814f9157d9117_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_68a22f0c9f7f01590d1814f9157d9117_add (data) {
+            geo_json_68a22f0c9f7f01590d1814f9157d9117
+                .addData(data);
+        }
+            geo_json_68a22f0c9f7f01590d1814f9157d9117_add({"geometry": {"coordinates": [-81.1128793, -5.0906258], "type": "Point"}, "properties": {"name": "MARIA NELLY CIEZA CORONADO", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_68a22f0c9f7f01590d1814f9157d9117.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_68a22f0c9f7f01590d1814f9157d9117.bindTooltip(
+                `<div>
+                     MARIA NELLY CIEZA CORONADO (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_68a22f0c9f7f01590d1814f9157d9117.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_a97606631107f6695e77394c9d1e1a2f_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_a97606631107f6695e77394c9d1e1a2f_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_a97606631107f6695e77394c9d1e1a2f = L.geoJson(null, {
+                onEachFeature: geo_json_a97606631107f6695e77394c9d1e1a2f_onEachFeature,
+            
+                pointToLayer: geo_json_a97606631107f6695e77394c9d1e1a2f_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_a97606631107f6695e77394c9d1e1a2f_add (data) {
+            geo_json_a97606631107f6695e77394c9d1e1a2f
+                .addData(data);
+        }
+            geo_json_a97606631107f6695e77394c9d1e1a2f_add({"geometry": {"coordinates": [-81.1129071, -5.0912796], "type": "Point"}, "properties": {"name": "NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_a97606631107f6695e77394c9d1e1a2f.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_a97606631107f6695e77394c9d1e1a2f.bindTooltip(
+                `<div>
+                     NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_a97606631107f6695e77394c9d1e1a2f.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_b9fde667309050e296e0e33cb0fbe2a5_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_b9fde667309050e296e0e33cb0fbe2a5_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_b9fde667309050e296e0e33cb0fbe2a5 = L.geoJson(null, {
+                onEachFeature: geo_json_b9fde667309050e296e0e33cb0fbe2a5_onEachFeature,
+            
+                pointToLayer: geo_json_b9fde667309050e296e0e33cb0fbe2a5_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_b9fde667309050e296e0e33cb0fbe2a5_add (data) {
+            geo_json_b9fde667309050e296e0e33cb0fbe2a5
+                .addData(data);
+        }
+            geo_json_b9fde667309050e296e0e33cb0fbe2a5_add({"geometry": {"coordinates": [-81.115962, -5.0906452], "type": "Point"}, "properties": {"name": "Rosa Bayona Ruiz", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_b9fde667309050e296e0e33cb0fbe2a5.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_b9fde667309050e296e0e33cb0fbe2a5.bindTooltip(
+                `<div>
+                     Rosa Bayona Ruiz (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_b9fde667309050e296e0e33cb0fbe2a5.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_35fa30c4da7875d4d751a6a86e21a3ef_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_35fa30c4da7875d4d751a6a86e21a3ef_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_35fa30c4da7875d4d751a6a86e21a3ef = L.geoJson(null, {
+                onEachFeature: geo_json_35fa30c4da7875d4d751a6a86e21a3ef_onEachFeature,
+            
+                pointToLayer: geo_json_35fa30c4da7875d4d751a6a86e21a3ef_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_35fa30c4da7875d4d751a6a86e21a3ef_add (data) {
+            geo_json_35fa30c4da7875d4d751a6a86e21a3ef
+                .addData(data);
+        }
+            geo_json_35fa30c4da7875d4d751a6a86e21a3ef_add({"geometry": {"coordinates": [-81.1159924, -5.090737], "type": "Point"}, "properties": {"name": "CORONADO CHECA PEDRO MIGUEL", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_35fa30c4da7875d4d751a6a86e21a3ef.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_35fa30c4da7875d4d751a6a86e21a3ef.bindTooltip(
+                `<div>
+                     CORONADO CHECA PEDRO MIGUEL (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_35fa30c4da7875d4d751a6a86e21a3ef.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_f641c9d43d0e0995338e4d377caf1801_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_f641c9d43d0e0995338e4d377caf1801_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_f641c9d43d0e0995338e4d377caf1801 = L.geoJson(null, {
+                onEachFeature: geo_json_f641c9d43d0e0995338e4d377caf1801_onEachFeature,
+            
+                pointToLayer: geo_json_f641c9d43d0e0995338e4d377caf1801_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_f641c9d43d0e0995338e4d377caf1801_add (data) {
+            geo_json_f641c9d43d0e0995338e4d377caf1801
+                .addData(data);
+        }
+            geo_json_f641c9d43d0e0995338e4d377caf1801_add({"geometry": {"coordinates": [-81.1148497, -5.0930554], "type": "Point"}, "properties": {"name": "RIOS CARRERA CRISTOBAL", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_f641c9d43d0e0995338e4d377caf1801.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_f641c9d43d0e0995338e4d377caf1801.bindTooltip(
+                `<div>
+                     RIOS CARRERA CRISTOBAL (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_f641c9d43d0e0995338e4d377caf1801.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_b2032889ff41b7806085f18a838e07c1_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_b2032889ff41b7806085f18a838e07c1_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_b2032889ff41b7806085f18a838e07c1 = L.geoJson(null, {
+                onEachFeature: geo_json_b2032889ff41b7806085f18a838e07c1_onEachFeature,
+            
+                pointToLayer: geo_json_b2032889ff41b7806085f18a838e07c1_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_b2032889ff41b7806085f18a838e07c1_add (data) {
+            geo_json_b2032889ff41b7806085f18a838e07c1
+                .addData(data);
+        }
+            geo_json_b2032889ff41b7806085f18a838e07c1_add({"geometry": {"coordinates": [-81.1106854, -5.0918939], "type": "Point"}, "properties": {"name": "ERNA SILVA EUSEBIA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_b2032889ff41b7806085f18a838e07c1.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_b2032889ff41b7806085f18a838e07c1.bindTooltip(
+                `<div>
+                     ERNA SILVA EUSEBIA (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_b2032889ff41b7806085f18a838e07c1.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_6e5c6e968bc4c747b0e4c15d804eabc0_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_6e5c6e968bc4c747b0e4c15d804eabc0_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_6e5c6e968bc4c747b0e4c15d804eabc0 = L.geoJson(null, {
+                onEachFeature: geo_json_6e5c6e968bc4c747b0e4c15d804eabc0_onEachFeature,
+            
+                pointToLayer: geo_json_6e5c6e968bc4c747b0e4c15d804eabc0_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_6e5c6e968bc4c747b0e4c15d804eabc0_add (data) {
+            geo_json_6e5c6e968bc4c747b0e4c15d804eabc0
+                .addData(data);
+        }
+            geo_json_6e5c6e968bc4c747b0e4c15d804eabc0_add({"geometry": {"coordinates": [-81.1107056, -5.0928701], "type": "Point"}, "properties": {"name": "GABRIELA SANTIAGO AYALA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_6e5c6e968bc4c747b0e4c15d804eabc0.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_6e5c6e968bc4c747b0e4c15d804eabc0.bindTooltip(
+                `<div>
+                     GABRIELA SANTIAGO AYALA (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_6e5c6e968bc4c747b0e4c15d804eabc0.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_02167cce22cabb5dbe3a4d5450cfbede_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_02167cce22cabb5dbe3a4d5450cfbede_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_02167cce22cabb5dbe3a4d5450cfbede = L.geoJson(null, {
+                onEachFeature: geo_json_02167cce22cabb5dbe3a4d5450cfbede_onEachFeature,
+            
+                pointToLayer: geo_json_02167cce22cabb5dbe3a4d5450cfbede_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_02167cce22cabb5dbe3a4d5450cfbede_add (data) {
+            geo_json_02167cce22cabb5dbe3a4d5450cfbede
+                .addData(data);
+        }
+            geo_json_02167cce22cabb5dbe3a4d5450cfbede_add({"geometry": {"coordinates": [-81.1139302, -5.0928176], "type": "Point"}, "properties": {"name": "RAMOS CISNEROS SOCORRO", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_02167cce22cabb5dbe3a4d5450cfbede.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_02167cce22cabb5dbe3a4d5450cfbede.bindTooltip(
+                `<div>
+                     RAMOS CISNEROS SOCORRO (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_02167cce22cabb5dbe3a4d5450cfbede.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_89535bdb7aec8ed072ec55488266df5e_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_89535bdb7aec8ed072ec55488266df5e_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_89535bdb7aec8ed072ec55488266df5e = L.geoJson(null, {
+                onEachFeature: geo_json_89535bdb7aec8ed072ec55488266df5e_onEachFeature,
+            
+                pointToLayer: geo_json_89535bdb7aec8ed072ec55488266df5e_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_89535bdb7aec8ed072ec55488266df5e_add (data) {
+            geo_json_89535bdb7aec8ed072ec55488266df5e
+                .addData(data);
+        }
+            geo_json_89535bdb7aec8ed072ec55488266df5e_add({"geometry": {"coordinates": [-81.1128793, -5.0906258], "type": "Point"}, "properties": {"name": "MARIA NELLY CIEZA CORONADO", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_89535bdb7aec8ed072ec55488266df5e.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_89535bdb7aec8ed072ec55488266df5e.bindTooltip(
+                `<div>
+                     MARIA NELLY CIEZA CORONADO (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_89535bdb7aec8ed072ec55488266df5e.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_622d27d0ada14eb4419bb331376e3c0e_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_622d27d0ada14eb4419bb331376e3c0e_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_622d27d0ada14eb4419bb331376e3c0e = L.geoJson(null, {
+                onEachFeature: geo_json_622d27d0ada14eb4419bb331376e3c0e_onEachFeature,
+            
+                pointToLayer: geo_json_622d27d0ada14eb4419bb331376e3c0e_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_622d27d0ada14eb4419bb331376e3c0e_add (data) {
+            geo_json_622d27d0ada14eb4419bb331376e3c0e
+                .addData(data);
+        }
+            geo_json_622d27d0ada14eb4419bb331376e3c0e_add({"geometry": {"coordinates": [-81.112956, -5.0909986], "type": "Point"}, "properties": {"name": "DIANA ELIZABET PE\u00d1A TOCTO", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_622d27d0ada14eb4419bb331376e3c0e.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_622d27d0ada14eb4419bb331376e3c0e.bindTooltip(
+                `<div>
+                     DIANA ELIZABET PEÑA TOCTO (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_622d27d0ada14eb4419bb331376e3c0e.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_1817841c3d3d4278c054e8241591bd96_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_1817841c3d3d4278c054e8241591bd96_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_1817841c3d3d4278c054e8241591bd96 = L.geoJson(null, {
+                onEachFeature: geo_json_1817841c3d3d4278c054e8241591bd96_onEachFeature,
+            
+                pointToLayer: geo_json_1817841c3d3d4278c054e8241591bd96_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_1817841c3d3d4278c054e8241591bd96_add (data) {
+            geo_json_1817841c3d3d4278c054e8241591bd96
+                .addData(data);
+        }
+            geo_json_1817841c3d3d4278c054e8241591bd96_add({"geometry": {"coordinates": [-81.1128813, -5.0909221], "type": "Point"}, "properties": {"name": "ROSA ELVIRA PALACIOS HUAMAN", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_1817841c3d3d4278c054e8241591bd96.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_1817841c3d3d4278c054e8241591bd96.bindTooltip(
+                `<div>
+                     ROSA ELVIRA PALACIOS HUAMAN (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_1817841c3d3d4278c054e8241591bd96.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_ab2c0cccca96293581d66c24b009116c_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_ab2c0cccca96293581d66c24b009116c_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_ab2c0cccca96293581d66c24b009116c = L.geoJson(null, {
+                onEachFeature: geo_json_ab2c0cccca96293581d66c24b009116c_onEachFeature,
+            
+                pointToLayer: geo_json_ab2c0cccca96293581d66c24b009116c_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_ab2c0cccca96293581d66c24b009116c_add (data) {
+            geo_json_ab2c0cccca96293581d66c24b009116c
+                .addData(data);
+        }
+            geo_json_ab2c0cccca96293581d66c24b009116c_add({"geometry": {"coordinates": [-81.1125713, -5.0906563], "type": "Point"}, "properties": {"name": "SANTAMARIA SANTISTEBAN JUAN", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_ab2c0cccca96293581d66c24b009116c.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_ab2c0cccca96293581d66c24b009116c.bindTooltip(
+                `<div>
+                     SANTAMARIA SANTISTEBAN JUAN (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_ab2c0cccca96293581d66c24b009116c.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_522c5e801c21a1e7a3864b9d4324963c_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_522c5e801c21a1e7a3864b9d4324963c_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_522c5e801c21a1e7a3864b9d4324963c = L.geoJson(null, {
+                onEachFeature: geo_json_522c5e801c21a1e7a3864b9d4324963c_onEachFeature,
+            
+                pointToLayer: geo_json_522c5e801c21a1e7a3864b9d4324963c_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_522c5e801c21a1e7a3864b9d4324963c_add (data) {
+            geo_json_522c5e801c21a1e7a3864b9d4324963c
+                .addData(data);
+        }
+            geo_json_522c5e801c21a1e7a3864b9d4324963c_add({"geometry": {"coordinates": [-81.1125974, -5.0908462], "type": "Point"}, "properties": {"name": "JULIA ANTON RUIZ", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_522c5e801c21a1e7a3864b9d4324963c.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_522c5e801c21a1e7a3864b9d4324963c.bindTooltip(
+                `<div>
+                     JULIA ANTON RUIZ (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_522c5e801c21a1e7a3864b9d4324963c.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_7d9dc340dff664a99ffea77e650a3540_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_7d9dc340dff664a99ffea77e650a3540_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_7d9dc340dff664a99ffea77e650a3540 = L.geoJson(null, {
+                onEachFeature: geo_json_7d9dc340dff664a99ffea77e650a3540_onEachFeature,
+            
+                pointToLayer: geo_json_7d9dc340dff664a99ffea77e650a3540_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_7d9dc340dff664a99ffea77e650a3540_add (data) {
+            geo_json_7d9dc340dff664a99ffea77e650a3540
+                .addData(data);
+        }
+            geo_json_7d9dc340dff664a99ffea77e650a3540_add({"geometry": {"coordinates": [-81.1124608, -5.0907721], "type": "Point"}, "properties": {"name": "PAOLA MIRELLA MAZA ALVARADO", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_7d9dc340dff664a99ffea77e650a3540.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_7d9dc340dff664a99ffea77e650a3540.bindTooltip(
+                `<div>
+                     PAOLA MIRELLA MAZA ALVARADO (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_7d9dc340dff664a99ffea77e650a3540.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_2c2dc4f24163aff094733e802c954be8_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_2c2dc4f24163aff094733e802c954be8_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_2c2dc4f24163aff094733e802c954be8 = L.geoJson(null, {
+                onEachFeature: geo_json_2c2dc4f24163aff094733e802c954be8_onEachFeature,
+            
+                pointToLayer: geo_json_2c2dc4f24163aff094733e802c954be8_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_2c2dc4f24163aff094733e802c954be8_add (data) {
+            geo_json_2c2dc4f24163aff094733e802c954be8
+                .addData(data);
+        }
+            geo_json_2c2dc4f24163aff094733e802c954be8_add({"geometry": {"coordinates": [-81.1129071, -5.0912796], "type": "Point"}, "properties": {"name": "NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_2c2dc4f24163aff094733e802c954be8.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_2c2dc4f24163aff094733e802c954be8.bindTooltip(
+                `<div>
+                     NEGOCIOS LAEL EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_2c2dc4f24163aff094733e802c954be8.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+        function geo_json_f4e4fd3ff51341cc6f66a000ed198418_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_f4e4fd3ff51341cc6f66a000ed198418_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_f4e4fd3ff51341cc6f66a000ed198418 = L.geoJson(null, {
+                onEachFeature: geo_json_f4e4fd3ff51341cc6f66a000ed198418_onEachFeature,
+            
+                pointToLayer: geo_json_f4e4fd3ff51341cc6f66a000ed198418_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_f4e4fd3ff51341cc6f66a000ed198418_add (data) {
+            geo_json_f4e4fd3ff51341cc6f66a000ed198418
+                .addData(data);
+        }
+            geo_json_f4e4fd3ff51341cc6f66a000ed198418_add({"geometry": {"coordinates": [-81.1130671, -5.0899405], "type": "Point"}, "properties": {"name": "YULI LILIANA CRUZ HIJUELA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"});
+        geo_json_f4e4fd3ff51341cc6f66a000ed198418.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_f4e4fd3ff51341cc6f66a000ed198418.bindTooltip(
+                `<div>
+                     YULI LILIANA CRUZ HIJUELA (LEONARDO VIERA CHAVEZ)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_f4e4fd3ff51341cc6f66a000ed198418.addTo(feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1);
+        
+    
+            feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1.addTo(map_a3875549b73f7c31b9c00df7406513ef);
+        
+    
+            var feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1searchControl = new L.Control.Search({
+                layer: feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1,
+                
+                propertyName: 'name',
+                
+                collapsed: false,
+                textPlaceholder: 'Buscar cliente (Bodega)...',
+                position:'topleft',
+            
+                initial: false,
+                
+                zoom: 18,
+                
+                hideMarkerOnCollapse: true
+            
+                });
+                feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1searchControl.on('search:locationfound', function(e) {
+                    feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1.setStyle(function(feature){
+                        return feature.properties.style
+                    })
+                    
+                    e.layer.setStyle({
+  "weight": 3,
+  "searchAtStart": false,
+});
+                    
+                    if(e.layer._popup)
+                        e.layer.openPopup();
+                })
+                feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1searchControl.on('search:collapsed', function(e) {
+                        feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1.setStyle(function(feature){
+                            return feature.properties.style
+                    });
+                });
+            map_a3875549b73f7c31b9c00df7406513ef.addControl( feature_group_922a14d7dc6b1d6ca9cfc7539ad0b0a1searchControl );
+
+        
+    
+            var layer_control_595a0558c2fa4c6db1afccd4f205feeb_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_53362ded3c0d3ac946356e15becfb99b,
+                },
+                overlays :  {
+                    "LEONARDO VIERA CHAVEZ (16)" : feature_group_5567fe1a8ad4879326d1c170b0d8a1d0,
+                },
+            };
+            let layer_control_595a0558c2fa4c6db1afccd4f205feeb = L.control.layers(
+                layer_control_595a0558c2fa4c6db1afccd4f205feeb_layers.base_layers,
+                layer_control_595a0558c2fa4c6db1afccd4f205feeb_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_a3875549b73f7c31b9c00df7406513ef);
+
+        
+    
+            var locate_control_73480ddc6fe1e774e8fb84979bd9ae37 = L.control.locate(
+                {"flyTo": true, "keepCurrentZoomLevel": true, "locateOptions": {"enableHighAccuracy": true, "maxZoom": 16}, "strings": {"popup": "\u00a1Est\u00e1s aqu\u00ed!", "title": "Mostrar mi ubicaci\u00f3n"}}
+            ).addTo(map_a3875549b73f7c31b9c00df7406513ef);
+            
+                locate_control_73480ddc6fe1e774e8fb84979bd9ae37.start();
+            
+        
+</script>
+</html>
