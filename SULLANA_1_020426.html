@@ -1,0 +1,3478 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+    <style>
+        /* Estilo general del contenedor de búsqueda */
+        .leaflet-control-search {
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+            border-radius: 25px !important;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .leaflet-control-search .search-input {
+            padding: 8px 15px !important;
+            border-radius: 25px !important;
+            border: 1px solid #eee !important;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .leaflet-control-search.search-exp .search-input {
+            width: 250px !important;
+        }
+        .leaflet-control-search .search-button {
+            background-color: #fff !important;
+            border-radius: 50% !important;
+            width: 34px !important;
+            height: 34px !important;
+        }
+
+        /* Estilo para el Control de Capas (Vendedores) */
+        .leaflet-control-layers {
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            border-radius: 12px !important;
+            padding: 10px !important;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .leaflet-control-layers-toggle {
+            width: 40px !important;
+            height: 40px !important;
+            background-size: 25px !important;
+        }
+
+        /* Estilo para los botones de Zoom */
+        .leaflet-bar {
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        }
+        .leaflet-bar a {
+            background-color: white !important;
+            color: #333 !important;
+            border: 1px solid #f0f0f0 !important;
+        }
+        .leaflet-bar a:first-child { border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; }
+        .leaflet-bar a:last-child { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; }
+
+        /* Mejora de los tooltips */
+        .leaflet-tooltip {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border: none !important;
+            border-radius: 6px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 600;
+        }
+        /* Mejora del listado de resultados del buscador */
+        .leaflet-control-search .search-tip {
+            padding: 8px !important;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px !important;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .leaflet-control-search .search-tip:hover {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+        .leaflet-control-search .search-tooltip {
+            max-height: 300px !important;
+            overflow-y: auto !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            border: none !important;
+            background: white !important;
+        }
+    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_cdc658dcf6cd3fc55a0a6839c088a432 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.css"/>
+</head>
+<body>
+    
+    
+    <div id="nav-panel" style="
+        position: fixed; 
+        bottom: 20px; 
+        left: 20px; 
+        width: 300px; 
+        background: white; 
+        z-index: 9999; 
+        border-radius: 15px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        font-family: 'Segoe UI', sans-serif;
+        padding: 15px;
+        display: none;
+    ">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; font-size: 16px; color: #333;">🚀 Rutas de Navegación</h3>
+            <button onclick="document.getElementById('nav-panel').style.display='none'" style="border: none; background: none; cursor: pointer; font-size: 20px;">×</button>
+        </div>
+        <div id="nav-links-container" style="max-height: 400px; overflow-y: auto;">
+            <!-- Se llenará dinámicamente -->
+        </div>
+    </div>
+
+    <button id="nav-toggle" style="
+        position: fixed; 
+        bottom: 20px; 
+        left: 20px; 
+        z-index: 9998; 
+        background: #4285F4; 
+        color: white; 
+        border: none; 
+        border-radius: 50px; 
+        padding: 12px 20px; 
+        font-weight: bold; 
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        font-family: 'Segoe UI', sans-serif;
+    " onclick="toggleNavPanel()">
+        🗺️ VER RUTAS GOOGLE MAPS
+    </button>
+
+    <script>
+        var infoRutas = {"WILLIAN ALEJANDRO HERRERA MORAN": [{"nombre": "Tramo 1 (FIORELLA YACQUELINE VALDEZ PE\u00d1A ... MARIA YSABEL JIMENEZ CALVA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.9089274,-80.7273671&waypoints=-4.8960251%2C-80.6821159%7C-4.8932417%2C-80.6823929%7C-4.9151917%2C-80.7208234%7C-4.9072692%2C-80.7295636%7C-4.9072286%2C-80.7303311%7C-4.9072564%2C-80.7296621%7C-4.9072072%2C-80.7295895%7C-4.9072577%2C-80.7291965%7C-4.908587%2C-80.725012"}, {"nombre": "Tramo 2 (VALDIVIEZO ROJAS ANA MARIA ... FILOMENO ALVITES DEZA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.9090278,-80.721258&waypoints=-4.907673%2C-80.72672%7C-4.9076435%2C-80.7267846%7C-4.9077744%2C-80.725881%7C-4.908592%2C-80.725807%7C-4.909958%2C-80.72584%7C-4.9103395%2C-80.7246758%7C-4.910231%2C-80.723627%7C-4.9098168%2C-80.7246802%7C-4.890093%2C-80.686844"}, {"nombre": "Tramo 3 (MARIA LUCILA JUAREZ VDA DE REYES ... MIRTHA CRISANTO CORDOVA DE MORE)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.8932417,-80.6823929&waypoints=-4.900277%2C-80.8141549%7C-4.898185%2C-80.813146%7C-4.899611%2C-80.81612%7C-4.9017196%2C-80.8148894%7C-4.902902%2C-80.81599%7C-4.906884%2C-80.720431%7C-4.8967963%2C-80.6820076%7C-4.8960251%2C-80.6821159"}]};
+        
+        function toggleNavPanel() {
+            var panel = document.getElementById('nav-panel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                renderRutas();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function renderRutas() {
+            var container = document.getElementById('nav-links-container');
+            container.innerHTML = '';
+            
+            for (var vendedor in infoRutas) {
+                var section = document.createElement('div');
+                section.style.marginBottom = '15px';
+                section.innerHTML = '<strong style="color: #666; font-size: 13px; display: block; margin-bottom: 5px;">👤 ' + vendedor + '</strong>';
+                
+                infoRutas[vendedor].forEach(function(link) {
+                    var a = document.createElement('a');
+                    a.href = link.url;
+                    a.target = '_blank';
+                    a.className = 'nav-link-btn';
+                    a.innerHTML = link.nombre;
+                    a.style.display = 'block';
+                    a.style.background = '#f1f3f4';
+                    a.style.color = '#1a73e8';
+                    a.style.padding = '8px 12px';
+                    a.style.borderRadius = '8px';
+                    a.style.marginBottom = '5px';
+                    a.style.textDecoration = 'none';
+                    a.style.fontSize = '12px';
+                    a.style.fontWeight = '600';
+                    a.onmouseover = function() { this.style.background = '#e8f0fe'; };
+                    a.onmouseout = function() { this.style.background = '#f1f3f4'; };
+                    section.appendChild(a);
+                });
+                container.appendChild(section);
+            }
+        }
+    </script>
+    
+    
+    <a href="index.html" style="
+        position: fixed; top: 15px; left: 50px; z-index: 9998;
+        background: white; color: #333; border: 2px solid #ccc;
+        border-radius: 8px; padding: 8px 15px; font-weight: bold;
+        cursor: pointer; text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        font-family: 'Segoe UI', sans-serif; font-size: 13px;
+    ">&#8592; VOLVER AL MENU</a>
+
+    <script>
+        // nombre_bodega -> referencia al Leaflet Marker
+        window._entregaMarkers = {};
+        // Marcador cuyo popup esta abierto ahora mismo
+        window._markerActual = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var map = document.querySelector('.folium-map')._leaflet_map;
+
+            // ── Aplicar estado visual de entregado ──────────────────────────
+            function marcarVisual(marker, entregado) {
+                if (!marker || !marker._icon) return;
+                if (entregado) {
+                    // Poner en escala de grises y mas opaco con check verde encima
+                    marker._icon.style.filter = 'grayscale(100%) brightness(0.5)';
+                    marker._icon.style.opacity = '0.6';
+                } else {
+                    marker._icon.style.filter  = '';
+                    marker._icon.style.opacity = '1';
+                }
+            }
+
+            // ── Re-aplicar estados guardados (despues de zoom/mover) ────────
+            function reAplicarEstados() {
+                for (var nombre in window._entregaMarkers) {
+                    if (localStorage.getItem('_ent_' + nombre)) {
+                        marcarVisual(window._entregaMarkers[nombre], true);
+                    }
+                }
+            }
+            // MarkerCluster regenera los iconos al hacer zoom: re-aplicar
+            map.on('zoomend moveend', function() {
+                setTimeout(reAplicarEstados, 150);
+            });
+
+            // ── Al abrir popup: registrar marcador y actualizar boton ───────
+            map.on('popupopen', function(e) {
+                window._markerActual = e.popup._source;
+                var wrapper = e.popup._wrapper;
+                if (!wrapper) return;
+
+                var span = wrapper.querySelector('.bodega-nombre');
+                var btn  = wrapper.querySelector('.btn-entregado');
+                if (!span || !btn) return;
+
+                var nombre = span.textContent.trim();
+
+                // Registrar referencia del marcador por nombre
+                window._entregaMarkers[nombre] = window._markerActual;
+
+                // Sincronizar texto del boton con el estado real
+                var yaEntregado = !!localStorage.getItem('_ent_' + nombre);
+                actualizarBoton(btn, yaEntregado);
+            });
+
+            // ── Actualizar apariencia del boton ─────────────────────────────
+            function actualizarBoton(btn, entregado) {
+                if (entregado) {
+                    btn.textContent  = '✔ ENTREGADO - Toca para deshacer';
+                    btn.style.background = '#2ecc71';
+                    btn.style.color      = 'white';
+                    btn.style.border     = 'none';
+                } else {
+                    btn.textContent  = '☐ MARCAR ENTREGADO';
+                    btn.style.background = '#f8f9fa';
+                    btn.style.color      = '#333';
+                    btn.style.border     = '1px solid #ccc';
+                }
+            }
+
+            // ── Funcion global llamada por onclick del boton ─────────────────
+            window.toggleEntregado = function(btn) {
+                var marker = window._markerActual;
+                var wrapper = document.querySelector('.leaflet-popup-content-wrapper');
+                if (!wrapper) return;
+                var span = wrapper.querySelector('.bodega-nombre');
+                if (!span) return;
+
+                var nombre = span.textContent.trim();
+                var key    = '_ent_' + nombre;
+                var ahora  = !!localStorage.getItem(key);
+
+                // Invertir estado
+                var nuevo = !ahora;
+                if (nuevo) {
+                    localStorage.setItem(key, '1');
+                } else {
+                    localStorage.removeItem(key);
+                }
+
+                // Actualizar visual del pin
+                if (marker) {
+                    window._entregaMarkers[nombre] = marker;
+                    marcarVisual(marker, nuevo);
+                }
+
+                // Actualizar boton
+                actualizarBoton(btn, nuevo);
+            };
+
+            // Aplicar estados guardados al cargar
+            setTimeout(reAplicarEstados, 1200);
+            setTimeout(reAplicarEstados, 3000);
+        });
+    </script>
+    
+    
+            <div class="folium-map" id="map_cdc658dcf6cd3fc55a0a6839c088a432" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_cdc658dcf6cd3fc55a0a6839c088a432 = L.map(
+                "map_cdc658dcf6cd3fc55a0a6839c088a432",
+                {
+                    center: [-4.904309748275862, -80.7323937724138],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_764232582e2de56a28a58568906d46a4 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_764232582e2de56a28a58568906d46a4.addTo(map_cdc658dcf6cd3fc55a0a6839c088a432);
+        
+    
+            var feature_group_15591da5a395557d5ada6632ed7e4973 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57 = L.markerClusterGroup(
+                {
+  "spiderfyOnMaxZoom": true,
+  "disableClusteringAtZoom": 17,
+  "maxClusterRadius": 60,
+}
+            );
+        
+    
+            var marker_4f1d22f0ce5b8f777757d384a7d1dc5c = L.marker(
+                [-4.8960251, -80.6821159],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_045ae3373f8c351f00faaef796664faa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6c7afa8504e51d6effb2fa5f4ac61729 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_23af0abbd5243dee72a31d7d16ca6093 = $(`<div id="html_23af0abbd5243dee72a31d7d16ca6093" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">FIORELLA YACQUELINE VALDEZ PEÑA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         FIORELLA YACQUELINE VALDEZ PEÑA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223687                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8960251,-80.6821159','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_6c7afa8504e51d6effb2fa5f4ac61729.setContent(html_23af0abbd5243dee72a31d7d16ca6093);
+            
+        
+
+        marker_4f1d22f0ce5b8f777757d384a7d1dc5c.bindPopup(popup_6c7afa8504e51d6effb2fa5f4ac61729)
+        ;
+
+        
+    
+    
+            marker_4f1d22f0ce5b8f777757d384a7d1dc5c.bindTooltip(
+                `<div>
+                     FIORELLA YACQUELINE VALDEZ PEÑA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4f1d22f0ce5b8f777757d384a7d1dc5c.setIcon(icon_045ae3373f8c351f00faaef796664faa);
+            
+    
+            var marker_4be70e40319435874ce3c3793c51bd79 = L.marker(
+                [-4.8932417, -80.6823929],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_ff7329a86f8c8f2d7229b55080f572a2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5656f9c82e09e85c5c5881634e10b68b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b6aca89dbc731c32814022c739ac2c7e = $(`<div id="html_b6aca89dbc731c32814022c739ac2c7e" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">MIRTHA CRISANTO CORDOVA DE MORE</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         MIRTHA CRISANTO CORDOVA DE MORE                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223704                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8932417,-80.6823929','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_5656f9c82e09e85c5c5881634e10b68b.setContent(html_b6aca89dbc731c32814022c739ac2c7e);
+            
+        
+
+        marker_4be70e40319435874ce3c3793c51bd79.bindPopup(popup_5656f9c82e09e85c5c5881634e10b68b)
+        ;
+
+        
+    
+    
+            marker_4be70e40319435874ce3c3793c51bd79.bindTooltip(
+                `<div>
+                     MIRTHA CRISANTO CORDOVA DE MORE - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4be70e40319435874ce3c3793c51bd79.setIcon(icon_ff7329a86f8c8f2d7229b55080f572a2);
+            
+    
+            var marker_6af85aa105d1c38126e203562f2f71b3 = L.marker(
+                [-4.9151917, -80.7208234],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_002f156e7cbdc22b4bc2565ead2a1970 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_81b093e1e9da226ee3151fc35a6bc5d2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cac3dd39806d4ed8f3e0fa2cc6a4423a = $(`<div id="html_cac3dd39806d4ed8f3e0fa2cc6a4423a" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">MARIA SULEMA MUÑOZ MEZONES</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         MARIA SULEMA MUÑOZ MEZONES                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223118                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9151917,-80.7208234','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_81b093e1e9da226ee3151fc35a6bc5d2.setContent(html_cac3dd39806d4ed8f3e0fa2cc6a4423a);
+            
+        
+
+        marker_6af85aa105d1c38126e203562f2f71b3.bindPopup(popup_81b093e1e9da226ee3151fc35a6bc5d2)
+        ;
+
+        
+    
+    
+            marker_6af85aa105d1c38126e203562f2f71b3.bindTooltip(
+                `<div>
+                     MARIA SULEMA MUÑOZ MEZONES - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6af85aa105d1c38126e203562f2f71b3.setIcon(icon_002f156e7cbdc22b4bc2565ead2a1970);
+            
+    
+            var marker_deb3c3ff914288dd778d2dde520824c2 = L.marker(
+                [-4.9072692, -80.7295636],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_87b57a482d24898c18d2e24488a3b103 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0c62773d885142937004c8337be48d06 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bc144bb86af12a7c5b6fd3893ac36cbf = $(`<div id="html_bc144bb86af12a7c5b6fd3893ac36cbf" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">ANA CLAUDIA CRISANTO SANCHEZ</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         ANA CLAUDIA CRISANTO SANCHEZ                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223154                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9072692,-80.7295636','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_0c62773d885142937004c8337be48d06.setContent(html_bc144bb86af12a7c5b6fd3893ac36cbf);
+            
+        
+
+        marker_deb3c3ff914288dd778d2dde520824c2.bindPopup(popup_0c62773d885142937004c8337be48d06)
+        ;
+
+        
+    
+    
+            marker_deb3c3ff914288dd778d2dde520824c2.bindTooltip(
+                `<div>
+                     ANA CLAUDIA CRISANTO SANCHEZ - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_deb3c3ff914288dd778d2dde520824c2.setIcon(icon_87b57a482d24898c18d2e24488a3b103);
+            
+    
+            var marker_8b3d6c2d8cbc5dae7d9c466279b366b7 = L.marker(
+                [-4.9072286, -80.7303311],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_0ee34eba086be86101081da9538ee020 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4a1fb6c67881eb3786647e592652b139 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4fdf906c444d4533c4ebaf022921cb2a = $(`<div id="html_4fdf906c444d4533c4ebaf022921cb2a" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">CLAUDIA TAVARA SEMINARIO</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         CLAUDIA TAVARA SEMINARIO                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223164                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9072286,-80.7303311','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_4a1fb6c67881eb3786647e592652b139.setContent(html_4fdf906c444d4533c4ebaf022921cb2a);
+            
+        
+
+        marker_8b3d6c2d8cbc5dae7d9c466279b366b7.bindPopup(popup_4a1fb6c67881eb3786647e592652b139)
+        ;
+
+        
+    
+    
+            marker_8b3d6c2d8cbc5dae7d9c466279b366b7.bindTooltip(
+                `<div>
+                     CLAUDIA TAVARA SEMINARIO - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8b3d6c2d8cbc5dae7d9c466279b366b7.setIcon(icon_0ee34eba086be86101081da9538ee020);
+            
+    
+            var marker_c299748b57cd401981db8253b82ff298 = L.marker(
+                [-4.9072564, -80.7296621],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_4836ede8f56a07f5277cbfd69c37f8f3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4eaccd90b560e0ff3b645a6cbee5b203 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fb923af4f749e444af2a70c1cd8e46ac = $(`<div id="html_fb923af4f749e444af2a70c1cd8e46ac" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">CRISTINA LORO PUESCAS</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         CRISTINA LORO PUESCAS                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223174                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9072564,-80.7296621','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_4eaccd90b560e0ff3b645a6cbee5b203.setContent(html_fb923af4f749e444af2a70c1cd8e46ac);
+            
+        
+
+        marker_c299748b57cd401981db8253b82ff298.bindPopup(popup_4eaccd90b560e0ff3b645a6cbee5b203)
+        ;
+
+        
+    
+    
+            marker_c299748b57cd401981db8253b82ff298.bindTooltip(
+                `<div>
+                     CRISTINA LORO PUESCAS - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c299748b57cd401981db8253b82ff298.setIcon(icon_4836ede8f56a07f5277cbfd69c37f8f3);
+            
+    
+            var marker_6c5d945c7f5e9b5522bb0d23818897b2 = L.marker(
+                [-4.9072072, -80.7295895],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_c60508d56e01f168c2a1d98af5c5d001 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9870a35ff67fff72190c0d8dc4c295b5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ffd553bae1ab4a6f923ab25644d95368 = $(`<div id="html_ffd553bae1ab4a6f923ab25644d95368" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">SANCHEZ NAVARRO MIGUEL LUIS</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         SANCHEZ NAVARRO MIGUEL LUIS                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223197                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9072072,-80.7295895','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_9870a35ff67fff72190c0d8dc4c295b5.setContent(html_ffd553bae1ab4a6f923ab25644d95368);
+            
+        
+
+        marker_6c5d945c7f5e9b5522bb0d23818897b2.bindPopup(popup_9870a35ff67fff72190c0d8dc4c295b5)
+        ;
+
+        
+    
+    
+            marker_6c5d945c7f5e9b5522bb0d23818897b2.bindTooltip(
+                `<div>
+                     SANCHEZ NAVARRO MIGUEL LUIS - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6c5d945c7f5e9b5522bb0d23818897b2.setIcon(icon_c60508d56e01f168c2a1d98af5c5d001);
+            
+    
+            var marker_90d17c5c772e27ac8015eccf40f72de7 = L.marker(
+                [-4.9072577, -80.7291965],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_1191582897165ad28e47ebb78a3a7a8c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_29b153fcd9312c8421979142d6e17ebe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ed0bc171ecb92d206ca2d0656c610d56 = $(`<div id="html_ed0bc171ecb92d206ca2d0656c610d56" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">PULACHE QUISPE ADELINDA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         PULACHE QUISPE ADELINDA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223202                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9072577,-80.7291965','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_29b153fcd9312c8421979142d6e17ebe.setContent(html_ed0bc171ecb92d206ca2d0656c610d56);
+            
+        
+
+        marker_90d17c5c772e27ac8015eccf40f72de7.bindPopup(popup_29b153fcd9312c8421979142d6e17ebe)
+        ;
+
+        
+    
+    
+            marker_90d17c5c772e27ac8015eccf40f72de7.bindTooltip(
+                `<div>
+                     PULACHE QUISPE ADELINDA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_90d17c5c772e27ac8015eccf40f72de7.setIcon(icon_1191582897165ad28e47ebb78a3a7a8c);
+            
+    
+            var marker_1976738b8d1e2d37f52e4f25cb69621e = L.marker(
+                [-4.908587, -80.725012],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_629b47daa0a2215d6d3f35a788b90a5a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ac786795f5b009d8d45df0e3ca1ad3e3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_85cd657f168f28099c0ea3692126d2c2 = $(`<div id="html_85cd657f168f28099c0ea3692126d2c2" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">VALDIVIEZO SAAVEDRA MIRIAM R.</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         VALDIVIEZO SAAVEDRA MIRIAM R.                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223219                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.908587,-80.725012','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_ac786795f5b009d8d45df0e3ca1ad3e3.setContent(html_85cd657f168f28099c0ea3692126d2c2);
+            
+        
+
+        marker_1976738b8d1e2d37f52e4f25cb69621e.bindPopup(popup_ac786795f5b009d8d45df0e3ca1ad3e3)
+        ;
+
+        
+    
+    
+            marker_1976738b8d1e2d37f52e4f25cb69621e.bindTooltip(
+                `<div>
+                     VALDIVIEZO SAAVEDRA MIRIAM R. - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1976738b8d1e2d37f52e4f25cb69621e.setIcon(icon_629b47daa0a2215d6d3f35a788b90a5a);
+            
+    
+            var marker_6a4d36d5f4410c37f5858fa2e4219eb4 = L.marker(
+                [-4.9089274, -80.7273671],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_cfa68d16c7f4208a8acddc4ceb609cbb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c75b0d36501d55937981d82fb89cfa8d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_32c097d878378491da7ad2ba79a58fda = $(`<div id="html_32c097d878378491da7ad2ba79a58fda" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">MARIA YSABEL JIMENEZ CALVA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         MARIA YSABEL JIMENEZ CALVA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223226                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9089274,-80.7273671','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_c75b0d36501d55937981d82fb89cfa8d.setContent(html_32c097d878378491da7ad2ba79a58fda);
+            
+        
+
+        marker_6a4d36d5f4410c37f5858fa2e4219eb4.bindPopup(popup_c75b0d36501d55937981d82fb89cfa8d)
+        ;
+
+        
+    
+    
+            marker_6a4d36d5f4410c37f5858fa2e4219eb4.bindTooltip(
+                `<div>
+                     MARIA YSABEL JIMENEZ CALVA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6a4d36d5f4410c37f5858fa2e4219eb4.setIcon(icon_cfa68d16c7f4208a8acddc4ceb609cbb);
+            
+    
+            var marker_6cfb2c5d07e0fad0386c8d83d375a3f7 = L.marker(
+                [-4.907673, -80.72672],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_29f8cf9965fa77336213be905a062798 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_14ff0239f124805949cde4b8b5fa55b2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_97f35e4fa431981558c2b589b3c70735 = $(`<div id="html_97f35e4fa431981558c2b589b3c70735" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">VALDIVIEZO ROJAS ANA MARIA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         VALDIVIEZO ROJAS ANA MARIA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223238                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.907673,-80.72672','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_14ff0239f124805949cde4b8b5fa55b2.setContent(html_97f35e4fa431981558c2b589b3c70735);
+            
+        
+
+        marker_6cfb2c5d07e0fad0386c8d83d375a3f7.bindPopup(popup_14ff0239f124805949cde4b8b5fa55b2)
+        ;
+
+        
+    
+    
+            marker_6cfb2c5d07e0fad0386c8d83d375a3f7.bindTooltip(
+                `<div>
+                     VALDIVIEZO ROJAS ANA MARIA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6cfb2c5d07e0fad0386c8d83d375a3f7.setIcon(icon_29f8cf9965fa77336213be905a062798);
+            
+    
+            var marker_5b40a89d51df579076c8d8179bace9dd = L.marker(
+                [-4.9076435, -80.7267846],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_d96c613c10566fbd1a4562813e9fb68f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fa5c16e00b8f34bb368b3d13b0f6c9a0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2daace2c89825b31d196af25cc48a6fc = $(`<div id="html_2daace2c89825b31d196af25cc48a6fc" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">ALVARADO CALDERON JANET</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         ALVARADO CALDERON JANET                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223242                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9076435,-80.7267846','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_fa5c16e00b8f34bb368b3d13b0f6c9a0.setContent(html_2daace2c89825b31d196af25cc48a6fc);
+            
+        
+
+        marker_5b40a89d51df579076c8d8179bace9dd.bindPopup(popup_fa5c16e00b8f34bb368b3d13b0f6c9a0)
+        ;
+
+        
+    
+    
+            marker_5b40a89d51df579076c8d8179bace9dd.bindTooltip(
+                `<div>
+                     ALVARADO CALDERON JANET - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5b40a89d51df579076c8d8179bace9dd.setIcon(icon_d96c613c10566fbd1a4562813e9fb68f);
+            
+    
+            var marker_39c405475fd0f56be0049b787be24d82 = L.marker(
+                [-4.9077744, -80.725881],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_51ce2d3d083334819392c22254c2ed89 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_05d1b7b8358d59035b191488ee5a3dec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6cc99d7e80ac244bdaf64820c0c07cde = $(`<div id="html_6cc99d7e80ac244bdaf64820c0c07cde" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">URBINA FLORES MARIA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         URBINA FLORES MARIA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223251                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9077744,-80.725881','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_05d1b7b8358d59035b191488ee5a3dec.setContent(html_6cc99d7e80ac244bdaf64820c0c07cde);
+            
+        
+
+        marker_39c405475fd0f56be0049b787be24d82.bindPopup(popup_05d1b7b8358d59035b191488ee5a3dec)
+        ;
+
+        
+    
+    
+            marker_39c405475fd0f56be0049b787be24d82.bindTooltip(
+                `<div>
+                     URBINA FLORES MARIA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_39c405475fd0f56be0049b787be24d82.setIcon(icon_51ce2d3d083334819392c22254c2ed89);
+            
+    
+            var marker_2de1fb6b6a68dbd2bbad86605f473d2b = L.marker(
+                [-4.908592, -80.725807],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_da47a6d9f89a65142fb68898461b986a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_21bdcebc8eb3c5247d3718a1114207b1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_39772a036ce573fa6357d0252478792d = $(`<div id="html_39772a036ce573fa6357d0252478792d" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">PRIETO COLMENARES DE NOLE</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         PRIETO COLMENARES DE NOLE                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223259                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.908592,-80.725807','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_21bdcebc8eb3c5247d3718a1114207b1.setContent(html_39772a036ce573fa6357d0252478792d);
+            
+        
+
+        marker_2de1fb6b6a68dbd2bbad86605f473d2b.bindPopup(popup_21bdcebc8eb3c5247d3718a1114207b1)
+        ;
+
+        
+    
+    
+            marker_2de1fb6b6a68dbd2bbad86605f473d2b.bindTooltip(
+                `<div>
+                     PRIETO COLMENARES DE NOLE - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2de1fb6b6a68dbd2bbad86605f473d2b.setIcon(icon_da47a6d9f89a65142fb68898461b986a);
+            
+    
+            var marker_cf41d8be7df21b92baf3ee11ef06bc8d = L.marker(
+                [-4.909958, -80.72584],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_f33ae81932192ed21346d7d17947912c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_78714d573e8fc4b573a01d1a9d9a2d65 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9f5f303221085984ce0d21d9e13ff9b8 = $(`<div id="html_9f5f303221085984ce0d21d9e13ff9b8" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">FARRO DUAREZ DE ALDANA JAQUELI</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         FARRO DUAREZ DE ALDANA JAQUELI                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223273                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.909958,-80.72584','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_78714d573e8fc4b573a01d1a9d9a2d65.setContent(html_9f5f303221085984ce0d21d9e13ff9b8);
+            
+        
+
+        marker_cf41d8be7df21b92baf3ee11ef06bc8d.bindPopup(popup_78714d573e8fc4b573a01d1a9d9a2d65)
+        ;
+
+        
+    
+    
+            marker_cf41d8be7df21b92baf3ee11ef06bc8d.bindTooltip(
+                `<div>
+                     FARRO DUAREZ DE ALDANA JAQUELI - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cf41d8be7df21b92baf3ee11ef06bc8d.setIcon(icon_f33ae81932192ed21346d7d17947912c);
+            
+    
+            var marker_e355576f6f6411396fda82c7f39fa4f4 = L.marker(
+                [-4.9103395, -80.7246758],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_95ba7d7f4beecb5294c20537686594fa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9cbb8729c591b25ceb35194b1dc657b1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d7295bedee0293dfea3850998c4d29ed = $(`<div id="html_d7295bedee0293dfea3850998c4d29ed" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">YOJANA MILAGROS PANTA GARCIA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         YOJANA MILAGROS PANTA GARCIA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223278                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9103395,-80.7246758','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_9cbb8729c591b25ceb35194b1dc657b1.setContent(html_d7295bedee0293dfea3850998c4d29ed);
+            
+        
+
+        marker_e355576f6f6411396fda82c7f39fa4f4.bindPopup(popup_9cbb8729c591b25ceb35194b1dc657b1)
+        ;
+
+        
+    
+    
+            marker_e355576f6f6411396fda82c7f39fa4f4.bindTooltip(
+                `<div>
+                     YOJANA MILAGROS PANTA GARCIA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e355576f6f6411396fda82c7f39fa4f4.setIcon(icon_95ba7d7f4beecb5294c20537686594fa);
+            
+    
+            var marker_39a802b8a8035d616fd797f432e5907b = L.marker(
+                [-4.910231, -80.723627],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_15587690e84a041d5d7c1e9539a035ea = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_543fbc1c40687e012a40492f81ccacbd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_00d14068bf9a0756cd997c7bb38d2329 = $(`<div id="html_00d14068bf9a0756cd997c7bb38d2329" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">BENAVIDES GUTIERREZ JENNY F</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         BENAVIDES GUTIERREZ JENNY F                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223287                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.910231,-80.723627','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_543fbc1c40687e012a40492f81ccacbd.setContent(html_00d14068bf9a0756cd997c7bb38d2329);
+            
+        
+
+        marker_39a802b8a8035d616fd797f432e5907b.bindPopup(popup_543fbc1c40687e012a40492f81ccacbd)
+        ;
+
+        
+    
+    
+            marker_39a802b8a8035d616fd797f432e5907b.bindTooltip(
+                `<div>
+                     BENAVIDES GUTIERREZ JENNY F - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_39a802b8a8035d616fd797f432e5907b.setIcon(icon_15587690e84a041d5d7c1e9539a035ea);
+            
+    
+            var marker_37bd459ef0eb2245ec9c935a555b351c = L.marker(
+                [-4.9098168, -80.7246802],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_4d9259f5d6a6357ff105fe760b1e0da6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0bef6314d346d36d47ce1bd66eb67c2a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_81997bc83fc2afb09003989ea39dd315 = $(`<div id="html_81997bc83fc2afb09003989ea39dd315" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">KAREN JAKELINE CORREA CALLE</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         KAREN JAKELINE CORREA CALLE                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223297                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9098168,-80.7246802','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_0bef6314d346d36d47ce1bd66eb67c2a.setContent(html_81997bc83fc2afb09003989ea39dd315);
+            
+        
+
+        marker_37bd459ef0eb2245ec9c935a555b351c.bindPopup(popup_0bef6314d346d36d47ce1bd66eb67c2a)
+        ;
+
+        
+    
+    
+            marker_37bd459ef0eb2245ec9c935a555b351c.bindTooltip(
+                `<div>
+                     KAREN JAKELINE CORREA CALLE - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_37bd459ef0eb2245ec9c935a555b351c.setIcon(icon_4d9259f5d6a6357ff105fe760b1e0da6);
+            
+    
+            var marker_2b93d9725abdbb5d1fad45c8b2909a72 = L.marker(
+                [-4.890093, -80.686844],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_29e1b28ae2e6b563ae7f966accd46d7b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0835f2d2ff7d181ddd6a611716523113 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_75fcebac4655ea0abf76a467d7f01d21 = $(`<div id="html_75fcebac4655ea0abf76a467d7f01d21" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">REYNA ISABEL CASILLA TICONA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         REYNA ISABEL CASILLA TICONA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223327                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.890093,-80.686844','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_0835f2d2ff7d181ddd6a611716523113.setContent(html_75fcebac4655ea0abf76a467d7f01d21);
+            
+        
+
+        marker_2b93d9725abdbb5d1fad45c8b2909a72.bindPopup(popup_0835f2d2ff7d181ddd6a611716523113)
+        ;
+
+        
+    
+    
+            marker_2b93d9725abdbb5d1fad45c8b2909a72.bindTooltip(
+                `<div>
+                     REYNA ISABEL CASILLA TICONA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2b93d9725abdbb5d1fad45c8b2909a72.setIcon(icon_29e1b28ae2e6b563ae7f966accd46d7b);
+            
+    
+            var marker_6e09a65be301bfa7da5ed3599f630315 = L.marker(
+                [-4.9090278, -80.721258],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_0108dac128510ffab18b0da01b4c971d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a431640d7d7e8efbbe9921fe51238611 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_aa7446af25cf8eb94ca0097be019cee3 = $(`<div id="html_aa7446af25cf8eb94ca0097be019cee3" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">FILOMENO ALVITES DEZA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         FILOMENO ALVITES DEZA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223346                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9090278,-80.721258','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_a431640d7d7e8efbbe9921fe51238611.setContent(html_aa7446af25cf8eb94ca0097be019cee3);
+            
+        
+
+        marker_6e09a65be301bfa7da5ed3599f630315.bindPopup(popup_a431640d7d7e8efbbe9921fe51238611)
+        ;
+
+        
+    
+    
+            marker_6e09a65be301bfa7da5ed3599f630315.bindTooltip(
+                `<div>
+                     FILOMENO ALVITES DEZA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6e09a65be301bfa7da5ed3599f630315.setIcon(icon_0108dac128510ffab18b0da01b4c971d);
+            
+    
+            var marker_341635ae6d56408bcd8aadca2474f31a = L.marker(
+                [-4.900277, -80.8141549],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_15f91d03898583b09a5d844bed352cda = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1baa70b65748d5746d62bc4c53cf8004 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_688ce01ceb47a071a11cbb94c7dbdac5 = $(`<div id="html_688ce01ceb47a071a11cbb94c7dbdac5" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">MARIA LUCILA JUAREZ VDA DE REYES</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         MARIA LUCILA JUAREZ VDA DE REYES                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223435                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.900277,-80.8141549','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_1baa70b65748d5746d62bc4c53cf8004.setContent(html_688ce01ceb47a071a11cbb94c7dbdac5);
+            
+        
+
+        marker_341635ae6d56408bcd8aadca2474f31a.bindPopup(popup_1baa70b65748d5746d62bc4c53cf8004)
+        ;
+
+        
+    
+    
+            marker_341635ae6d56408bcd8aadca2474f31a.bindTooltip(
+                `<div>
+                     MARIA LUCILA JUAREZ VDA DE REYES - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_341635ae6d56408bcd8aadca2474f31a.setIcon(icon_15f91d03898583b09a5d844bed352cda);
+            
+    
+            var marker_7bc142f49e52e8ba5697a44d6a890c53 = L.marker(
+                [-4.898185, -80.813146],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_394c1609b4225639f082d3107d8e939b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b178fb5b65425a4cb2214a76db81310e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_271c13a2b66207b7e3e039c56b5a7776 = $(`<div id="html_271c13a2b66207b7e3e039c56b5a7776" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">RUFINO ZAPATA JACINTA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         RUFINO ZAPATA JACINTA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223442                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.898185,-80.813146','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_b178fb5b65425a4cb2214a76db81310e.setContent(html_271c13a2b66207b7e3e039c56b5a7776);
+            
+        
+
+        marker_7bc142f49e52e8ba5697a44d6a890c53.bindPopup(popup_b178fb5b65425a4cb2214a76db81310e)
+        ;
+
+        
+    
+    
+            marker_7bc142f49e52e8ba5697a44d6a890c53.bindTooltip(
+                `<div>
+                     RUFINO ZAPATA JACINTA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7bc142f49e52e8ba5697a44d6a890c53.setIcon(icon_394c1609b4225639f082d3107d8e939b);
+            
+    
+            var marker_313c7ae8a51c39dce1d9dbf5439e8f76 = L.marker(
+                [-4.899611, -80.81612],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_12e62555419f19c137710f4376b59161 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_da00a25468eb8cbac8a3cb55674b8d7c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_575cc6b047e31efc337a9389e07c6838 = $(`<div id="html_575cc6b047e31efc337a9389e07c6838" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">SOSA FLORES FAUSTINA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         SOSA FLORES FAUSTINA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223456                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.899611,-80.81612','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_da00a25468eb8cbac8a3cb55674b8d7c.setContent(html_575cc6b047e31efc337a9389e07c6838);
+            
+        
+
+        marker_313c7ae8a51c39dce1d9dbf5439e8f76.bindPopup(popup_da00a25468eb8cbac8a3cb55674b8d7c)
+        ;
+
+        
+    
+    
+            marker_313c7ae8a51c39dce1d9dbf5439e8f76.bindTooltip(
+                `<div>
+                     SOSA FLORES FAUSTINA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_313c7ae8a51c39dce1d9dbf5439e8f76.setIcon(icon_12e62555419f19c137710f4376b59161);
+            
+    
+            var marker_a58dcca99482312c91738a7b00526625 = L.marker(
+                [-4.9017196, -80.8148894],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_cb809c819ec0446de428692834b18ca3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e20573c0c32af94580169a46eaf0c378 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3d0f3f36cf3ca80e19d4629493893f7a = $(`<div id="html_3d0f3f36cf3ca80e19d4629493893f7a" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">CORNEJO ALVARADO BETTY</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         CORNEJO ALVARADO BETTY                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223513                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9017196,-80.8148894','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_e20573c0c32af94580169a46eaf0c378.setContent(html_3d0f3f36cf3ca80e19d4629493893f7a);
+            
+        
+
+        marker_a58dcca99482312c91738a7b00526625.bindPopup(popup_e20573c0c32af94580169a46eaf0c378)
+        ;
+
+        
+    
+    
+            marker_a58dcca99482312c91738a7b00526625.bindTooltip(
+                `<div>
+                     CORNEJO ALVARADO BETTY - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a58dcca99482312c91738a7b00526625.setIcon(icon_cb809c819ec0446de428692834b18ca3);
+            
+    
+            var marker_eb103738597b39bac01396f91561a1de = L.marker(
+                [-4.902902, -80.81599],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_12052f6a202d00a51591953d4b4bc608 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_807ebb73c42370621531149c02b2f5eb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3e2b6b1433ccac03af54387112d3f7b3 = $(`<div id="html_3e2b6b1433ccac03af54387112d3f7b3" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">QUEVEDO CHECA LILIANA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         QUEVEDO CHECA LILIANA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223557                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.902902,-80.81599','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_807ebb73c42370621531149c02b2f5eb.setContent(html_3e2b6b1433ccac03af54387112d3f7b3);
+            
+        
+
+        marker_eb103738597b39bac01396f91561a1de.bindPopup(popup_807ebb73c42370621531149c02b2f5eb)
+        ;
+
+        
+    
+    
+            marker_eb103738597b39bac01396f91561a1de.bindTooltip(
+                `<div>
+                     QUEVEDO CHECA LILIANA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_eb103738597b39bac01396f91561a1de.setIcon(icon_12052f6a202d00a51591953d4b4bc608);
+            
+    
+            var marker_3834366cb31d3028961e029d6b6d88ca = L.marker(
+                [-4.906884, -80.720431],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_b627755bcfbe6a955792bf8cc2f9fa77 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cab9c071a60a6107d838e1232009f6c2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d3e80fb2020d0105008c32d3216d10b0 = $(`<div id="html_d3e80fb2020d0105008c32d3216d10b0" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">MESONES OVIEDO SONIA ISABEL</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         MESONES OVIEDO SONIA ISABEL                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223661                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.906884,-80.720431','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_cab9c071a60a6107d838e1232009f6c2.setContent(html_d3e80fb2020d0105008c32d3216d10b0);
+            
+        
+
+        marker_3834366cb31d3028961e029d6b6d88ca.bindPopup(popup_cab9c071a60a6107d838e1232009f6c2)
+        ;
+
+        
+    
+    
+            marker_3834366cb31d3028961e029d6b6d88ca.bindTooltip(
+                `<div>
+                     MESONES OVIEDO SONIA ISABEL - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3834366cb31d3028961e029d6b6d88ca.setIcon(icon_b627755bcfbe6a955792bf8cc2f9fa77);
+            
+    
+            var marker_c9197eec7a6c02463abfbaa693cb42c4 = L.marker(
+                [-4.8967963, -80.6820076],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_747bb2fccc199de411189650384017af = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ef14ae085f937d205464eb0fdad1f288 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_98c5808f4e4c50585c7c372b39096f0f = $(`<div id="html_98c5808f4e4c50585c7c372b39096f0f" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">WILSON CASTILLO SIANCAS</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         WILSON CASTILLO SIANCAS                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223682                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8967963,-80.6820076','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_ef14ae085f937d205464eb0fdad1f288.setContent(html_98c5808f4e4c50585c7c372b39096f0f);
+            
+        
+
+        marker_c9197eec7a6c02463abfbaa693cb42c4.bindPopup(popup_ef14ae085f937d205464eb0fdad1f288)
+        ;
+
+        
+    
+    
+            marker_c9197eec7a6c02463abfbaa693cb42c4.bindTooltip(
+                `<div>
+                     WILSON CASTILLO SIANCAS - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c9197eec7a6c02463abfbaa693cb42c4.setIcon(icon_747bb2fccc199de411189650384017af);
+            
+    
+            var marker_4f7b63dd7e5aee014576059d1adedfc9 = L.marker(
+                [-4.8960251, -80.6821159],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_12e2ccdbb2eecc52018a214dad5c2e68 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5e2ff64451005bcaff7554cbd0fd1b58 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3beb6ddc2c9cf0c39a040222054cb753 = $(`<div id="html_3beb6ddc2c9cf0c39a040222054cb753" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">FIORELLA YACQUELINE VALDEZ PEÑA</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         FIORELLA YACQUELINE VALDEZ PEÑA                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223684                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8960251,-80.6821159','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_5e2ff64451005bcaff7554cbd0fd1b58.setContent(html_3beb6ddc2c9cf0c39a040222054cb753);
+            
+        
+
+        marker_4f7b63dd7e5aee014576059d1adedfc9.bindPopup(popup_5e2ff64451005bcaff7554cbd0fd1b58)
+        ;
+
+        
+    
+    
+            marker_4f7b63dd7e5aee014576059d1adedfc9.bindTooltip(
+                `<div>
+                     FIORELLA YACQUELINE VALDEZ PEÑA - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4f7b63dd7e5aee014576059d1adedfc9.setIcon(icon_12e2ccdbb2eecc52018a214dad5c2e68);
+            
+    
+            var marker_ec421466b76ed76e2b826acc03a3aee8 = L.marker(
+                [-4.8932417, -80.6823929],
+                {
+}
+            ).addTo(marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57);
+        
+    
+            var icon_9426b87b19cb5bb96d3dcd85d7180dbf = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4995ed4c1f701002770a6de161d7959d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eabeeb5bc2610826ae8e19a1ce465d6e = $(`<div id="html_eabeeb5bc2610826ae8e19a1ce465d6e" style="width: 100.0%; height: 100.0%;">             <div style="                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;                  min-width: 250px;                  padding: 10px;                 border-radius: 12px;                 background: white;             ">                 <header style="                     border-bottom: 2px solid red;                      margin-bottom: 12px;                      padding-bottom: 8px;                 ">                     <span class="bodega-nombre" style="display:none;">MIRTHA CRISANTO CORDOVA DE MORE</span>                     <span class="bodega-color" style="display:none;">red</span>                     <h4 style="                         color: #333;                          margin: 0;                          font-size: 16px;                          font-weight: 700;                     ">                         MIRTHA CRISANTO CORDOVA DE MORE                     </h4>                     <span style="                         color: red;                          font-size: 12px;                          font-weight: 600;                          text-transform: uppercase;                     ">                         Vendedor: WILLIAN ALEJANDRO HERRERA MORAN                     </span>                 </header>                                  <div style="margin-bottom: 15px; color: #555; line-height: 1.4;">                     <p style="margin: 0; font-size: 13px;">                         <strong>📍 Dirección:</strong><br>                         S00223696                     </p>                 </div>                  <button onclick="toggleEntregado(this)"                     class="btn-entregado"                    style="background-color:#f8f9fa;color:#333;padding:8px;text-align:center;                           display:block;border:1px solid #ccc;border-radius:8px;font-weight:bold;                           font-size:13px;cursor:pointer;width:100%;margin-bottom:8px;"                 >✅ MARCAR ENTREGADO</button>                  <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8932417,-80.6823929','_blank')"                     style="background-color:red;color:white;padding:10px;                           text-align:center;border:none;display:block;border-radius:8px;                           font-weight:bold;font-size:13px;cursor:pointer;width:100%;                           box-shadow:0 4px 6px rgba(0,0,0,0.1);"                 >🚀 CÓMO LLEGAR (GOOGLE MAPS)</button>             </div>             </div>`)[0];
+                popup_4995ed4c1f701002770a6de161d7959d.setContent(html_eabeeb5bc2610826ae8e19a1ce465d6e);
+            
+        
+
+        marker_ec421466b76ed76e2b826acc03a3aee8.bindPopup(popup_4995ed4c1f701002770a6de161d7959d)
+        ;
+
+        
+    
+    
+            marker_ec421466b76ed76e2b826acc03a3aee8.bindTooltip(
+                `<div>
+                     MIRTHA CRISANTO CORDOVA DE MORE - WILLIAN ALEJANDRO HERRERA MORAN
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ec421466b76ed76e2b826acc03a3aee8.setIcon(icon_9426b87b19cb5bb96d3dcd85d7180dbf);
+            
+    
+            marker_cluster_a2b1552cd1b36efcf4a234c3b9030c57.addTo(feature_group_15591da5a395557d5ada6632ed7e4973);
+        
+    
+            feature_group_15591da5a395557d5ada6632ed7e4973.addTo(map_cdc658dcf6cd3fc55a0a6839c088a432);
+        
+    
+            var feature_group_efbe1317e35ddd29a96dd499d64ee808 = L.featureGroup(
+                {
+}
+            );
+        
+    
+        function geo_json_9823332dfd86e1186ea5d5bed5ec25be_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_9823332dfd86e1186ea5d5bed5ec25be_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_9823332dfd86e1186ea5d5bed5ec25be = L.geoJson(null, {
+                onEachFeature: geo_json_9823332dfd86e1186ea5d5bed5ec25be_onEachFeature,
+            
+                pointToLayer: geo_json_9823332dfd86e1186ea5d5bed5ec25be_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_9823332dfd86e1186ea5d5bed5ec25be_add (data) {
+            geo_json_9823332dfd86e1186ea5d5bed5ec25be
+                .addData(data);
+        }
+            geo_json_9823332dfd86e1186ea5d5bed5ec25be_add({"geometry": {"coordinates": [-80.6821159, -4.8960251], "type": "Point"}, "properties": {"name": "FIORELLA YACQUELINE VALDEZ PE\u00d1A", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_9823332dfd86e1186ea5d5bed5ec25be.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_9823332dfd86e1186ea5d5bed5ec25be.bindTooltip(
+                `<div>
+                     FIORELLA YACQUELINE VALDEZ PEÑA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_9823332dfd86e1186ea5d5bed5ec25be.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_ef0ffa79012e97d623690e2125ccfb68_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_ef0ffa79012e97d623690e2125ccfb68_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_ef0ffa79012e97d623690e2125ccfb68 = L.geoJson(null, {
+                onEachFeature: geo_json_ef0ffa79012e97d623690e2125ccfb68_onEachFeature,
+            
+                pointToLayer: geo_json_ef0ffa79012e97d623690e2125ccfb68_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_ef0ffa79012e97d623690e2125ccfb68_add (data) {
+            geo_json_ef0ffa79012e97d623690e2125ccfb68
+                .addData(data);
+        }
+            geo_json_ef0ffa79012e97d623690e2125ccfb68_add({"geometry": {"coordinates": [-80.6823929, -4.8932417], "type": "Point"}, "properties": {"name": "MIRTHA CRISANTO CORDOVA DE MORE", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_ef0ffa79012e97d623690e2125ccfb68.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_ef0ffa79012e97d623690e2125ccfb68.bindTooltip(
+                `<div>
+                     MIRTHA CRISANTO CORDOVA DE MORE (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_ef0ffa79012e97d623690e2125ccfb68.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_5373b7b679a5fbf237cab42d6f0a5df5_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_5373b7b679a5fbf237cab42d6f0a5df5_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_5373b7b679a5fbf237cab42d6f0a5df5 = L.geoJson(null, {
+                onEachFeature: geo_json_5373b7b679a5fbf237cab42d6f0a5df5_onEachFeature,
+            
+                pointToLayer: geo_json_5373b7b679a5fbf237cab42d6f0a5df5_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_5373b7b679a5fbf237cab42d6f0a5df5_add (data) {
+            geo_json_5373b7b679a5fbf237cab42d6f0a5df5
+                .addData(data);
+        }
+            geo_json_5373b7b679a5fbf237cab42d6f0a5df5_add({"geometry": {"coordinates": [-80.7208234, -4.9151917], "type": "Point"}, "properties": {"name": "MARIA SULEMA MU\u00d1OZ MEZONES", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_5373b7b679a5fbf237cab42d6f0a5df5.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_5373b7b679a5fbf237cab42d6f0a5df5.bindTooltip(
+                `<div>
+                     MARIA SULEMA MUÑOZ MEZONES (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_5373b7b679a5fbf237cab42d6f0a5df5.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_68f60b67b93d0dadd6f8b514a75a26c8_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_68f60b67b93d0dadd6f8b514a75a26c8_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_68f60b67b93d0dadd6f8b514a75a26c8 = L.geoJson(null, {
+                onEachFeature: geo_json_68f60b67b93d0dadd6f8b514a75a26c8_onEachFeature,
+            
+                pointToLayer: geo_json_68f60b67b93d0dadd6f8b514a75a26c8_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_68f60b67b93d0dadd6f8b514a75a26c8_add (data) {
+            geo_json_68f60b67b93d0dadd6f8b514a75a26c8
+                .addData(data);
+        }
+            geo_json_68f60b67b93d0dadd6f8b514a75a26c8_add({"geometry": {"coordinates": [-80.7295636, -4.9072692], "type": "Point"}, "properties": {"name": "ANA CLAUDIA CRISANTO SANCHEZ", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_68f60b67b93d0dadd6f8b514a75a26c8.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_68f60b67b93d0dadd6f8b514a75a26c8.bindTooltip(
+                `<div>
+                     ANA CLAUDIA CRISANTO SANCHEZ (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_68f60b67b93d0dadd6f8b514a75a26c8.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_395ba19a8105e63e4b488a12f0fd9606_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_395ba19a8105e63e4b488a12f0fd9606_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_395ba19a8105e63e4b488a12f0fd9606 = L.geoJson(null, {
+                onEachFeature: geo_json_395ba19a8105e63e4b488a12f0fd9606_onEachFeature,
+            
+                pointToLayer: geo_json_395ba19a8105e63e4b488a12f0fd9606_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_395ba19a8105e63e4b488a12f0fd9606_add (data) {
+            geo_json_395ba19a8105e63e4b488a12f0fd9606
+                .addData(data);
+        }
+            geo_json_395ba19a8105e63e4b488a12f0fd9606_add({"geometry": {"coordinates": [-80.7303311, -4.9072286], "type": "Point"}, "properties": {"name": "CLAUDIA TAVARA SEMINARIO", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_395ba19a8105e63e4b488a12f0fd9606.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_395ba19a8105e63e4b488a12f0fd9606.bindTooltip(
+                `<div>
+                     CLAUDIA TAVARA SEMINARIO (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_395ba19a8105e63e4b488a12f0fd9606.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_b688237d69c85960b48795830fd9076e_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_b688237d69c85960b48795830fd9076e_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_b688237d69c85960b48795830fd9076e = L.geoJson(null, {
+                onEachFeature: geo_json_b688237d69c85960b48795830fd9076e_onEachFeature,
+            
+                pointToLayer: geo_json_b688237d69c85960b48795830fd9076e_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_b688237d69c85960b48795830fd9076e_add (data) {
+            geo_json_b688237d69c85960b48795830fd9076e
+                .addData(data);
+        }
+            geo_json_b688237d69c85960b48795830fd9076e_add({"geometry": {"coordinates": [-80.7296621, -4.9072564], "type": "Point"}, "properties": {"name": "CRISTINA LORO PUESCAS", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_b688237d69c85960b48795830fd9076e.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_b688237d69c85960b48795830fd9076e.bindTooltip(
+                `<div>
+                     CRISTINA LORO PUESCAS (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_b688237d69c85960b48795830fd9076e.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_cf9022448447691b8c90ea8b6c94470a_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_cf9022448447691b8c90ea8b6c94470a_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_cf9022448447691b8c90ea8b6c94470a = L.geoJson(null, {
+                onEachFeature: geo_json_cf9022448447691b8c90ea8b6c94470a_onEachFeature,
+            
+                pointToLayer: geo_json_cf9022448447691b8c90ea8b6c94470a_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_cf9022448447691b8c90ea8b6c94470a_add (data) {
+            geo_json_cf9022448447691b8c90ea8b6c94470a
+                .addData(data);
+        }
+            geo_json_cf9022448447691b8c90ea8b6c94470a_add({"geometry": {"coordinates": [-80.7295895, -4.9072072], "type": "Point"}, "properties": {"name": "SANCHEZ NAVARRO MIGUEL LUIS", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_cf9022448447691b8c90ea8b6c94470a.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_cf9022448447691b8c90ea8b6c94470a.bindTooltip(
+                `<div>
+                     SANCHEZ NAVARRO MIGUEL LUIS (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_cf9022448447691b8c90ea8b6c94470a.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_c8c8c1bfa29db5a459d41e10440b58d4_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_c8c8c1bfa29db5a459d41e10440b58d4_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_c8c8c1bfa29db5a459d41e10440b58d4 = L.geoJson(null, {
+                onEachFeature: geo_json_c8c8c1bfa29db5a459d41e10440b58d4_onEachFeature,
+            
+                pointToLayer: geo_json_c8c8c1bfa29db5a459d41e10440b58d4_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_c8c8c1bfa29db5a459d41e10440b58d4_add (data) {
+            geo_json_c8c8c1bfa29db5a459d41e10440b58d4
+                .addData(data);
+        }
+            geo_json_c8c8c1bfa29db5a459d41e10440b58d4_add({"geometry": {"coordinates": [-80.7291965, -4.9072577], "type": "Point"}, "properties": {"name": "PULACHE QUISPE ADELINDA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_c8c8c1bfa29db5a459d41e10440b58d4.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_c8c8c1bfa29db5a459d41e10440b58d4.bindTooltip(
+                `<div>
+                     PULACHE QUISPE ADELINDA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_c8c8c1bfa29db5a459d41e10440b58d4.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_d886114fa6f08a67c8d019fd10789efb_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_d886114fa6f08a67c8d019fd10789efb_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_d886114fa6f08a67c8d019fd10789efb = L.geoJson(null, {
+                onEachFeature: geo_json_d886114fa6f08a67c8d019fd10789efb_onEachFeature,
+            
+                pointToLayer: geo_json_d886114fa6f08a67c8d019fd10789efb_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_d886114fa6f08a67c8d019fd10789efb_add (data) {
+            geo_json_d886114fa6f08a67c8d019fd10789efb
+                .addData(data);
+        }
+            geo_json_d886114fa6f08a67c8d019fd10789efb_add({"geometry": {"coordinates": [-80.725012, -4.908587], "type": "Point"}, "properties": {"name": "VALDIVIEZO SAAVEDRA MIRIAM R.", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_d886114fa6f08a67c8d019fd10789efb.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_d886114fa6f08a67c8d019fd10789efb.bindTooltip(
+                `<div>
+                     VALDIVIEZO SAAVEDRA MIRIAM R. (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_d886114fa6f08a67c8d019fd10789efb.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_3209e081a472c86cc786022efccb28ff_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_3209e081a472c86cc786022efccb28ff_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_3209e081a472c86cc786022efccb28ff = L.geoJson(null, {
+                onEachFeature: geo_json_3209e081a472c86cc786022efccb28ff_onEachFeature,
+            
+                pointToLayer: geo_json_3209e081a472c86cc786022efccb28ff_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_3209e081a472c86cc786022efccb28ff_add (data) {
+            geo_json_3209e081a472c86cc786022efccb28ff
+                .addData(data);
+        }
+            geo_json_3209e081a472c86cc786022efccb28ff_add({"geometry": {"coordinates": [-80.7273671, -4.9089274], "type": "Point"}, "properties": {"name": "MARIA YSABEL JIMENEZ CALVA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_3209e081a472c86cc786022efccb28ff.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_3209e081a472c86cc786022efccb28ff.bindTooltip(
+                `<div>
+                     MARIA YSABEL JIMENEZ CALVA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_3209e081a472c86cc786022efccb28ff.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_3d85b081af33fa82886b6649cd9597c1_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_3d85b081af33fa82886b6649cd9597c1_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_3d85b081af33fa82886b6649cd9597c1 = L.geoJson(null, {
+                onEachFeature: geo_json_3d85b081af33fa82886b6649cd9597c1_onEachFeature,
+            
+                pointToLayer: geo_json_3d85b081af33fa82886b6649cd9597c1_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_3d85b081af33fa82886b6649cd9597c1_add (data) {
+            geo_json_3d85b081af33fa82886b6649cd9597c1
+                .addData(data);
+        }
+            geo_json_3d85b081af33fa82886b6649cd9597c1_add({"geometry": {"coordinates": [-80.72672, -4.907673], "type": "Point"}, "properties": {"name": "VALDIVIEZO ROJAS ANA MARIA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_3d85b081af33fa82886b6649cd9597c1.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_3d85b081af33fa82886b6649cd9597c1.bindTooltip(
+                `<div>
+                     VALDIVIEZO ROJAS ANA MARIA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_3d85b081af33fa82886b6649cd9597c1.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_f2b3399994058dd10976ffa15ad1a821_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_f2b3399994058dd10976ffa15ad1a821_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_f2b3399994058dd10976ffa15ad1a821 = L.geoJson(null, {
+                onEachFeature: geo_json_f2b3399994058dd10976ffa15ad1a821_onEachFeature,
+            
+                pointToLayer: geo_json_f2b3399994058dd10976ffa15ad1a821_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_f2b3399994058dd10976ffa15ad1a821_add (data) {
+            geo_json_f2b3399994058dd10976ffa15ad1a821
+                .addData(data);
+        }
+            geo_json_f2b3399994058dd10976ffa15ad1a821_add({"geometry": {"coordinates": [-80.7267846, -4.9076435], "type": "Point"}, "properties": {"name": "ALVARADO CALDERON JANET", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_f2b3399994058dd10976ffa15ad1a821.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_f2b3399994058dd10976ffa15ad1a821.bindTooltip(
+                `<div>
+                     ALVARADO CALDERON JANET (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_f2b3399994058dd10976ffa15ad1a821.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_d7d606e2f4574600cea01fe41cb192e2_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_d7d606e2f4574600cea01fe41cb192e2_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_d7d606e2f4574600cea01fe41cb192e2 = L.geoJson(null, {
+                onEachFeature: geo_json_d7d606e2f4574600cea01fe41cb192e2_onEachFeature,
+            
+                pointToLayer: geo_json_d7d606e2f4574600cea01fe41cb192e2_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_d7d606e2f4574600cea01fe41cb192e2_add (data) {
+            geo_json_d7d606e2f4574600cea01fe41cb192e2
+                .addData(data);
+        }
+            geo_json_d7d606e2f4574600cea01fe41cb192e2_add({"geometry": {"coordinates": [-80.725881, -4.9077744], "type": "Point"}, "properties": {"name": "URBINA FLORES MARIA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_d7d606e2f4574600cea01fe41cb192e2.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_d7d606e2f4574600cea01fe41cb192e2.bindTooltip(
+                `<div>
+                     URBINA FLORES MARIA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_d7d606e2f4574600cea01fe41cb192e2.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_18b671322fe8d4d42e4995ebfdbaced5_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_18b671322fe8d4d42e4995ebfdbaced5_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_18b671322fe8d4d42e4995ebfdbaced5 = L.geoJson(null, {
+                onEachFeature: geo_json_18b671322fe8d4d42e4995ebfdbaced5_onEachFeature,
+            
+                pointToLayer: geo_json_18b671322fe8d4d42e4995ebfdbaced5_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_18b671322fe8d4d42e4995ebfdbaced5_add (data) {
+            geo_json_18b671322fe8d4d42e4995ebfdbaced5
+                .addData(data);
+        }
+            geo_json_18b671322fe8d4d42e4995ebfdbaced5_add({"geometry": {"coordinates": [-80.725807, -4.908592], "type": "Point"}, "properties": {"name": "PRIETO COLMENARES DE NOLE", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_18b671322fe8d4d42e4995ebfdbaced5.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_18b671322fe8d4d42e4995ebfdbaced5.bindTooltip(
+                `<div>
+                     PRIETO COLMENARES DE NOLE (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_18b671322fe8d4d42e4995ebfdbaced5.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_a6943f1beb3fbaee86f246dc67e28379_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_a6943f1beb3fbaee86f246dc67e28379_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_a6943f1beb3fbaee86f246dc67e28379 = L.geoJson(null, {
+                onEachFeature: geo_json_a6943f1beb3fbaee86f246dc67e28379_onEachFeature,
+            
+                pointToLayer: geo_json_a6943f1beb3fbaee86f246dc67e28379_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_a6943f1beb3fbaee86f246dc67e28379_add (data) {
+            geo_json_a6943f1beb3fbaee86f246dc67e28379
+                .addData(data);
+        }
+            geo_json_a6943f1beb3fbaee86f246dc67e28379_add({"geometry": {"coordinates": [-80.72584, -4.909958], "type": "Point"}, "properties": {"name": "FARRO DUAREZ DE ALDANA JAQUELI", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_a6943f1beb3fbaee86f246dc67e28379.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_a6943f1beb3fbaee86f246dc67e28379.bindTooltip(
+                `<div>
+                     FARRO DUAREZ DE ALDANA JAQUELI (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_a6943f1beb3fbaee86f246dc67e28379.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_95cc5e67f87d344d03fc327f122b4287_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_95cc5e67f87d344d03fc327f122b4287_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_95cc5e67f87d344d03fc327f122b4287 = L.geoJson(null, {
+                onEachFeature: geo_json_95cc5e67f87d344d03fc327f122b4287_onEachFeature,
+            
+                pointToLayer: geo_json_95cc5e67f87d344d03fc327f122b4287_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_95cc5e67f87d344d03fc327f122b4287_add (data) {
+            geo_json_95cc5e67f87d344d03fc327f122b4287
+                .addData(data);
+        }
+            geo_json_95cc5e67f87d344d03fc327f122b4287_add({"geometry": {"coordinates": [-80.7246758, -4.9103395], "type": "Point"}, "properties": {"name": "YOJANA MILAGROS PANTA GARCIA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_95cc5e67f87d344d03fc327f122b4287.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_95cc5e67f87d344d03fc327f122b4287.bindTooltip(
+                `<div>
+                     YOJANA MILAGROS PANTA GARCIA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_95cc5e67f87d344d03fc327f122b4287.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_84892e355f53aab3ab23141155e1bfb6_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_84892e355f53aab3ab23141155e1bfb6_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_84892e355f53aab3ab23141155e1bfb6 = L.geoJson(null, {
+                onEachFeature: geo_json_84892e355f53aab3ab23141155e1bfb6_onEachFeature,
+            
+                pointToLayer: geo_json_84892e355f53aab3ab23141155e1bfb6_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_84892e355f53aab3ab23141155e1bfb6_add (data) {
+            geo_json_84892e355f53aab3ab23141155e1bfb6
+                .addData(data);
+        }
+            geo_json_84892e355f53aab3ab23141155e1bfb6_add({"geometry": {"coordinates": [-80.723627, -4.910231], "type": "Point"}, "properties": {"name": "BENAVIDES GUTIERREZ JENNY F", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_84892e355f53aab3ab23141155e1bfb6.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_84892e355f53aab3ab23141155e1bfb6.bindTooltip(
+                `<div>
+                     BENAVIDES GUTIERREZ JENNY F (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_84892e355f53aab3ab23141155e1bfb6.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_19390ef05f1edf4400abf709bd1a9df7_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_19390ef05f1edf4400abf709bd1a9df7_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_19390ef05f1edf4400abf709bd1a9df7 = L.geoJson(null, {
+                onEachFeature: geo_json_19390ef05f1edf4400abf709bd1a9df7_onEachFeature,
+            
+                pointToLayer: geo_json_19390ef05f1edf4400abf709bd1a9df7_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_19390ef05f1edf4400abf709bd1a9df7_add (data) {
+            geo_json_19390ef05f1edf4400abf709bd1a9df7
+                .addData(data);
+        }
+            geo_json_19390ef05f1edf4400abf709bd1a9df7_add({"geometry": {"coordinates": [-80.7246802, -4.9098168], "type": "Point"}, "properties": {"name": "KAREN JAKELINE CORREA CALLE", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_19390ef05f1edf4400abf709bd1a9df7.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_19390ef05f1edf4400abf709bd1a9df7.bindTooltip(
+                `<div>
+                     KAREN JAKELINE CORREA CALLE (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_19390ef05f1edf4400abf709bd1a9df7.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_a6d6a6605bffbaa140234fbcc63343b5_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_a6d6a6605bffbaa140234fbcc63343b5_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_a6d6a6605bffbaa140234fbcc63343b5 = L.geoJson(null, {
+                onEachFeature: geo_json_a6d6a6605bffbaa140234fbcc63343b5_onEachFeature,
+            
+                pointToLayer: geo_json_a6d6a6605bffbaa140234fbcc63343b5_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_a6d6a6605bffbaa140234fbcc63343b5_add (data) {
+            geo_json_a6d6a6605bffbaa140234fbcc63343b5
+                .addData(data);
+        }
+            geo_json_a6d6a6605bffbaa140234fbcc63343b5_add({"geometry": {"coordinates": [-80.686844, -4.890093], "type": "Point"}, "properties": {"name": "REYNA ISABEL CASILLA TICONA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_a6d6a6605bffbaa140234fbcc63343b5.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_a6d6a6605bffbaa140234fbcc63343b5.bindTooltip(
+                `<div>
+                     REYNA ISABEL CASILLA TICONA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_a6d6a6605bffbaa140234fbcc63343b5.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_ff3e6b2a556da7be0832858cca1df803_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_ff3e6b2a556da7be0832858cca1df803_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_ff3e6b2a556da7be0832858cca1df803 = L.geoJson(null, {
+                onEachFeature: geo_json_ff3e6b2a556da7be0832858cca1df803_onEachFeature,
+            
+                pointToLayer: geo_json_ff3e6b2a556da7be0832858cca1df803_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_ff3e6b2a556da7be0832858cca1df803_add (data) {
+            geo_json_ff3e6b2a556da7be0832858cca1df803
+                .addData(data);
+        }
+            geo_json_ff3e6b2a556da7be0832858cca1df803_add({"geometry": {"coordinates": [-80.721258, -4.9090278], "type": "Point"}, "properties": {"name": "FILOMENO ALVITES DEZA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_ff3e6b2a556da7be0832858cca1df803.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_ff3e6b2a556da7be0832858cca1df803.bindTooltip(
+                `<div>
+                     FILOMENO ALVITES DEZA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_ff3e6b2a556da7be0832858cca1df803.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_d3677b923b6f887066cf861993fa1938_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_d3677b923b6f887066cf861993fa1938_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_d3677b923b6f887066cf861993fa1938 = L.geoJson(null, {
+                onEachFeature: geo_json_d3677b923b6f887066cf861993fa1938_onEachFeature,
+            
+                pointToLayer: geo_json_d3677b923b6f887066cf861993fa1938_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_d3677b923b6f887066cf861993fa1938_add (data) {
+            geo_json_d3677b923b6f887066cf861993fa1938
+                .addData(data);
+        }
+            geo_json_d3677b923b6f887066cf861993fa1938_add({"geometry": {"coordinates": [-80.8141549, -4.900277], "type": "Point"}, "properties": {"name": "MARIA LUCILA JUAREZ VDA DE REYES", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_d3677b923b6f887066cf861993fa1938.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_d3677b923b6f887066cf861993fa1938.bindTooltip(
+                `<div>
+                     MARIA LUCILA JUAREZ VDA DE REYES (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_d3677b923b6f887066cf861993fa1938.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_ff7ef037154787507022789572c30f70_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_ff7ef037154787507022789572c30f70_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_ff7ef037154787507022789572c30f70 = L.geoJson(null, {
+                onEachFeature: geo_json_ff7ef037154787507022789572c30f70_onEachFeature,
+            
+                pointToLayer: geo_json_ff7ef037154787507022789572c30f70_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_ff7ef037154787507022789572c30f70_add (data) {
+            geo_json_ff7ef037154787507022789572c30f70
+                .addData(data);
+        }
+            geo_json_ff7ef037154787507022789572c30f70_add({"geometry": {"coordinates": [-80.813146, -4.898185], "type": "Point"}, "properties": {"name": "RUFINO ZAPATA JACINTA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_ff7ef037154787507022789572c30f70.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_ff7ef037154787507022789572c30f70.bindTooltip(
+                `<div>
+                     RUFINO ZAPATA JACINTA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_ff7ef037154787507022789572c30f70.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_e07c765e0f5a022b1f100c0c179c242c_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_e07c765e0f5a022b1f100c0c179c242c_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_e07c765e0f5a022b1f100c0c179c242c = L.geoJson(null, {
+                onEachFeature: geo_json_e07c765e0f5a022b1f100c0c179c242c_onEachFeature,
+            
+                pointToLayer: geo_json_e07c765e0f5a022b1f100c0c179c242c_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_e07c765e0f5a022b1f100c0c179c242c_add (data) {
+            geo_json_e07c765e0f5a022b1f100c0c179c242c
+                .addData(data);
+        }
+            geo_json_e07c765e0f5a022b1f100c0c179c242c_add({"geometry": {"coordinates": [-80.81612, -4.899611], "type": "Point"}, "properties": {"name": "SOSA FLORES FAUSTINA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_e07c765e0f5a022b1f100c0c179c242c.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_e07c765e0f5a022b1f100c0c179c242c.bindTooltip(
+                `<div>
+                     SOSA FLORES FAUSTINA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_e07c765e0f5a022b1f100c0c179c242c.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8 = L.geoJson(null, {
+                onEachFeature: geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8_onEachFeature,
+            
+                pointToLayer: geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8_add (data) {
+            geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8
+                .addData(data);
+        }
+            geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8_add({"geometry": {"coordinates": [-80.8148894, -4.9017196], "type": "Point"}, "properties": {"name": "CORNEJO ALVARADO BETTY", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8.bindTooltip(
+                `<div>
+                     CORNEJO ALVARADO BETTY (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_f7b7edbd593a6447fa1fbcd4cdbab5b8.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_7c5c0867243e715f7d1298d51d935ba5_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_7c5c0867243e715f7d1298d51d935ba5_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_7c5c0867243e715f7d1298d51d935ba5 = L.geoJson(null, {
+                onEachFeature: geo_json_7c5c0867243e715f7d1298d51d935ba5_onEachFeature,
+            
+                pointToLayer: geo_json_7c5c0867243e715f7d1298d51d935ba5_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_7c5c0867243e715f7d1298d51d935ba5_add (data) {
+            geo_json_7c5c0867243e715f7d1298d51d935ba5
+                .addData(data);
+        }
+            geo_json_7c5c0867243e715f7d1298d51d935ba5_add({"geometry": {"coordinates": [-80.81599, -4.902902], "type": "Point"}, "properties": {"name": "QUEVEDO CHECA LILIANA", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_7c5c0867243e715f7d1298d51d935ba5.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_7c5c0867243e715f7d1298d51d935ba5.bindTooltip(
+                `<div>
+                     QUEVEDO CHECA LILIANA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_7c5c0867243e715f7d1298d51d935ba5.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_688e337fe0ce920ee9c52f6330305961_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_688e337fe0ce920ee9c52f6330305961_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_688e337fe0ce920ee9c52f6330305961 = L.geoJson(null, {
+                onEachFeature: geo_json_688e337fe0ce920ee9c52f6330305961_onEachFeature,
+            
+                pointToLayer: geo_json_688e337fe0ce920ee9c52f6330305961_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_688e337fe0ce920ee9c52f6330305961_add (data) {
+            geo_json_688e337fe0ce920ee9c52f6330305961
+                .addData(data);
+        }
+            geo_json_688e337fe0ce920ee9c52f6330305961_add({"geometry": {"coordinates": [-80.720431, -4.906884], "type": "Point"}, "properties": {"name": "MESONES OVIEDO SONIA ISABEL", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_688e337fe0ce920ee9c52f6330305961.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_688e337fe0ce920ee9c52f6330305961.bindTooltip(
+                `<div>
+                     MESONES OVIEDO SONIA ISABEL (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_688e337fe0ce920ee9c52f6330305961.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_fab4c48a88f7e131f9a03f8da5718e72_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_fab4c48a88f7e131f9a03f8da5718e72_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_fab4c48a88f7e131f9a03f8da5718e72 = L.geoJson(null, {
+                onEachFeature: geo_json_fab4c48a88f7e131f9a03f8da5718e72_onEachFeature,
+            
+                pointToLayer: geo_json_fab4c48a88f7e131f9a03f8da5718e72_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_fab4c48a88f7e131f9a03f8da5718e72_add (data) {
+            geo_json_fab4c48a88f7e131f9a03f8da5718e72
+                .addData(data);
+        }
+            geo_json_fab4c48a88f7e131f9a03f8da5718e72_add({"geometry": {"coordinates": [-80.6820076, -4.8967963], "type": "Point"}, "properties": {"name": "WILSON CASTILLO SIANCAS", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_fab4c48a88f7e131f9a03f8da5718e72.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_fab4c48a88f7e131f9a03f8da5718e72.bindTooltip(
+                `<div>
+                     WILSON CASTILLO SIANCAS (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_fab4c48a88f7e131f9a03f8da5718e72.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_5ff5ab5459f03ae7c38a0dff4223c804_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_5ff5ab5459f03ae7c38a0dff4223c804_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_5ff5ab5459f03ae7c38a0dff4223c804 = L.geoJson(null, {
+                onEachFeature: geo_json_5ff5ab5459f03ae7c38a0dff4223c804_onEachFeature,
+            
+                pointToLayer: geo_json_5ff5ab5459f03ae7c38a0dff4223c804_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_5ff5ab5459f03ae7c38a0dff4223c804_add (data) {
+            geo_json_5ff5ab5459f03ae7c38a0dff4223c804
+                .addData(data);
+        }
+            geo_json_5ff5ab5459f03ae7c38a0dff4223c804_add({"geometry": {"coordinates": [-80.6821159, -4.8960251], "type": "Point"}, "properties": {"name": "FIORELLA YACQUELINE VALDEZ PE\u00d1A", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_5ff5ab5459f03ae7c38a0dff4223c804.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_5ff5ab5459f03ae7c38a0dff4223c804.bindTooltip(
+                `<div>
+                     FIORELLA YACQUELINE VALDEZ PEÑA (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_5ff5ab5459f03ae7c38a0dff4223c804.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+        function geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744 = L.geoJson(null, {
+                onEachFeature: geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744_onEachFeature,
+            
+                pointToLayer: geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744_add (data) {
+            geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744
+                .addData(data);
+        }
+            geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744_add({"geometry": {"coordinates": [-80.6823929, -4.8932417], "type": "Point"}, "properties": {"name": "MIRTHA CRISANTO CORDOVA DE MORE", "vendedor": "WILLIAN ALEJANDRO HERRERA MORAN"}, "type": "Feature"});
+        geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+            geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744.bindTooltip(
+                `<div>
+                     MIRTHA CRISANTO CORDOVA DE MORE (WILLIAN ALEJANDRO HERRERA MORAN)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_841b4fb9c6b9dfc1cd5019c5edb5d744.addTo(feature_group_efbe1317e35ddd29a96dd499d64ee808);
+        
+    
+            feature_group_efbe1317e35ddd29a96dd499d64ee808.addTo(map_cdc658dcf6cd3fc55a0a6839c088a432);
+        
+    
+            var feature_group_efbe1317e35ddd29a96dd499d64ee808searchControl = new L.Control.Search({
+                layer: feature_group_efbe1317e35ddd29a96dd499d64ee808,
+                
+                propertyName: 'name',
+                
+                collapsed: false,
+                textPlaceholder: 'Buscar cliente (Bodega)...',
+                position:'topleft',
+            
+                initial: false,
+                
+                zoom: 18,
+                
+                hideMarkerOnCollapse: true
+            
+                });
+                feature_group_efbe1317e35ddd29a96dd499d64ee808searchControl.on('search:locationfound', function(e) {
+                    feature_group_efbe1317e35ddd29a96dd499d64ee808.setStyle(function(feature){
+                        return feature.properties.style
+                    })
+                    
+                    e.layer.setStyle({
+  "weight": 3,
+  "searchAtStart": false,
+});
+                    
+                    if(e.layer._popup)
+                        e.layer.openPopup();
+                })
+                feature_group_efbe1317e35ddd29a96dd499d64ee808searchControl.on('search:collapsed', function(e) {
+                        feature_group_efbe1317e35ddd29a96dd499d64ee808.setStyle(function(feature){
+                            return feature.properties.style
+                    });
+                });
+            map_cdc658dcf6cd3fc55a0a6839c088a432.addControl( feature_group_efbe1317e35ddd29a96dd499d64ee808searchControl );
+
+        
+    
+            var layer_control_57ba8c54f579eaccdc173d1fe8e180f7_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_764232582e2de56a28a58568906d46a4,
+                },
+                overlays :  {
+                    "WILLIAN ALEJANDRO HERRERA MORAN (29)" : feature_group_15591da5a395557d5ada6632ed7e4973,
+                },
+            };
+            let layer_control_57ba8c54f579eaccdc173d1fe8e180f7 = L.control.layers(
+                layer_control_57ba8c54f579eaccdc173d1fe8e180f7_layers.base_layers,
+                layer_control_57ba8c54f579eaccdc173d1fe8e180f7_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_cdc658dcf6cd3fc55a0a6839c088a432);
+
+        
+    
+            var locate_control_e99ed1ab952c61c8e86897a7e4583fa2 = L.control.locate(
+                {"flyTo": true, "keepCurrentZoomLevel": true, "locateOptions": {"enableHighAccuracy": true, "maxZoom": 16}, "strings": {"popup": "\u00a1Est\u00e1s aqu\u00ed!", "title": "Mostrar mi ubicaci\u00f3n"}}
+            ).addTo(map_cdc658dcf6cd3fc55a0a6839c088a432);
+            
+                locate_control_e99ed1ab952c61c8e86897a7e4583fa2.start();
+            
+        
+</script>
+</html>
