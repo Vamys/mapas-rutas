@@ -38,17 +38,76 @@
             transition: transform 0.2s, background 0.2s;
         }
         .btn:hover { background: #2980b9; transform: translateY(-2px); }
+
+        /* PWA Install Banner */
+        .install-banner {
+            display: none;
+            background: #2c3e50; color: white;
+            padding: 15px; border-radius: 12px;
+            margin-bottom: 20px; width: 90%; max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            flex-direction: column; align-items: center; gap: 10px;
+            text-align: center; animation: slideIn 0.5s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .btn-install {
+            background: #27ae60; color: white; border: none;
+            padding: 10px 20px; border-radius: 8px;
+            font-weight: bold; cursor: pointer; font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .btn-install:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
     <h1>&#128506; Portal de Rutas</h1>
     <p>Selecciona una ruta para visualizarla en el mapa:</p>
+
+    <!-- Banner de Instalación PWA -->
+    <div id="install-banner" class="install-banner">
+        <p style="margin:0; font-size:14px;">&#128241; ¡Instala esta app para acceder rápido y sin conexión!</p>
+        <button id="btn-install" class="btn-install">INSTALAR AHORA</button>
+    </div>
+
     <div class="container">
         <a href="Mapa_General.html" class="btn">Mapa General</a>
     </div>
 
     <script>
-        // Registro del Service Worker para PWA
+        // --- Lógica de Instalación PWA ---
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const btnInstall = document.getElementById('btn-install');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevenir que el navegador muestre el prompt automático
+            e.preventDefault();
+            deferredPrompt = e;
+            // Mostrar nuestro banner personalizado
+            installBanner.style.display = 'flex';
+        });
+
+        btnInstall.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            // Mostrar el prompt nativo
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            if (outcome === 'accepted') {
+                installBanner.style.display = 'none';
+            }
+            deferredPrompt = null;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installBanner.style.display = 'none';
+            console.log('App instalada con éxito');
+        });
+
+        // --- Registro del Service Worker ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
