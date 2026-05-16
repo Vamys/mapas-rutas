@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+<style>
+    .folium-map {
+        width: 100% !important;
+        height: 100vh !important;
+        position: absolute !important;
+        top: 0; left: 0;
+        z-index: 1;
+    }
+    .leaflet-control-search {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+        border-radius: 25px !important;
+        overflow: hidden;
+    }
+    .leaflet-control-search .search-input {
+        padding: 8px 15px !important;
+        border-radius: 25px !important;
+        border: 1px solid #eee !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-control-search.search-exp .search-input { width: 250px !important; }
+    .leaflet-control-search .search-button {
+        background-color: #fff !important;
+        border-radius: 50% !important;
+        width: 34px !important; height: 34px !important;
+    }
+    .leaflet-control-layers {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        border-radius: 12px !important;
+        padding: 10px !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-bar {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }
+    .leaflet-bar a {
+        background-color: white !important;
+        color: #333 !important;
+        border: 1px solid #f0f0f0 !important;
+    }
+    .leaflet-bar a:first-child { border-radius: 8px 8px 0 0 !important; }
+    .leaflet-bar a:last-child  { border-radius: 0 0 8px 8px !important; }
+    .leaflet-tooltip {
+        background: rgba(255,255,255,0.95) !important;
+        border: none !important;
+        border-radius: 6px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
+    }
+    /* Mejoras al buscador para que parezca una lista */
+    .leaflet-control-search .search-tip {
+        padding: 12px !important;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px !important;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #333;
+        background: #fff;
+    }
+    .leaflet-control-search .search-tip:hover {
+        background: #3498db !important;
+        color: #fff !important;
+    }
+    .leaflet-control-search .search-tooltip {
+        max-height: 400px !important;
+        width: 100% !important;
+        min-width: 280px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+        border: none !important;
+        margin-top: 10px !important;
+    }
+    .leaflet-control-search .search-input {
+        height: 40px !important;
+        font-size: 16px !important;
+    }
+    /* Estilo para pines entregados */
+    .marker-delivered {
+        filter: grayscale(100%) brightness(70%) opacity(0.6) !important;
+        transition: all 0.3s ease;
+    }
+    .marker-delivered i {
+        color: #eee !important;
+    }
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_dac4df7876608d75fdb8fe87bcddd982 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    
+                    <style>
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    </style>
+            
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.css"/>
+</head>
+<body>
+    
+    
+<div id="nav-panel" style="
+    display:none; position:fixed; bottom:20px; left:20px;
+    width:300px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">&#128640; Rutas de Navegacion</h3>
+        <button onclick="document.getElementById('nav-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">&#215;</button>
+    </div>
+    <div id="nav-links-container" style="max-height:400px;overflow-y:auto;"></div>
+</div>
+
+<button onclick="toggleNavPanel()" style="
+    position:fixed; bottom:20px; left:20px; z-index:9998;
+    background:#4285F4; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    &#128506; VER RUTAS GOOGLE MAPS
+</button>
+
+<script>
+    var infoRutas = {"MANUEL ENRIQUE ZAPATA QUEVEDO": [{"nombre": "Tramo 1  (PEKANSA E.I.R.L. \u2192 MARIA VICENTE REYES)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.6562774,-80.2366643&waypoints=-4.6600271%2C-80.2407698%7C-4.6600271%2C-80.2407698%7C-4.653567%2C-80.2440876%7C-4.65472%2C-80.2448123%7C-4.6599076%2C-80.242813%7C-4.6569102%2C-80.2398735%7C-4.6559513%2C-80.2406544%7C-4.6536254%2C-80.2379362%7C-4.6556685%2C-80.2399765"}, {"nombre": "Tramo 2  (MARIA VICENTE REYES \u2192 GHISELA EDITH TORRES RAMIREZ)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.65935,-80.239224&waypoints=-4.6562774%2C-80.2366643%7C-4.653408%2C-80.2323811%7C-4.6563399%2C-80.2355949%7C-4.658191%2C-80.2348735%7C-4.6578308%2C-80.2345421%7C-4.6589278%2C-80.2361837%7C-4.6582398%2C-80.2377625%7C-4.6592498%2C-80.2361348%7C-4.6600705%2C-80.2388748"}, {"nombre": "Tramo 3  (GHISELA EDITH TORRES RAMIREZ \u2192 EVELYN RUIZ VARGAS)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.659145,-80.2416719&waypoints=-4.65935%2C-80.239224%7C-4.657573%2C-80.241238%7C-4.6588669%2C-80.2428556%7C-4.6590538%2C-80.242143%7C-4.658949%2C-80.242448%7C-4.6588908%2C-80.2420394%7C-4.665045%2C-80.2442079"}]};
+    var listaClientes = [{"nombre": "AMALIA ALEJANDRINA REYES ESPINOZA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6569102, "lng": -80.2398735}, {"nombre": "ATO PALACIOS LIZ EDITA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.65472, "lng": -80.2448123}, {"nombre": "CONSUELO MARIA JUAREZ CAMPOS", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6589278, "lng": -80.2361837}, {"nombre": "Doria Carmen correa morocho", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6556685, "lng": -80.2399765}, {"nombre": "EVELYN RUIZ VARGAS", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.659145, "lng": -80.2416719}, {"nombre": "GHISELA EDITH TORRES RAMIREZ", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.65935, "lng": -80.239224}, {"nombre": "HUMBERTO BENJAMIN MANRIQUE VELA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.665045, "lng": -80.2442079}, {"nombre": "LUISA RODRIGUEZ DE PINTADO", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.653567, "lng": -80.2440876}, {"nombre": "LUZ RAQUEL CARRE\u00d1O GARCIA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6578308, "lng": -80.2345421}, {"nombre": "MAGNA VICENTE JIMENEZ", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6588908, "lng": -80.2420394}, {"nombre": "MARIA ISABEL FLORES GARCIA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6592498, "lng": -80.2361348}, {"nombre": "MARIA LIDIA AGURTO GONZAGA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.657573, "lng": -80.241238}, {"nombre": "MARIA VICENTE REYES", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6562774, "lng": -80.2366643}, {"nombre": "MARICIELO LLOCLLA MARCHENA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6590538, "lng": -80.242143}, {"nombre": "NELIDA CUEVA MORALES", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6588669, "lng": -80.2428556}, {"nombre": "PATRICIA MARILIS TAMAYO CORREA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6563399, "lng": -80.2355949}, {"nombre": "PAULA CORDOVA FLORES", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6536254, "lng": -80.2379362}, {"nombre": "PEKANSA E.I.R.L.", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6600271, "lng": -80.2407698}, {"nombre": "PEKANSA E.I.R.L.", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6600271, "lng": -80.2407698}, {"nombre": "PE\u00d1A NAIRA ARDELI", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.658949, "lng": -80.242448}, {"nombre": "RAFAELA RETETE REYES", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6600705, "lng": -80.2388748}, {"nombre": "ROSA GRIMANEZA MARTINEZ ESPINOZA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.653408, "lng": -80.2323811}, {"nombre": "ROSA MARIEL MALDONADO ALTAMIRANO", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.658191, "lng": -80.2348735}, {"nombre": "SANTOS AMADA GARCIA JIMENEZ", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6582398, "lng": -80.2377625}, {"nombre": "YULY VALDEZ CASTILLO", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6599076, "lng": -80.242813}, {"nombre": "ZAIDA RISSBELI AQUINO RODRIGUEZ", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO", "lat": -4.6559513, "lng": -80.2406544}];
+
+    function toggleNavPanel() {
+        var p = document.getElementById('nav-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+             renderRutas();
+             document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+
+    function toggleListPanel() {
+        var p = document.getElementById('list-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+            renderListaClientes();
+            document.getElementById('nav-panel').style.display = 'none';
+        }
+    }
+
+    function renderRutas() {
+        var c = document.getElementById('nav-links-container');
+        c.innerHTML = '';
+        for (var vend in infoRutas) {
+            var sec = document.createElement('div');
+            sec.style.marginBottom = '15px';
+            sec.innerHTML = '<strong style="color:#666;font-size:13px;display:block;margin-bottom:5px;">👤 ' + vend + '</strong>';
+            infoRutas[vend].forEach(function(link) {
+                var a = document.createElement('a');
+                a.href = link.url; a.target = '_blank';
+                a.textContent = link.nombre;
+                a.style.cssText = 'display:block;background:#f1f3f4;color:#1a73e8;' +
+                    'padding:8px 12px;border-radius:8px;margin-bottom:5px;' +
+                    'text-decoration:none;font-size:12px;font-weight:600;';
+                a.onmouseover = function() { this.style.background = '#e8f0fe'; };
+                a.onmouseout  = function() { this.style.background = '#f1f3f4'; };
+                sec.appendChild(a);
+            });
+            c.appendChild(sec);
+        }
+    }
+
+    function renderListaClientes(filtro = '') {
+        var c = document.getElementById('list-container');
+        c.innerHTML = '';
+        var filtrados = listaClientes.filter(cl => 
+            cl.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+            cl.vendedor.toLowerCase().includes(filtro.toLowerCase())
+        );
+
+        filtrados.forEach(function(cl) {
+            var d = document.createElement('div');
+            d.style.cssText = 'background:#fff; border:1px solid #eee; padding:10px; border-radius:8px; margin-bottom:8px; cursor:pointer; transition: 0.2s;';
+            d.innerHTML = '<div style="font-weight:bold; color:#333; font-size:13px;">' + cl.nombre + '</div>' +
+                          '<div style="font-size:11px; color:#777;">👤 ' + cl.vendedor + '</div>';
+            
+            d.onclick = function() {
+                irAlCliente(cl.lat, cl.lng, cl.nombre);
+            };
+            d.onmouseover = function() { this.style.background = '#f8f9fa'; this.style.borderColor = '#3498db'; };
+            d.onmouseout  = function() { this.style.background = '#fff'; this.style.borderColor = '#eee'; };
+            c.appendChild(d);
+        });
+    }
+
+    function irAlCliente(lat, lng, nombre) {
+        if (!window._mapaListo) return;
+        window._mapaListo.setView([lat, lng], 18);
+        
+        // Buscar el marcador y abrir popup
+        window._mapaListo.eachLayer(function(layer) {
+            if (layer instanceof L.Marker && layer.options && (layer.options.alt === nombre || (layer.options.tooltip && layer.options.tooltip.getContent().includes(nombre)))) {
+                layer.openPopup();
+            }
+        });
+
+        if (window.innerWidth < 768) {
+            document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+</script>
+
+<div id="list-panel" style="
+    display:none; position:fixed; bottom:80px; left:20px;
+    width:320px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">📋 Lista de Clientes</h3>
+        <button onclick="document.getElementById('list-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">×</button>
+    </div>
+    <input type="text" placeholder="Filtrar clientes..." onkeyup="renderListaClientes(this.value)" style="
+        width:100%; padding:8px 12px; border-radius:8px; border:1px solid #ddd; margin-bottom:10px; box-sizing: border-box;
+    ">
+    <div id="list-container" style="max-height:400px;overflow-y:auto; padding-right:5px;"></div>
+</div>
+
+<button onclick="toggleListPanel()" style="
+    position:fixed; bottom:20px; left:220px; z-index:9998;
+    background:#27ae60; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    📋 LISTADO
+</button>
+    
+            <div class="folium-map" id="map_dac4df7876608d75fdb8fe87bcddd982" ></div>
+        
+
+<!-- Boton volver al menu principal -->
+<a href="index.html" style="
+    position:fixed; top:15px; left:50px; z-index:9998;
+    background:white; color:#333;
+    border:2px solid #ccc; border-radius:8px;
+    padding:8px 15px; font-weight:bold;
+    text-decoration:none; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8592; VOLVER AL MENU
+</a>
+
+<!-- Indicador de sincronizacion -->
+<div id="sync-indicator" style="
+    position:fixed; bottom:15px; right:15px; z-index:9999;
+    background:rgba(0,0,0,0.7); color:white;
+    padding:6px 12px; border-radius:20px;
+    font-size:11px; font-family:'Segoe UI',sans-serif;
+    display:none; transition:opacity 0.3s;">
+    &#9729; Sincronizando...
+</div>
+
+<script>
+    // --- CONFIGURACION NUBE ---
+    
+    const JSONBIN_BIN_ID = '6a08ffdb250b1311c35f1326';
+    const JSONBIN_API_KEY = '$2a$10$XbSEDYDqGr6WwHfnYP2gQu07YA10s.clBAD4NP8ZDflkUr0ihvtA2';
+    const NUBE_ACTIVA = true;
+    
+
+    window._mapaListo   = null;
+    window._markerActual = null;
+
+    function mostrarSync(texto, color) {
+        const el = document.getElementById('sync-indicator');
+        if (!el) return;
+        el.textContent = texto;
+        el.style.background = color || 'rgba(0,0,0,0.7)';
+        el.style.display = 'block';
+        el.style.opacity = '1';
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }, 2000);
+    }
+
+    // --- VISUAL ---
+    window.marcarVisual = function(marker, entregado) {
+        if (!marker) return;
+        
+        // Guardar el estado en las opciones del marker para persistencia
+        if (!marker.options) marker.options = {};
+        marker.options.isDelivered = entregado;
+
+        if (marker._icon) {
+            if (entregado) {
+                marker._icon.classList.add('marker-delivered');
+            } else {
+                marker._icon.classList.remove('marker-delivered');
+            }
+        }
+    };
+
+    // --- JSONBIN CLOUD API ---
+    async function leerNube() {
+        if (!NUBE_ACTIVA) return null;
+        try {
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            return data.record || data;
+        } catch(e) { return null; }
+    }
+
+    async function escribirNube(estadoCompleto) {
+        if (!NUBE_ACTIVA) return false;
+        mostrarSync('&#9729; Sincronizando...', 'rgba(0,100,200,0.8)');
+        try {
+            // Leer estado actual para hacer MERGE (evitar sobrescribir cambios de otros)
+            const actual = await leerNube();
+            const entregasActuales = (actual && actual.entregas) ? actual.entregas : {};
+
+            // Merge: combinar estado actual en nube + nuevos cambios
+            const merged = { ...entregasActuales, ...estadoCompleto.entregas };
+            const payload = {
+                entregas: merged,
+                ultima_sync: new Date().toISOString()
+            };
+
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY
+                },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                mostrarSync('&#10003; Guardado en nube', 'rgba(0,150,50,0.8)');
+                return true;
+            }
+        } catch(e) { console.warn('Error escribiendo en nube:', e); }
+        mostrarSync('&#9888; Solo guardado local', 'rgba(200,100,0,0.8)');
+        return false;
+    }
+
+    // --- LOCAL STORAGE FALLBACK ---
+    function guardarLocal(id, delivered) {
+        try { localStorage.setItem('entregas_' + id, delivered); } catch(e){}
+    }
+    function leerLocal(id) {
+        const v = localStorage.getItem('entregas_' + id);
+        return v === 'true' || v === true;
+    }
+    function leerTodosLocal() {
+        const res = {};
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('entregas_')) {
+                    res[key.replace('entregas_', '')] = localStorage.getItem(key) === 'true';
+                }
+            }
+        } catch(e){}
+        return res;
+    }
+
+    // --- ESTADO UNIFICADO ---
+    let _estadoNube = null;
+
+    async function cargarEstados() {
+        // Prioridad: Nube > Local
+        const nube = await leerNube();
+        if (nube && nube.entregas) {
+            _estadoNube = nube.entregas;
+            // Sincronizar nube -> local
+            Object.entries(_estadoNube).forEach(([id, data]) => {
+                const val = (typeof data === 'object') ? data.entregado : data;
+                guardarLocal(id, val);
+            });
+            return _estadoNube;
+        }
+        // Fallback local
+        return leerTodosLocal();
+    }
+
+    async function getStatus(id) {
+        if (_estadoNube && id in _estadoNube) {
+            const val = _estadoNube[id];
+            return (typeof val === 'object') ? !!val.entregado : !!val;
+        }
+        return leerLocal(id);
+    }
+
+    // --- GUARDAR ENTREGA ---
+    window.guardarEstadoEntrega = async function(btn) {
+        try {
+            const popup = btn.closest('.leaflet-popup-content') || btn.closest('.leaflet-popup-content-wrapper');
+            const span = popup ? popup.querySelector('.bodega-nombre') : null;
+            const chk  = popup ? popup.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+
+            const nombre      = span.textContent.trim();
+            const nuevoEstado = chk.checked;
+
+            // 1. Guardar local de inmediato (UX sin espera)
+            guardarLocal(nombre, nuevoEstado);
+
+            // 2. Actualizar visual
+            if (window._markerActual) window.marcarVisual(window._markerActual, nuevoEstado);
+            else reAplicarEstados();
+
+            // 3. Feedback inmediato en boton
+            const orig = btn.innerHTML;
+            btn.innerHTML = 'GUARDANDO...';
+            btn.style.background = '#0d6efd';
+
+            // 4. Subir a la nube con merge
+            const entregaData = {
+                entregado: nuevoEstado,
+                fecha: new Date().toISOString()
+            };
+            if (_estadoNube) _estadoNube[nombre] = entregaData;
+            else _estadoNube = { [nombre]: entregaData };
+
+            const nubeOk = await escribirNube({ entregas: { [nombre]: entregaData } });
+
+            // Si fallo la nube, guardar en cola de reintentos
+            if (!nubeOk && NUBE_ACTIVA) {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    cola.push({ [nombre]: entregaData });
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(cola));
+                    console.log('[Vamys] Guardado en cola de reintentos');
+                } catch(qe) {}
+            }
+
+            btn.innerHTML = nubeOk ? '✓ GUARDADO EN NUBE' : '✓ GUARDADO LOCAL';
+            btn.style.background = nubeOk ? '#155724' : '#856404';
+            setTimeout(() => { btn.innerHTML = orig; btn.style.background = '#28a745'; }, 1500);
+
+        } catch (err) {
+            console.error("Error al guardar:", err);
+        }
+    };
+
+    async function reAplicarEstados() {
+        if (!window._mapaListo) return;
+        try {
+            const estados = await cargarEstados();
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    const val = estados[layer.options.alt];
+                    const entregado = (typeof val === 'object') ? !!val?.entregado : !!val;
+                    window.marcarVisual(layer, entregado);
+                }
+            });
+        } catch(e) { console.error("Error re-aplicando estados:", e); }
+    }
+
+    function inicializarVamys() {
+        const mapEl = document.querySelector('.folium-map');
+        if (!mapEl) { setTimeout(inicializarVamys, 500); return; }
+        if (mapEl.offsetHeight === 0) { mapEl.style.height = '100vh'; mapEl.style.width = '100vw'; }
+
+        let mapObj = null;
+        try {
+            if (mapEl.id && window[mapEl.id] && typeof window[mapEl.id].on === 'function') {
+                mapObj = window[mapEl.id];
+            } else {
+                for (let key in window) {
+                    if (key.startsWith('map_') && window[key] && typeof window[key].on === 'function') {
+                        if (window[key].eachLayer) { mapObj = window[key]; break; }
+                    }
+                }
+            }
+        } catch(e){}
+
+        if (!mapObj) { setTimeout(inicializarVamys, 500); return; }
+
+        window._mapaListo  = mapObj;
+        mapEl._leaflet_map = mapObj;
+
+        // Escuchar cuando se agrega cualquier capa (muy útil para clusters)
+        mapObj.on('layeradd', async (e) => {
+            if (e.layer instanceof L.Marker && e.layer.options && e.layer.options.alt) {
+                const entregado = await getStatus(e.layer.options.alt);
+                window.marcarVisual(e.layer, entregado);
+            }
+        });
+
+        // Mantener moveend/zoomend solo como backup ocasional
+        mapObj.on('zoomend moveend spiderfied', () => setTimeout(reAplicarEstados, 500));
+
+        mapObj.on('popupopen', async (e) => {
+            const marker  = e.popup._source;
+            if (!marker) return;
+            const wrapper = e.popup._wrapper;
+            const span    = wrapper ? wrapper.querySelector('.bodega-nombre') : null;
+            const chk     = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+            const nombre = span.textContent.trim();
+            window._markerActual = marker;
+            if (marker.options) marker.options.alt = nombre;
+            chk.checked = await getStatus(nombre);
+        });
+
+        reAplicarEstados();
+
+        // ── POLLING: actualizar desde la nube cada 15 segundos ──
+        if (NUBE_ACTIVA) {
+            console.log('[Vamys] Polling activo: sincronizando cada 15s desde JSONBin');
+            setInterval(async () => {
+                try {
+                    _estadoNube = null; // forzar re-lectura
+                    await reAplicarEstados();
+                } catch(e) { console.warn('[Vamys] Error en polling:', e); }
+            }, 15000);
+        }
+
+        // ── REINTENTAR escrituras fallidas guardadas en cola ──
+        if (NUBE_ACTIVA) {
+            setInterval(async () => {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    if (cola.length === 0) return;
+                    console.log(`[Vamys] Reintentando ${cola.length} escrituras pendientes...`);
+                    const exitosas = [];
+                    for (const item of cola) {
+                        const ok = await escribirNube({ entregas: item });
+                        if (ok) exitosas.push(item);
+                    }
+                    // Quitar las exitosas de la cola
+                    const restantes = cola.filter(c => !exitosas.includes(c));
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(restantes));
+                    if (exitosas.length > 0) {
+                        mostrarSync(`✓ ${exitosas.length} pendientes sincronizados`, 'rgba(0,150,50,0.8)');
+                    }
+                } catch(e) { console.warn('[Vamys] Error reintentando cola:', e); }
+            }, 30000);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", inicializarVamys);
+    } else {
+        inicializarVamys();
+    }
+</script>
+</body>
+<script>
+    
+    
+            var map_dac4df7876608d75fdb8fe87bcddd982 = L.map(
+                "map_dac4df7876608d75fdb8fe87bcddd982",
+                {
+                    center: [-4.657915873076923, -80.23963586923077],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_8bae2bd8c6536a93f0330b58549806d2 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_8bae2bd8c6536a93f0330b58549806d2.addTo(map_dac4df7876608d75fdb8fe87bcddd982);
+        
+    
+            var feature_group_046171b92c5e614e5b9256a476b8cee0 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_cf15e1668645f84588e81129c72856a8 = L.markerClusterGroup(
+                {
+  "spiderfyOnMaxZoom": true,
+  "disableClusteringAtZoom": 17,
+  "maxClusterRadius": 60,
+}
+            );
+        
+    
+            var marker_43a2f01c953ded7693ebe18b0793a431 = L.marker(
+                [-4.6600271, -80.2407698],
+                {
+  "alt": "PEKANSA E.I.R.L.",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_90b4162444279c7d1d7c7cb1dacda4a3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_70ffa1a220a41cf90d6df76b72e0eff5 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_38727f25cf4f2aee8eb62657f4e5454f = $(`<div id="html_38727f25cf4f2aee8eb62657f4e5454f" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PEKANSA E.I.R.L.</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PEKANSA E.I.R.L.</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JR. CUSCO NRO. 262 OTR. CERCADO DE LAS LOMAS (CERCA AL MERCADO DE ABASTOS) PIURA - PIURA - LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6600271,-80.2407698','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_70ffa1a220a41cf90d6df76b72e0eff5.setContent(html_38727f25cf4f2aee8eb62657f4e5454f);
+            
+        
+
+        marker_43a2f01c953ded7693ebe18b0793a431.bindPopup(popup_70ffa1a220a41cf90d6df76b72e0eff5)
+        ;
+
+        
+    
+    
+            marker_43a2f01c953ded7693ebe18b0793a431.bindTooltip(
+                `<div>
+                     PEKANSA E.I.R.L. — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_43a2f01c953ded7693ebe18b0793a431.setIcon(icon_90b4162444279c7d1d7c7cb1dacda4a3);
+            
+    
+            var marker_880ecb6210e4056ebfcad4d1a26a3725 = L.marker(
+                [-4.6600271, -80.2407698],
+                {
+  "alt": "PEKANSA E.I.R.L.",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_6942a14261414ca054485d6e5184cc66 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_76580b05285f0421ceefda1052cc37ae = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_d765172520f0487c771b2b41147478ee = $(`<div id="html_d765172520f0487c771b2b41147478ee" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PEKANSA E.I.R.L.</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PEKANSA E.I.R.L.</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JR. CUSCO NRO. 262 OTR. CERCADO DE LAS LOMAS (CERCA AL MERCADO DE ABASTOS) PIURA - PIURA - LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6600271,-80.2407698','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_76580b05285f0421ceefda1052cc37ae.setContent(html_d765172520f0487c771b2b41147478ee);
+            
+        
+
+        marker_880ecb6210e4056ebfcad4d1a26a3725.bindPopup(popup_76580b05285f0421ceefda1052cc37ae)
+        ;
+
+        
+    
+    
+            marker_880ecb6210e4056ebfcad4d1a26a3725.bindTooltip(
+                `<div>
+                     PEKANSA E.I.R.L. — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_880ecb6210e4056ebfcad4d1a26a3725.setIcon(icon_6942a14261414ca054485d6e5184cc66);
+            
+    
+            var marker_5f552a3d3cb4f6d5d146d2387f34e041 = L.marker(
+                [-4.653567, -80.2440876],
+                {
+  "alt": "LUISA RODRIGUEZ DE PINTADO",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_2b4e149c47d8a1c87b671ec052c1d4e0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2d44e93c828a880632066c37c613c28d = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_e4f5e44e0843a84c2437111cfa6d852b = $(`<div id="html_e4f5e44e0843a84c2437111cfa6d852b" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">LUISA RODRIGUEZ DE PINTADO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">LUISA RODRIGUEZ DE PINTADO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JR. AYACUCHO 878 BARRIO ESPERANZA L     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.653567,-80.2440876','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_2d44e93c828a880632066c37c613c28d.setContent(html_e4f5e44e0843a84c2437111cfa6d852b);
+            
+        
+
+        marker_5f552a3d3cb4f6d5d146d2387f34e041.bindPopup(popup_2d44e93c828a880632066c37c613c28d)
+        ;
+
+        
+    
+    
+            marker_5f552a3d3cb4f6d5d146d2387f34e041.bindTooltip(
+                `<div>
+                     LUISA RODRIGUEZ DE PINTADO — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5f552a3d3cb4f6d5d146d2387f34e041.setIcon(icon_2b4e149c47d8a1c87b671ec052c1d4e0);
+            
+    
+            var marker_2d3567a3507ca90b4ab5b1475cd17922 = L.marker(
+                [-4.65472, -80.2448123],
+                {
+  "alt": "ATO PALACIOS LIZ EDITA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_5e28910476e555fc8a68857a34cda31a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_96d5b13dc066a195185d9a3a9424428c = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_0af8e179da54b39229ddd3fe1f87b7ef = $(`<div id="html_0af8e179da54b39229ddd3fe1f87b7ef" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ATO PALACIOS LIZ EDITA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ATO PALACIOS LIZ EDITA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CA BOLOGNESI 276 - LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.65472,-80.2448123','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_96d5b13dc066a195185d9a3a9424428c.setContent(html_0af8e179da54b39229ddd3fe1f87b7ef);
+            
+        
+
+        marker_2d3567a3507ca90b4ab5b1475cd17922.bindPopup(popup_96d5b13dc066a195185d9a3a9424428c)
+        ;
+
+        
+    
+    
+            marker_2d3567a3507ca90b4ab5b1475cd17922.bindTooltip(
+                `<div>
+                     ATO PALACIOS LIZ EDITA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2d3567a3507ca90b4ab5b1475cd17922.setIcon(icon_5e28910476e555fc8a68857a34cda31a);
+            
+    
+            var marker_2d344b02124f909d80ab53926dd74629 = L.marker(
+                [-4.6599076, -80.242813],
+                {
+  "alt": "YULY VALDEZ CASTILLO",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_9073486a424be6364349afd9c1d16779 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a03124d93579318a6440333617223589 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_a377b9ea094e6e6d9b0174a6a193ef7e = $(`<div id="html_a377b9ea094e6e6d9b0174a6a193ef7e" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">YULY VALDEZ CASTILLO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">YULY VALDEZ CASTILLO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CA EMANCIPACION 210 - LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6599076,-80.242813','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_a03124d93579318a6440333617223589.setContent(html_a377b9ea094e6e6d9b0174a6a193ef7e);
+            
+        
+
+        marker_2d344b02124f909d80ab53926dd74629.bindPopup(popup_a03124d93579318a6440333617223589)
+        ;
+
+        
+    
+    
+            marker_2d344b02124f909d80ab53926dd74629.bindTooltip(
+                `<div>
+                     YULY VALDEZ CASTILLO — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2d344b02124f909d80ab53926dd74629.setIcon(icon_9073486a424be6364349afd9c1d16779);
+            
+    
+            var marker_7cdccbabd9ef50e4aa59ef0d1eea9c9b = L.marker(
+                [-4.6569102, -80.2398735],
+                {
+  "alt": "AMALIA ALEJANDRINA REYES ESPINOZA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_1d2484dc5fa3868e0022c22f69a8c6e6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f1249a470638644f17a83584181cb133 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_0daf00662e22be4c89403e7951c6da2d = $(`<div id="html_0daf00662e22be4c89403e7951c6da2d" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">AMALIA ALEJANDRINA REYES ESPINOZA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">AMALIA ALEJANDRINA REYES ESPINOZA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE PUNO 332 - AH SANTA ROSA LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6569102,-80.2398735','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_f1249a470638644f17a83584181cb133.setContent(html_0daf00662e22be4c89403e7951c6da2d);
+            
+        
+
+        marker_7cdccbabd9ef50e4aa59ef0d1eea9c9b.bindPopup(popup_f1249a470638644f17a83584181cb133)
+        ;
+
+        
+    
+    
+            marker_7cdccbabd9ef50e4aa59ef0d1eea9c9b.bindTooltip(
+                `<div>
+                     AMALIA ALEJANDRINA REYES ESPINOZA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7cdccbabd9ef50e4aa59ef0d1eea9c9b.setIcon(icon_1d2484dc5fa3868e0022c22f69a8c6e6);
+            
+    
+            var marker_be2ebb48bffc282927dab0e828f8fbb5 = L.marker(
+                [-4.6559513, -80.2406544],
+                {
+  "alt": "ZAIDA RISSBELI AQUINO RODRIGUEZ",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_0d792f340dd4c64a4c9890e7dca43c46 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ffd8e5f59e6bced0c72ac52786aa07fd = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_8da9f57ed361ef216917dcdb3f82e453 = $(`<div id="html_8da9f57ed361ef216917dcdb3f82e453" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ZAIDA RISSBELI AQUINO RODRIGUEZ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ZAIDA RISSBELI AQUINO RODRIGUEZ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE PUNO 500 LAS LOMAS BARRIO SANTA ROSA     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6559513,-80.2406544','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_ffd8e5f59e6bced0c72ac52786aa07fd.setContent(html_8da9f57ed361ef216917dcdb3f82e453);
+            
+        
+
+        marker_be2ebb48bffc282927dab0e828f8fbb5.bindPopup(popup_ffd8e5f59e6bced0c72ac52786aa07fd)
+        ;
+
+        
+    
+    
+            marker_be2ebb48bffc282927dab0e828f8fbb5.bindTooltip(
+                `<div>
+                     ZAIDA RISSBELI AQUINO RODRIGUEZ — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_be2ebb48bffc282927dab0e828f8fbb5.setIcon(icon_0d792f340dd4c64a4c9890e7dca43c46);
+            
+    
+            var marker_3270f070a40349b7e99594e706045dbe = L.marker(
+                [-4.6536254, -80.2379362],
+                {
+  "alt": "PAULA CORDOVA FLORES",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_c902dc0c61a8be58df21e39eb07676a9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9c884562628b231d8de591f0c64a89b9 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_4af5c064c9d5c46f3c5a381fdb4fed14 = $(`<div id="html_4af5c064c9d5c46f3c5a381fdb4fed14" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PAULA CORDOVA FLORES</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PAULA CORDOVA FLORES</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle Lima 998     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6536254,-80.2379362','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_9c884562628b231d8de591f0c64a89b9.setContent(html_4af5c064c9d5c46f3c5a381fdb4fed14);
+            
+        
+
+        marker_3270f070a40349b7e99594e706045dbe.bindPopup(popup_9c884562628b231d8de591f0c64a89b9)
+        ;
+
+        
+    
+    
+            marker_3270f070a40349b7e99594e706045dbe.bindTooltip(
+                `<div>
+                     PAULA CORDOVA FLORES — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3270f070a40349b7e99594e706045dbe.setIcon(icon_c902dc0c61a8be58df21e39eb07676a9);
+            
+    
+            var marker_a1a05b6fc1ffb6817a2c739d0e4aa501 = L.marker(
+                [-4.6556685, -80.2399765],
+                {
+  "alt": "Doria Carmen correa morocho",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_e0659e60021ac6551e3840002822b429 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4383c71e54d15c7c1653a1dd196bc054 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_a5188fe1114bd313d1ccb1d1a2eedb0b = $(`<div id="html_a5188fe1114bd313d1ccb1d1a2eedb0b" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">Doria Carmen correa morocho</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">Doria Carmen correa morocho</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE LIMA 985 LAS.LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6556685,-80.2399765','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_4383c71e54d15c7c1653a1dd196bc054.setContent(html_a5188fe1114bd313d1ccb1d1a2eedb0b);
+            
+        
+
+        marker_a1a05b6fc1ffb6817a2c739d0e4aa501.bindPopup(popup_4383c71e54d15c7c1653a1dd196bc054)
+        ;
+
+        
+    
+    
+            marker_a1a05b6fc1ffb6817a2c739d0e4aa501.bindTooltip(
+                `<div>
+                     Doria Carmen correa morocho — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a1a05b6fc1ffb6817a2c739d0e4aa501.setIcon(icon_e0659e60021ac6551e3840002822b429);
+            
+    
+            var marker_d1ac58a2004e0f9badfb6336982eb48a = L.marker(
+                [-4.6562774, -80.2366643],
+                {
+  "alt": "MARIA VICENTE REYES",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_1526cfcc73427a0d73456694291b9c55 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_68a38495f380cd706feb1c36cebf9a65 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_4f29dff9df2a87e6513b0c0d7a54ffa1 = $(`<div id="html_4f29dff9df2a87e6513b0c0d7a54ffa1" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA VICENTE REYES</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA VICENTE REYES</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE LA LORETO S/N BARRIO BUENOS AIRES LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6562774,-80.2366643','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_68a38495f380cd706feb1c36cebf9a65.setContent(html_4f29dff9df2a87e6513b0c0d7a54ffa1);
+            
+        
+
+        marker_d1ac58a2004e0f9badfb6336982eb48a.bindPopup(popup_68a38495f380cd706feb1c36cebf9a65)
+        ;
+
+        
+    
+    
+            marker_d1ac58a2004e0f9badfb6336982eb48a.bindTooltip(
+                `<div>
+                     MARIA VICENTE REYES — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d1ac58a2004e0f9badfb6336982eb48a.setIcon(icon_1526cfcc73427a0d73456694291b9c55);
+            
+    
+            var marker_681cd40dd2846232aa900117a9ef54cb = L.marker(
+                [-4.653408, -80.2323811],
+                {
+  "alt": "ROSA GRIMANEZA MARTINEZ ESPINOZA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_d3ff29fa8158245fe3f3e0f81e0924f0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c9e4e48243720a5c53fcd034272c4330 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_6fc87bdc12ad0ba9d8b656b5dd6c49e8 = $(`<div id="html_6fc87bdc12ad0ba9d8b656b5dd6c49e8" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ROSA GRIMANEZA MARTINEZ ESPINOZA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ROSA GRIMANEZA MARTINEZ ESPINOZA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>nan     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.653408,-80.2323811','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_c9e4e48243720a5c53fcd034272c4330.setContent(html_6fc87bdc12ad0ba9d8b656b5dd6c49e8);
+            
+        
+
+        marker_681cd40dd2846232aa900117a9ef54cb.bindPopup(popup_c9e4e48243720a5c53fcd034272c4330)
+        ;
+
+        
+    
+    
+            marker_681cd40dd2846232aa900117a9ef54cb.bindTooltip(
+                `<div>
+                     ROSA GRIMANEZA MARTINEZ ESPINOZA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_681cd40dd2846232aa900117a9ef54cb.setIcon(icon_d3ff29fa8158245fe3f3e0f81e0924f0);
+            
+    
+            var marker_1114a9889839d549761df60cf8a3bfd1 = L.marker(
+                [-4.6563399, -80.2355949],
+                {
+  "alt": "PATRICIA MARILIS TAMAYO CORREA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_1457b8864f52f4d077dd9b098a112f75 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c1bcebb8336e359924a493d579c25105 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_0400b847a1ea71e9e16906ae42fca33f = $(`<div id="html_0400b847a1ea71e9e16906ae42fca33f" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PATRICIA MARILIS TAMAYO CORREA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PATRICIA MARILIS TAMAYO CORREA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>AH MIRAFLORES  D-1 CALLE LOS GERANIOS LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6563399,-80.2355949','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_c1bcebb8336e359924a493d579c25105.setContent(html_0400b847a1ea71e9e16906ae42fca33f);
+            
+        
+
+        marker_1114a9889839d549761df60cf8a3bfd1.bindPopup(popup_c1bcebb8336e359924a493d579c25105)
+        ;
+
+        
+    
+    
+            marker_1114a9889839d549761df60cf8a3bfd1.bindTooltip(
+                `<div>
+                     PATRICIA MARILIS TAMAYO CORREA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1114a9889839d549761df60cf8a3bfd1.setIcon(icon_1457b8864f52f4d077dd9b098a112f75);
+            
+    
+            var marker_c3ae5b0c97acc62e549f2f4dbdb218a9 = L.marker(
+                [-4.658191, -80.2348735],
+                {
+  "alt": "ROSA MARIEL MALDONADO ALTAMIRANO",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_5f0a28443da62e15198ee08c7c4a3802 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0377b7c24219ab75562b87c0350178c3 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_42d03c29c7ec26b41e7bb28ab69c2c8d = $(`<div id="html_42d03c29c7ec26b41e7bb28ab69c2c8d" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ROSA MARIEL MALDONADO ALTAMIRANO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ROSA MARIEL MALDONADO ALTAMIRANO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE LAS CUCARDAS S/N BARRIO  MIRAFLORES     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.658191,-80.2348735','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_0377b7c24219ab75562b87c0350178c3.setContent(html_42d03c29c7ec26b41e7bb28ab69c2c8d);
+            
+        
+
+        marker_c3ae5b0c97acc62e549f2f4dbdb218a9.bindPopup(popup_0377b7c24219ab75562b87c0350178c3)
+        ;
+
+        
+    
+    
+            marker_c3ae5b0c97acc62e549f2f4dbdb218a9.bindTooltip(
+                `<div>
+                     ROSA MARIEL MALDONADO ALTAMIRANO — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c3ae5b0c97acc62e549f2f4dbdb218a9.setIcon(icon_5f0a28443da62e15198ee08c7c4a3802);
+            
+    
+            var marker_e772337417d6c2f8501ee817f7f3ea1b = L.marker(
+                [-4.6578308, -80.2345421],
+                {
+  "alt": "LUZ RAQUEL CARRE\u00d1O GARCIA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_392edf70f734ded8c85eb87695d62302 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_58007cf1bd4174ba00ec21f6489b501d = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_2f60de91648fb710ed217ef796665432 = $(`<div id="html_2f60de91648fb710ed217ef796665432" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">LUZ RAQUEL CARREÑO GARCIA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">LUZ RAQUEL CARREÑO GARCIA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>LOS JAZMINES 100 MIRAFLORES PIEDRAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6578308,-80.2345421','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_58007cf1bd4174ba00ec21f6489b501d.setContent(html_2f60de91648fb710ed217ef796665432);
+            
+        
+
+        marker_e772337417d6c2f8501ee817f7f3ea1b.bindPopup(popup_58007cf1bd4174ba00ec21f6489b501d)
+        ;
+
+        
+    
+    
+            marker_e772337417d6c2f8501ee817f7f3ea1b.bindTooltip(
+                `<div>
+                     LUZ RAQUEL CARREÑO GARCIA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e772337417d6c2f8501ee817f7f3ea1b.setIcon(icon_392edf70f734ded8c85eb87695d62302);
+            
+    
+            var marker_7f6314b6cc9cc1c18c4ad92f055a8622 = L.marker(
+                [-4.6589278, -80.2361837],
+                {
+  "alt": "CONSUELO MARIA JUAREZ CAMPOS",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_babb3c2fe3aea73a4d1bed4b3f6999aa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2d0ed1e232f43291ecfd62224cd7eb9e = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_0c121b22fe62d155516f600d955944d5 = $(`<div id="html_0c121b22fe62d155516f600d955944d5" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">CONSUELO MARIA JUAREZ CAMPOS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">CONSUELO MARIA JUAREZ CAMPOS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>LAS ORQUIDEAS 51 LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6589278,-80.2361837','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_2d0ed1e232f43291ecfd62224cd7eb9e.setContent(html_0c121b22fe62d155516f600d955944d5);
+            
+        
+
+        marker_7f6314b6cc9cc1c18c4ad92f055a8622.bindPopup(popup_2d0ed1e232f43291ecfd62224cd7eb9e)
+        ;
+
+        
+    
+    
+            marker_7f6314b6cc9cc1c18c4ad92f055a8622.bindTooltip(
+                `<div>
+                     CONSUELO MARIA JUAREZ CAMPOS — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7f6314b6cc9cc1c18c4ad92f055a8622.setIcon(icon_babb3c2fe3aea73a4d1bed4b3f6999aa);
+            
+    
+            var marker_2f0fdce4b35de7d11241f6f98d69a176 = L.marker(
+                [-4.6582398, -80.2377625],
+                {
+  "alt": "SANTOS AMADA GARCIA JIMENEZ",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_afd9917fb8e291a1d95efa163b9cc43d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_74571eb8ed82554bf7dd6763d104f452 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_938e1883e6e6220671bc0c46eea2dd0f = $(`<div id="html_938e1883e6e6220671bc0c46eea2dd0f" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SANTOS AMADA GARCIA JIMENEZ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SANTOS AMADA GARCIA JIMENEZ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CA TUPAC AMARU 092 - LAS LOMAS - Partidor     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6582398,-80.2377625','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_74571eb8ed82554bf7dd6763d104f452.setContent(html_938e1883e6e6220671bc0c46eea2dd0f);
+            
+        
+
+        marker_2f0fdce4b35de7d11241f6f98d69a176.bindPopup(popup_74571eb8ed82554bf7dd6763d104f452)
+        ;
+
+        
+    
+    
+            marker_2f0fdce4b35de7d11241f6f98d69a176.bindTooltip(
+                `<div>
+                     SANTOS AMADA GARCIA JIMENEZ — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2f0fdce4b35de7d11241f6f98d69a176.setIcon(icon_afd9917fb8e291a1d95efa163b9cc43d);
+            
+    
+            var marker_0e0f14c16a8c3d08b3139c7a1d78db10 = L.marker(
+                [-4.6592498, -80.2361348],
+                {
+  "alt": "MARIA ISABEL FLORES GARCIA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_da34fb08158eedbb427683cd6817f35e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_102a89b02b94c191457ab5b51dcb8689 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_da50ee855fc777ee9b7ac3d8e7e5bbce = $(`<div id="html_da50ee855fc777ee9b7ac3d8e7e5bbce" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA ISABEL FLORES GARCIA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA ISABEL FLORES GARCIA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE PUNO S/N     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6592498,-80.2361348','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_102a89b02b94c191457ab5b51dcb8689.setContent(html_da50ee855fc777ee9b7ac3d8e7e5bbce);
+            
+        
+
+        marker_0e0f14c16a8c3d08b3139c7a1d78db10.bindPopup(popup_102a89b02b94c191457ab5b51dcb8689)
+        ;
+
+        
+    
+    
+            marker_0e0f14c16a8c3d08b3139c7a1d78db10.bindTooltip(
+                `<div>
+                     MARIA ISABEL FLORES GARCIA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0e0f14c16a8c3d08b3139c7a1d78db10.setIcon(icon_da34fb08158eedbb427683cd6817f35e);
+            
+    
+            var marker_7f7c98ea64925e28b14cd183d266c728 = L.marker(
+                [-4.6600705, -80.2388748],
+                {
+  "alt": "RAFAELA RETETE REYES",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_e85974b7cf0b3b550bdeba52362c5948 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_615a46ac33e3524658d776f36f8d9aef = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_00aaafc11b1d205170ca579313bdffaa = $(`<div id="html_00aaafc11b1d205170ca579313bdffaa" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">RAFAELA RETETE REYES</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">RAFAELA RETETE REYES</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JR.TACNA NÂ°331 CP.MIRAFLORES - LAS - Partidor     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6600705,-80.2388748','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_615a46ac33e3524658d776f36f8d9aef.setContent(html_00aaafc11b1d205170ca579313bdffaa);
+            
+        
+
+        marker_7f7c98ea64925e28b14cd183d266c728.bindPopup(popup_615a46ac33e3524658d776f36f8d9aef)
+        ;
+
+        
+    
+    
+            marker_7f7c98ea64925e28b14cd183d266c728.bindTooltip(
+                `<div>
+                     RAFAELA RETETE REYES — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7f7c98ea64925e28b14cd183d266c728.setIcon(icon_e85974b7cf0b3b550bdeba52362c5948);
+            
+    
+            var marker_d959acf3c58377c44947eb8aa28dd8ab = L.marker(
+                [-4.65935, -80.239224],
+                {
+  "alt": "GHISELA EDITH TORRES RAMIREZ",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_cd83d1717324289488f91eafcdbf11c6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_dea58475abbf15508a3bdb515946eea1 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_a9e7bf8c04bc47a6dc46a1417395f4ca = $(`<div id="html_a9e7bf8c04bc47a6dc46a1417395f4ca" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">GHISELA EDITH TORRES RAMIREZ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">GHISELA EDITH TORRES RAMIREZ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>nan     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.65935,-80.239224','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_dea58475abbf15508a3bdb515946eea1.setContent(html_a9e7bf8c04bc47a6dc46a1417395f4ca);
+            
+        
+
+        marker_d959acf3c58377c44947eb8aa28dd8ab.bindPopup(popup_dea58475abbf15508a3bdb515946eea1)
+        ;
+
+        
+    
+    
+            marker_d959acf3c58377c44947eb8aa28dd8ab.bindTooltip(
+                `<div>
+                     GHISELA EDITH TORRES RAMIREZ — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d959acf3c58377c44947eb8aa28dd8ab.setIcon(icon_cd83d1717324289488f91eafcdbf11c6);
+            
+    
+            var marker_c6339b598be3119bcfcae417fc7532d6 = L.marker(
+                [-4.657573, -80.241238],
+                {
+  "alt": "MARIA LIDIA AGURTO GONZAGA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_1f9dbce0db97e7955dda83cb22cb38a2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_48909e53e46372193aa463f4412150bb = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_2861d9c439344cb9d5916ebf800405e2 = $(`<div id="html_2861d9c439344cb9d5916ebf800405e2" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA LIDIA AGURTO GONZAGA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA LIDIA AGURTO GONZAGA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JR CUZCO 578 - LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.657573,-80.241238','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_48909e53e46372193aa463f4412150bb.setContent(html_2861d9c439344cb9d5916ebf800405e2);
+            
+        
+
+        marker_c6339b598be3119bcfcae417fc7532d6.bindPopup(popup_48909e53e46372193aa463f4412150bb)
+        ;
+
+        
+    
+    
+            marker_c6339b598be3119bcfcae417fc7532d6.bindTooltip(
+                `<div>
+                     MARIA LIDIA AGURTO GONZAGA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c6339b598be3119bcfcae417fc7532d6.setIcon(icon_1f9dbce0db97e7955dda83cb22cb38a2);
+            
+    
+            var marker_eaaa33cbb07af239446893438a8d48a8 = L.marker(
+                [-4.6588669, -80.2428556],
+                {
+  "alt": "NELIDA CUEVA MORALES",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_a4db6bdfb631ba31df49f4df6a397061 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9228a069a10272e2f517407b87f70fd3 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_3bd471e2e5077119d5730695f91786f7 = $(`<div id="html_3bd471e2e5077119d5730695f91786f7" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">NELIDA CUEVA MORALES</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">NELIDA CUEVA MORALES</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CUZCO/ALFONSO UGARTE 196 LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6588669,-80.2428556','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_9228a069a10272e2f517407b87f70fd3.setContent(html_3bd471e2e5077119d5730695f91786f7);
+            
+        
+
+        marker_eaaa33cbb07af239446893438a8d48a8.bindPopup(popup_9228a069a10272e2f517407b87f70fd3)
+        ;
+
+        
+    
+    
+            marker_eaaa33cbb07af239446893438a8d48a8.bindTooltip(
+                `<div>
+                     NELIDA CUEVA MORALES — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_eaaa33cbb07af239446893438a8d48a8.setIcon(icon_a4db6bdfb631ba31df49f4df6a397061);
+            
+    
+            var marker_49ac5fab6d64ea126d9f68ddc75b51dc = L.marker(
+                [-4.6590538, -80.242143],
+                {
+  "alt": "MARICIELO LLOCLLA MARCHENA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_47ef9a70e61e87f1b677c429fa434460 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6a0e22d0ac14abcb868916f1283e6ca5 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_7a24f96c20d5937c468dd935f020bb18 = $(`<div id="html_7a24f96c20d5937c468dd935f020bb18" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARICIELO LLOCLLA MARCHENA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARICIELO LLOCLLA MARCHENA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MERCADO LA LOMAS PUESTO 74     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6590538,-80.242143','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_6a0e22d0ac14abcb868916f1283e6ca5.setContent(html_7a24f96c20d5937c468dd935f020bb18);
+            
+        
+
+        marker_49ac5fab6d64ea126d9f68ddc75b51dc.bindPopup(popup_6a0e22d0ac14abcb868916f1283e6ca5)
+        ;
+
+        
+    
+    
+            marker_49ac5fab6d64ea126d9f68ddc75b51dc.bindTooltip(
+                `<div>
+                     MARICIELO LLOCLLA MARCHENA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_49ac5fab6d64ea126d9f68ddc75b51dc.setIcon(icon_47ef9a70e61e87f1b677c429fa434460);
+            
+    
+            var marker_66ca52bc4480944abcbe17566aeb23fa = L.marker(
+                [-4.658949, -80.242448],
+                {
+  "alt": "PE\u00d1A NAIRA ARDELI",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_c73e0eab855d02997d5118d0e93c2219 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_53993fadcce845a866f447bcf503d252 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_6a1e4fa8a1e219977cb482ed2541cd26 = $(`<div id="html_6a1e4fa8a1e219977cb482ed2541cd26" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PEÑA NAIRA ARDELI</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PEÑA NAIRA ARDELI</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>nan     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.658949,-80.242448','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_53993fadcce845a866f447bcf503d252.setContent(html_6a1e4fa8a1e219977cb482ed2541cd26);
+            
+        
+
+        marker_66ca52bc4480944abcbe17566aeb23fa.bindPopup(popup_53993fadcce845a866f447bcf503d252)
+        ;
+
+        
+    
+    
+            marker_66ca52bc4480944abcbe17566aeb23fa.bindTooltip(
+                `<div>
+                     PEÑA NAIRA ARDELI — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_66ca52bc4480944abcbe17566aeb23fa.setIcon(icon_c73e0eab855d02997d5118d0e93c2219);
+            
+    
+            var marker_1c3219c99ef5ed036a5b30730f356c69 = L.marker(
+                [-4.6588908, -80.2420394],
+                {
+  "alt": "MAGNA VICENTE JIMENEZ",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_5402261430db5a0343bb868ab3d2643d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_831f7286553732be1f10eb226baf76d8 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_db939e7dbda297e835f13d1d25468bf1 = $(`<div id="html_db939e7dbda297e835f13d1d25468bf1" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MAGNA VICENTE JIMENEZ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MAGNA VICENTE JIMENEZ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PTO 80 MCDO LOMAS - Partidor     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.6588908,-80.2420394','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_831f7286553732be1f10eb226baf76d8.setContent(html_db939e7dbda297e835f13d1d25468bf1);
+            
+        
+
+        marker_1c3219c99ef5ed036a5b30730f356c69.bindPopup(popup_831f7286553732be1f10eb226baf76d8)
+        ;
+
+        
+    
+    
+            marker_1c3219c99ef5ed036a5b30730f356c69.bindTooltip(
+                `<div>
+                     MAGNA VICENTE JIMENEZ — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1c3219c99ef5ed036a5b30730f356c69.setIcon(icon_5402261430db5a0343bb868ab3d2643d);
+            
+    
+            var marker_13f7eb52073ca9a3f78ee4712a29d1aa = L.marker(
+                [-4.665045, -80.2442079],
+                {
+  "alt": "HUMBERTO BENJAMIN MANRIQUE VELA",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_458f9fab1e4144d4e9ea433e41085ec0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e15be3de406890b6ff7a63ad415cbc9d = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_d1d92f1edb49fd8a9067262c9d18dafd = $(`<div id="html_d1d92f1edb49fd8a9067262c9d18dafd" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">HUMBERTO BENJAMIN MANRIQUE VELA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">HUMBERTO BENJAMIN MANRIQUE VELA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>AV PRINCIPAL LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.665045,-80.2442079','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_e15be3de406890b6ff7a63ad415cbc9d.setContent(html_d1d92f1edb49fd8a9067262c9d18dafd);
+            
+        
+
+        marker_13f7eb52073ca9a3f78ee4712a29d1aa.bindPopup(popup_e15be3de406890b6ff7a63ad415cbc9d)
+        ;
+
+        
+    
+    
+            marker_13f7eb52073ca9a3f78ee4712a29d1aa.bindTooltip(
+                `<div>
+                     HUMBERTO BENJAMIN MANRIQUE VELA — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_13f7eb52073ca9a3f78ee4712a29d1aa.setIcon(icon_458f9fab1e4144d4e9ea433e41085ec0);
+            
+    
+            var marker_205efd8d083fe180c84d25104139e8e3 = L.marker(
+                [-4.659145, -80.2416719],
+                {
+  "alt": "EVELYN RUIZ VARGAS",
+}
+            ).addTo(marker_cluster_cf15e1668645f84588e81129c72856a8);
+        
+    
+            var icon_84e83b87110bf1a3f5760c5606a47bfc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_344caa8dbc14ff82ee7bbd5c8d5820a4 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_12f58f769562c06f24125fff94baf500 = $(`<div id="html_12f58f769562c06f24125fff94baf500" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">EVELYN RUIZ VARGAS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">EVELYN RUIZ VARGAS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: MANUEL ENRIQUE ZAPATA QUEVEDO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>AH BELLAVISTA CALLE IQUITOS S/N LAS LOMAS     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.659145,-80.2416719','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_344caa8dbc14ff82ee7bbd5c8d5820a4.setContent(html_12f58f769562c06f24125fff94baf500);
+            
+        
+
+        marker_205efd8d083fe180c84d25104139e8e3.bindPopup(popup_344caa8dbc14ff82ee7bbd5c8d5820a4)
+        ;
+
+        
+    
+    
+            marker_205efd8d083fe180c84d25104139e8e3.bindTooltip(
+                `<div>
+                     EVELYN RUIZ VARGAS — MANUEL ENRIQUE ZAPATA QUEVEDO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_205efd8d083fe180c84d25104139e8e3.setIcon(icon_84e83b87110bf1a3f5760c5606a47bfc);
+            
+    
+            marker_cluster_cf15e1668645f84588e81129c72856a8.addTo(feature_group_046171b92c5e614e5b9256a476b8cee0);
+        
+    
+            feature_group_046171b92c5e614e5b9256a476b8cee0.addTo(map_dac4df7876608d75fdb8fe87bcddd982);
+        
+    
+        function geo_json_229154d0f56b2f8aa2ae1e2994848b99_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_229154d0f56b2f8aa2ae1e2994848b99_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_229154d0f56b2f8aa2ae1e2994848b99 = L.geoJson(null, {
+                onEachFeature: geo_json_229154d0f56b2f8aa2ae1e2994848b99_onEachFeature,
+            
+                pointToLayer: geo_json_229154d0f56b2f8aa2ae1e2994848b99_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_229154d0f56b2f8aa2ae1e2994848b99_add (data) {
+            geo_json_229154d0f56b2f8aa2ae1e2994848b99
+                .addData(data);
+        }
+            geo_json_229154d0f56b2f8aa2ae1e2994848b99_add({"features": [{"geometry": {"coordinates": [-80.2407698, -4.6600271], "type": "Point"}, "properties": {"name": "PEKANSA E.I.R.L.", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2407698, -4.6600271], "type": "Point"}, "properties": {"name": "PEKANSA E.I.R.L.", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2440876, -4.653567], "type": "Point"}, "properties": {"name": "LUISA RODRIGUEZ DE PINTADO", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2448123, -4.65472], "type": "Point"}, "properties": {"name": "ATO PALACIOS LIZ EDITA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.242813, -4.6599076], "type": "Point"}, "properties": {"name": "YULY VALDEZ CASTILLO", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2398735, -4.6569102], "type": "Point"}, "properties": {"name": "AMALIA ALEJANDRINA REYES ESPINOZA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2406544, -4.6559513], "type": "Point"}, "properties": {"name": "ZAIDA RISSBELI AQUINO RODRIGUEZ", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2379362, -4.6536254], "type": "Point"}, "properties": {"name": "PAULA CORDOVA FLORES", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2399765, -4.6556685], "type": "Point"}, "properties": {"name": "Doria Carmen correa morocho", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2366643, -4.6562774], "type": "Point"}, "properties": {"name": "MARIA VICENTE REYES", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2323811, -4.653408], "type": "Point"}, "properties": {"name": "ROSA GRIMANEZA MARTINEZ ESPINOZA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2355949, -4.6563399], "type": "Point"}, "properties": {"name": "PATRICIA MARILIS TAMAYO CORREA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2348735, -4.658191], "type": "Point"}, "properties": {"name": "ROSA MARIEL MALDONADO ALTAMIRANO", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2345421, -4.6578308], "type": "Point"}, "properties": {"name": "LUZ RAQUEL CARRE\u00d1O GARCIA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2361837, -4.6589278], "type": "Point"}, "properties": {"name": "CONSUELO MARIA JUAREZ CAMPOS", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2377625, -4.6582398], "type": "Point"}, "properties": {"name": "SANTOS AMADA GARCIA JIMENEZ", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2361348, -4.6592498], "type": "Point"}, "properties": {"name": "MARIA ISABEL FLORES GARCIA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2388748, -4.6600705], "type": "Point"}, "properties": {"name": "RAFAELA RETETE REYES", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.239224, -4.65935], "type": "Point"}, "properties": {"name": "GHISELA EDITH TORRES RAMIREZ", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.241238, -4.657573], "type": "Point"}, "properties": {"name": "MARIA LIDIA AGURTO GONZAGA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2428556, -4.6588669], "type": "Point"}, "properties": {"name": "NELIDA CUEVA MORALES", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.242143, -4.6590538], "type": "Point"}, "properties": {"name": "MARICIELO LLOCLLA MARCHENA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.242448, -4.658949], "type": "Point"}, "properties": {"name": "PE\u00d1A NAIRA ARDELI", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2420394, -4.6588908], "type": "Point"}, "properties": {"name": "MAGNA VICENTE JIMENEZ", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2442079, -4.665045], "type": "Point"}, "properties": {"name": "HUMBERTO BENJAMIN MANRIQUE VELA", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.2416719, -4.659145], "type": "Point"}, "properties": {"name": "EVELYN RUIZ VARGAS", "vendedor": "MANUEL ENRIQUE ZAPATA QUEVEDO"}, "type": "Feature"}], "type": "FeatureCollection"});
+        geo_json_229154d0f56b2f8aa2ae1e2994848b99.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+    geo_json_229154d0f56b2f8aa2ae1e2994848b99.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create('div');
+    
+    let handleObject = feature => {
+        if (feature === null) {
+            return '';
+        } else if (typeof(feature)=='object') {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = ["name", "vendedor"];
+    let aliases = ["Cliente:", "Vendedor:"];
+    let table = '<table>' +
+        String(
+        fields.map(
+        (v,i)=>
+        `<tr>
+            <th>${aliases[i]}</th>
+            
+            <td>${handleObject(layer.feature.properties[v])}</td>
+        </tr>`).join(''))
+    +'</table>';
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  "sticky": true,
+  "className": "foliumtooltip",
+});
+                     
+    
+            geo_json_229154d0f56b2f8aa2ae1e2994848b99.addTo(map_dac4df7876608d75fdb8fe87bcddd982);
+        
+    
+            var geo_json_229154d0f56b2f8aa2ae1e2994848b99searchControl = new L.Control.Search({
+                layer: geo_json_229154d0f56b2f8aa2ae1e2994848b99,
+                
+                propertyName: 'name',
+                
+                collapsed: false,
+                textPlaceholder: '🔍 Buscar cliente o bodega...',
+                position:'topleft',
+            
+                initial: false,
+                
+                zoom: 18,
+                
+                hideMarkerOnCollapse: true
+            
+                });
+                geo_json_229154d0f56b2f8aa2ae1e2994848b99searchControl.on('search:locationfound', function(e) {
+                    geo_json_229154d0f56b2f8aa2ae1e2994848b99.setStyle(function(feature){
+                        return feature.properties.style
+                    })
+                    
+                    e.layer.setStyle({
+  "weight": 3,
+  "searchAtStart": false,
+  "minLength": 1,
+  "autoCollapse": false,
+  "autoType": true,
+});
+                    
+                    if(e.layer._popup)
+                        e.layer.openPopup();
+                })
+                geo_json_229154d0f56b2f8aa2ae1e2994848b99searchControl.on('search:collapsed', function(e) {
+                        geo_json_229154d0f56b2f8aa2ae1e2994848b99.setStyle(function(feature){
+                            return feature.properties.style
+                    });
+                });
+            map_dac4df7876608d75fdb8fe87bcddd982.addControl( geo_json_229154d0f56b2f8aa2ae1e2994848b99searchControl );
+
+        
+    
+            var layer_control_4b49e48634f1834da92b48adb7f17e63_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_8bae2bd8c6536a93f0330b58549806d2,
+                },
+                overlays :  {
+                    "MANUEL ENRIQUE ZAPATA QUEVEDO (26)" : feature_group_046171b92c5e614e5b9256a476b8cee0,
+                },
+            };
+            let layer_control_4b49e48634f1834da92b48adb7f17e63 = L.control.layers(
+                layer_control_4b49e48634f1834da92b48adb7f17e63_layers.base_layers,
+                layer_control_4b49e48634f1834da92b48adb7f17e63_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_dac4df7876608d75fdb8fe87bcddd982);
+
+        
+    
+            var locate_control_be6711672a469168ddc19c92aefa7261 = L.control.locate(
+                {"flyTo": true, "keepCurrentZoomLevel": true, "locateOptions": {"enableHighAccuracy": true, "maxZoom": 16}, "strings": {"popup": "Estas aqui!", "title": "Mi ubicacion"}}
+            ).addTo(map_dac4df7876608d75fdb8fe87bcddd982);
+            
+                locate_control_be6711672a469168ddc19c92aefa7261.start();
+            
+        
+</script>
+</html>
