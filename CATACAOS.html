@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+<style>
+    .folium-map {
+        width: 100% !important;
+        height: 100vh !important;
+        position: absolute !important;
+        top: 0; left: 0;
+        z-index: 1;
+    }
+    .leaflet-control-search {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+        border-radius: 25px !important;
+        overflow: hidden;
+    }
+    .leaflet-control-search .search-input {
+        padding: 8px 15px !important;
+        border-radius: 25px !important;
+        border: 1px solid #eee !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-control-search.search-exp .search-input { width: 250px !important; }
+    .leaflet-control-search .search-button {
+        background-color: #fff !important;
+        border-radius: 50% !important;
+        width: 34px !important; height: 34px !important;
+    }
+    .leaflet-control-layers {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        border-radius: 12px !important;
+        padding: 10px !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-bar {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }
+    .leaflet-bar a {
+        background-color: white !important;
+        color: #333 !important;
+        border: 1px solid #f0f0f0 !important;
+    }
+    .leaflet-bar a:first-child { border-radius: 8px 8px 0 0 !important; }
+    .leaflet-bar a:last-child  { border-radius: 0 0 8px 8px !important; }
+    .leaflet-tooltip {
+        background: rgba(255,255,255,0.95) !important;
+        border: none !important;
+        border-radius: 6px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
+    }
+    /* Mejoras al buscador para que parezca una lista */
+    .leaflet-control-search .search-tip {
+        padding: 12px !important;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px !important;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #333;
+        background: #fff;
+    }
+    .leaflet-control-search .search-tip:hover {
+        background: #3498db !important;
+        color: #fff !important;
+    }
+    .leaflet-control-search .search-tooltip {
+        max-height: 400px !important;
+        width: 100% !important;
+        min-width: 280px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+        border: none !important;
+        margin-top: 10px !important;
+    }
+    .leaflet-control-search .search-input {
+        height: 40px !important;
+        font-size: 16px !important;
+    }
+    /* Estilo para pines entregados */
+    .marker-delivered {
+        filter: grayscale(100%) brightness(70%) opacity(0.6) !important;
+        transition: all 0.3s ease;
+    }
+    .marker-delivered i {
+        color: #eee !important;
+    }
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_923bb90fc750abd4a8542ac06f71a4b7 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    
+                    <style>
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    </style>
+            
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.css"/>
+</head>
+<body>
+    
+    
+<div id="nav-panel" style="
+    display:none; position:fixed; bottom:20px; left:20px;
+    width:300px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">&#128640; Rutas de Navegacion</h3>
+        <button onclick="document.getElementById('nav-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">&#215;</button>
+    </div>
+    <div id="nav-links-container" style="max-height:400px;overflow-y:auto;"></div>
+</div>
+
+<button onclick="toggleNavPanel()" style="
+    position:fixed; bottom:20px; left:20px; z-index:9998;
+    background:#4285F4; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    &#128506; VER RUTAS GOOGLE MAPS
+</button>
+
+<script>
+    var infoRutas = {"EDDINSON CECILIO DIOSES SAAVEDRA": [{"nombre": "Tramo 1  (MANUEL SERGIO COBE\u00d1AS SILVA \u2192 MILTON MARTINEZ SERNAQUE)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.4009714,-80.7410202&waypoints=-5.2649081%2C-80.6779816%7C-5.2649081%2C-80.6779816%7C-5.2660952%2C-80.6777052%7C-5.2657236%2C-80.6776298%7C-5.2657055%2C-80.677321%7C-5.3966135%2C-80.7411092%7C-5.3966135%2C-80.7411092%7C-5.4005396%2C-80.7419755%7C-5.4005396%2C-80.7419755"}, {"nombre": "Tramo 2  (MILTON MARTINEZ SERNAQUE \u2192 SEGUNDO MATEO SANDOVAL LLAUCE)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.5544453,-80.8217595&waypoints=-5.4009714%2C-80.7410202%7C-5.400291%2C-80.7409806%7C-5.4009087%2C-80.7410332%7C-5.4009087%2C-80.7410332%7C-5.4009521%2C-80.7412303%7C-5.4006935%2C-80.7414412%7C-5.400522%2C-80.7419618%7C-5.4005313%2C-80.7419561%7C-5.4005313%2C-80.7419561"}, {"nombre": "Tramo 3  (SEGUNDO MATEO SANDOVAL LLAUCE \u2192 MILTON LIMA CASTILLO)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.5537944,-80.822345&waypoints=-5.5544453%2C-80.8217595%7C-5.554183%2C-80.8218255%7C-5.554183%2C-80.8218255%7C-5.5531937%2C-80.8222241%7C-5.5537737%2C-80.8222847%7C-5.5537566%2C-80.8217996%7C-5.5536787%2C-80.8217978%7C-5.5534272%2C-80.8218246%7C-5.5536946%2C-80.8223337"}, {"nombre": "Tramo 4  (MILTON LIMA CASTILLO \u2192 PEDRO MONTALVAN CORDOVA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.5537383,-80.8223733&waypoints=-5.5537944%2C-80.822345%7C-5.5537944%2C-80.822345%7C-5.553913%2C-80.8224837%7C-5.5537383%2C-80.8223733"}]};
+    var listaClientes = [{"nombre": "ANTONIA CLODOMIRA HERNANDEZ SILUPU", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4005313, "lng": -80.7419561}, {"nombre": "ANTONIA CLODOMIRA HERNANDEZ SILUPU", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4005313, "lng": -80.7419561}, {"nombre": "AURELIA CORDOVA CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.554183, "lng": -80.8218255}, {"nombre": "AURELIA CORDOVA CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.554183, "lng": -80.8218255}, {"nombre": "CARLOS ALBERTO MARTINEZ AMAYA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5534272, "lng": -80.8218246}, {"nombre": "CORINA FRANCISCA ZETA ANTON", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.400522, "lng": -80.7419618}, {"nombre": "COSTANCIA PURIZACA DE OLIVAREZ", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.553913, "lng": -80.8224837}, {"nombre": "EDGARD JOHAN SUCLUPE SIESQUEN", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5536946, "lng": -80.8223337}, {"nombre": "ELADIO BLAS SEMINARIO TRELLES", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.2657236, "lng": -80.6776298}, {"nombre": "ESTRELLA MARIALIZ QUEREVALU ECHE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5537566, "lng": -80.8217996}, {"nombre": "INO\u00d1AN TU\u00d1OQUE YULIANA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5531937, "lng": -80.8222241}, {"nombre": "JOSE JEANKERLY YARLEQUE ROSAS", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5536787, "lng": -80.8217978}, {"nombre": "JULIO CESAR COBE\u00d1AS YARLEQUE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.2657055, "lng": -80.677321}, {"nombre": "MANUEL SERGIO COBE\u00d1AS SILVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.2649081, "lng": -80.6779816}, {"nombre": "MANUEL SERGIO COBE\u00d1AS SILVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.2649081, "lng": -80.6779816}, {"nombre": "MANUELA MORALES CRUZ", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5537737, "lng": -80.8222847}, {"nombre": "MARCO ANTONIO MORANTE GALAN", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4009087, "lng": -80.7410332}, {"nombre": "MARCO ANTONIO MORANTE GALAN", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4009087, "lng": -80.7410332}, {"nombre": "MILAGROS DE JESUS LALUPU CHULLE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4005396, "lng": -80.7419755}, {"nombre": "MILAGROS DE JESUS LALUPU CHULLE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4005396, "lng": -80.7419755}, {"nombre": "MILTON LIMA CASTILLO", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5537944, "lng": -80.822345}, {"nombre": "MILTON LIMA CASTILLO", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5537944, "lng": -80.822345}, {"nombre": "MILTON MARTINEZ SERNAQUE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4009714, "lng": -80.7410202}, {"nombre": "PEDRO CESAR VITE ANCAJIMA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.400291, "lng": -80.7409806}, {"nombre": "PEDRO MONTALVAN CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5537383, "lng": -80.8223733}, {"nombre": "PEDRO MONTALVAN CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5537383, "lng": -80.8223733}, {"nombre": "RODAIL SAAVEDRA CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4006935, "lng": -80.7414412}, {"nombre": "SARITA SANTOS ROJAS", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.4009521, "lng": -80.7412303}, {"nombre": "SEGUNDO MATEO SANDOVAL LLAUCE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.5544453, "lng": -80.8217595}, {"nombre": "SUPER LUNA S.R.L.", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.3966135, "lng": -80.7411092}, {"nombre": "SUPER LUNA S.R.L.", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.3966135, "lng": -80.7411092}, {"nombre": "VICTOR ADAN CORDOVA LOPEZ", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA", "lat": -5.2660952, "lng": -80.6777052}];
+
+    function toggleNavPanel() {
+        var p = document.getElementById('nav-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+             renderRutas();
+             document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+
+    function toggleListPanel() {
+        var p = document.getElementById('list-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+            renderListaClientes();
+            document.getElementById('nav-panel').style.display = 'none';
+        }
+    }
+
+    function renderRutas() {
+        var c = document.getElementById('nav-links-container');
+        c.innerHTML = '';
+        for (var vend in infoRutas) {
+            var sec = document.createElement('div');
+            sec.style.marginBottom = '15px';
+            sec.innerHTML = '<strong style="color:#666;font-size:13px;display:block;margin-bottom:5px;">👤 ' + vend + '</strong>';
+            infoRutas[vend].forEach(function(link) {
+                var a = document.createElement('a');
+                a.href = link.url; a.target = '_blank';
+                a.textContent = link.nombre;
+                a.style.cssText = 'display:block;background:#f1f3f4;color:#1a73e8;' +
+                    'padding:8px 12px;border-radius:8px;margin-bottom:5px;' +
+                    'text-decoration:none;font-size:12px;font-weight:600;';
+                a.onmouseover = function() { this.style.background = '#e8f0fe'; };
+                a.onmouseout  = function() { this.style.background = '#f1f3f4'; };
+                sec.appendChild(a);
+            });
+            c.appendChild(sec);
+        }
+    }
+
+    function renderListaClientes(filtro = '') {
+        var c = document.getElementById('list-container');
+        c.innerHTML = '';
+        var filtrados = listaClientes.filter(cl => 
+            cl.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+            cl.vendedor.toLowerCase().includes(filtro.toLowerCase())
+        );
+
+        filtrados.forEach(function(cl) {
+            var d = document.createElement('div');
+            d.style.cssText = 'background:#fff; border:1px solid #eee; padding:10px; border-radius:8px; margin-bottom:8px; cursor:pointer; transition: 0.2s;';
+            d.innerHTML = '<div style="font-weight:bold; color:#333; font-size:13px;">' + cl.nombre + '</div>' +
+                          '<div style="font-size:11px; color:#777;">👤 ' + cl.vendedor + '</div>';
+            
+            d.onclick = function() {
+                irAlCliente(cl.lat, cl.lng, cl.nombre);
+            };
+            d.onmouseover = function() { this.style.background = '#f8f9fa'; this.style.borderColor = '#3498db'; };
+            d.onmouseout  = function() { this.style.background = '#fff'; this.style.borderColor = '#eee'; };
+            c.appendChild(d);
+        });
+    }
+
+    function irAlCliente(lat, lng, nombre) {
+        if (!window._mapaListo) return;
+        window._mapaListo.setView([lat, lng], 18);
+        
+        // Buscar el marcador y abrir popup
+        window._mapaListo.eachLayer(function(layer) {
+            if (layer instanceof L.Marker && layer.options && (layer.options.alt === nombre || (layer.options.tooltip && layer.options.tooltip.getContent().includes(nombre)))) {
+                layer.openPopup();
+            }
+        });
+
+        if (window.innerWidth < 768) {
+            document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+</script>
+
+<div id="list-panel" style="
+    display:none; position:fixed; bottom:80px; left:20px;
+    width:320px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">📋 Lista de Clientes</h3>
+        <button onclick="document.getElementById('list-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">×</button>
+    </div>
+    <input type="text" placeholder="Filtrar clientes..." onkeyup="renderListaClientes(this.value)" style="
+        width:100%; padding:8px 12px; border-radius:8px; border:1px solid #ddd; margin-bottom:10px; box-sizing: border-box;
+    ">
+    <div id="list-container" style="max-height:400px;overflow-y:auto; padding-right:5px;"></div>
+</div>
+
+<button onclick="toggleListPanel()" style="
+    position:fixed; bottom:20px; left:220px; z-index:9998;
+    background:#27ae60; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    📋 LISTADO
+</button>
+    
+            <div class="folium-map" id="map_923bb90fc750abd4a8542ac06f71a4b7" ></div>
+        
+
+<!-- Boton volver al menu principal -->
+<a href="index.html" style="
+    position:fixed; top:15px; left:50px; z-index:9998;
+    background:white; color:#333;
+    border:2px solid #ccc; border-radius:8px;
+    padding:8px 15px; font-weight:bold;
+    text-decoration:none; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8592; VOLVER AL MENU
+</a>
+
+<!-- Boton reset de entregas -->
+<button onclick="resetEntregas()" style="
+    position:fixed; top:15px; left:230px; z-index:9998;
+    background:#e74c3c; color:white;
+    border:none; border-radius:8px;
+    padding:10px 15px; font-weight:bold;
+    cursor:pointer; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8635; RESET ENTREGAS
+</button>
+
+<!-- Indicador de sincronizacion -->
+<div id="sync-indicator" style="
+    position:fixed; bottom:15px; right:15px; z-index:9999;
+    background:rgba(0,0,0,0.7); color:white;
+    padding:6px 12px; border-radius:20px;
+    font-size:11px; font-family:'Segoe UI',sans-serif;
+    display:none; transition:opacity 0.3s;">
+    &#9729; Sincronizando...
+</div>
+
+<script>
+    // --- CONFIGURACION NUBE ---
+    
+    const JSONBIN_BIN_ID = '6a10f920ee5a733b1204df1e';
+    const JSONBIN_API_KEY = '$2a$10$XbSEDYDqGr6WwHfnYP2gQu07YA10s.clBAD4NP8ZDflkUr0ihvtA2';
+    const NUBE_ACTIVA = true;
+    
+
+    window._mapaListo   = null;
+    window._markerActual = null;
+
+    window.resetEntregas = async function() {
+        if (!confirm("¿Estás seguro de que quieres reiniciar TODOS los estados de entrega de esta ruta?")) return;
+        
+        // 1. Limpiar localStorage
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('entregas_')) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+        
+        // 2. Limpiar nube
+        if (NUBE_ACTIVA) {
+            mostrarSync('&#9729; Reiniciando en nube...', 'rgba(0,100,200,0.8)');
+            _estadoNube = {};
+            const payload = { entregas: {}, ultima_sync: new Date().toISOString() };
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+                mostrarSync('&#10003; Entregas reiniciadas en nube', 'rgba(0,150,50,0.8)');
+            } catch(e) {}
+        }
+        
+        // 3. Re-aplicar visualmente (todos a false)
+        if (window._mapaListo) {
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    window.marcarVisual(layer, false);
+                }
+            });
+        }
+        
+        // 4. Si el popup de un marcador está abierto, actualizar su checkbox
+        if (window._markerActual && window._markerActual.isPopupOpen()) {
+             const popup = window._markerActual.getPopup();
+             const wrapper = popup ? popup._wrapper : null;
+             const chk = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+             if (chk) chk.checked = false;
+        }
+    };
+
+    function mostrarSync(texto, color) {
+        const el = document.getElementById('sync-indicator');
+        if (!el) return;
+        el.textContent = texto;
+        el.style.background = color || 'rgba(0,0,0,0.7)';
+        el.style.display = 'block';
+        el.style.opacity = '1';
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }, 2000);
+    }
+
+    // --- VISUAL ---
+    window.marcarVisual = function(marker, entregado) {
+        if (!marker) return;
+        
+        // Guardar el estado en las opciones del marker para persistencia
+        if (!marker.options) marker.options = {};
+        marker.options.isDelivered = entregado;
+
+        if (marker._icon) {
+            if (entregado) {
+                marker._icon.classList.add('marker-delivered');
+            } else {
+                marker._icon.classList.remove('marker-delivered');
+            }
+        }
+    };
+
+    // --- JSONBIN CLOUD API ---
+    async function leerNube() {
+        if (!NUBE_ACTIVA) return null;
+        try {
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            return data.record || data;
+        } catch(e) { return null; }
+    }
+
+    async function escribirNube(estadoCompleto) {
+        if (!NUBE_ACTIVA) return false;
+        mostrarSync('&#9729; Sincronizando...', 'rgba(0,100,200,0.8)');
+        try {
+            // Leer estado actual para hacer MERGE (evitar sobrescribir cambios de otros)
+            const actual = await leerNube();
+            const entregasActuales = (actual && actual.entregas) ? actual.entregas : {};
+
+            // Merge: combinar estado actual en nube + nuevos cambios
+            const merged = { ...entregasActuales, ...estadoCompleto.entregas };
+            const payload = {
+                entregas: merged,
+                ultima_sync: new Date().toISOString()
+            };
+
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY
+                },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                mostrarSync('&#10003; Guardado en nube', 'rgba(0,150,50,0.8)');
+                return true;
+            }
+        } catch(e) { console.warn('Error escribiendo en nube:', e); }
+        mostrarSync('&#9888; Solo guardado local', 'rgba(200,100,0,0.8)');
+        return false;
+    }
+
+    // --- LOCAL STORAGE FALLBACK ---
+    function guardarLocal(id, delivered) {
+        try { localStorage.setItem('entregas_' + id, delivered); } catch(e){}
+    }
+    function leerLocal(id) {
+        const v = localStorage.getItem('entregas_' + id);
+        return v === 'true' || v === true;
+    }
+    function leerTodosLocal() {
+        const res = {};
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('entregas_')) {
+                    res[key.replace('entregas_', '')] = localStorage.getItem(key) === 'true';
+                }
+            }
+        } catch(e){}
+        return res;
+    }
+
+    // --- ESTADO UNIFICADO ---
+    let _estadoNube = null;
+
+    async function cargarEstados() {
+        // Prioridad: Nube > Local
+        const nube = await leerNube();
+        if (nube && nube.entregas) {
+            _estadoNube = nube.entregas;
+            // Sincronizar nube -> local
+            Object.entries(_estadoNube).forEach(([id, data]) => {
+                const val = (typeof data === 'object') ? data.entregado : data;
+                guardarLocal(id, val);
+            });
+            return _estadoNube;
+        }
+        // Fallback local
+        return leerTodosLocal();
+    }
+
+    async function getStatus(id) {
+        if (_estadoNube && id in _estadoNube) {
+            const val = _estadoNube[id];
+            return (typeof val === 'object') ? !!val.entregado : !!val;
+        }
+        return leerLocal(id);
+    }
+
+    // --- GUARDAR ENTREGA ---
+    window.guardarEstadoEntrega = async function(btn) {
+        try {
+            const popup = btn.closest('.leaflet-popup-content') || btn.closest('.leaflet-popup-content-wrapper');
+            const span = popup ? popup.querySelector('.bodega-nombre') : null;
+            const chk  = popup ? popup.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+
+            const nombre      = span.textContent.trim();
+            const nuevoEstado = chk.checked;
+
+            // 1. Guardar local de inmediato (UX sin espera)
+            guardarLocal(nombre, nuevoEstado);
+
+            // 2. Actualizar visual
+            if (window._markerActual) window.marcarVisual(window._markerActual, nuevoEstado);
+            else reAplicarEstados();
+
+            // 3. Feedback inmediato en boton
+            const orig = btn.innerHTML;
+            btn.innerHTML = 'GUARDANDO...';
+            btn.style.background = '#0d6efd';
+
+            // 4. Subir a la nube con merge
+            const entregaData = {
+                entregado: nuevoEstado,
+                fecha: new Date().toISOString()
+            };
+            if (_estadoNube) _estadoNube[nombre] = entregaData;
+            else _estadoNube = { [nombre]: entregaData };
+
+            const nubeOk = await escribirNube({ entregas: { [nombre]: entregaData } });
+
+            // Si fallo la nube, guardar en cola de reintentos
+            if (!nubeOk && NUBE_ACTIVA) {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    cola.push({ [nombre]: entregaData });
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(cola));
+                    console.log('[Vamys] Guardado en cola de reintentos');
+                } catch(qe) {}
+            }
+
+            btn.innerHTML = nubeOk ? '✓ GUARDADO EN NUBE' : '✓ GUARDADO LOCAL';
+            btn.style.background = nubeOk ? '#155724' : '#856404';
+            setTimeout(() => { btn.innerHTML = orig; btn.style.background = '#28a745'; }, 1500);
+
+        } catch (err) {
+            console.error("Error al guardar:", err);
+        }
+    };
+
+    async function reAplicarEstados() {
+        if (!window._mapaListo) return;
+        try {
+            const estados = await cargarEstados();
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    const val = estados[layer.options.alt];
+                    const entregado = (typeof val === 'object') ? !!val?.entregado : !!val;
+                    window.marcarVisual(layer, entregado);
+                }
+            });
+        } catch(e) { console.error("Error re-aplicando estados:", e); }
+    }
+
+    function inicializarVamys() {
+        const mapEl = document.querySelector('.folium-map');
+        if (!mapEl) { setTimeout(inicializarVamys, 500); return; }
+        if (mapEl.offsetHeight === 0) { mapEl.style.height = '100vh'; mapEl.style.width = '100vw'; }
+
+        let mapObj = null;
+        try {
+            if (mapEl.id && window[mapEl.id] && typeof window[mapEl.id].on === 'function') {
+                mapObj = window[mapEl.id];
+            } else {
+                for (let key in window) {
+                    if (key.startsWith('map_') && window[key] && typeof window[key].on === 'function') {
+                        if (window[key].eachLayer) { mapObj = window[key]; break; }
+                    }
+                }
+            }
+        } catch(e){}
+
+        if (!mapObj) { setTimeout(inicializarVamys, 500); return; }
+
+        window._mapaListo  = mapObj;
+        mapEl._leaflet_map = mapObj;
+
+        // Escuchar cuando se agrega cualquier capa (muy útil para clusters)
+        mapObj.on('layeradd', async (e) => {
+            if (e.layer instanceof L.Marker && e.layer.options && e.layer.options.alt) {
+                const entregado = await getStatus(e.layer.options.alt);
+                window.marcarVisual(e.layer, entregado);
+            }
+        });
+
+        // Mantener moveend/zoomend solo como backup ocasional
+        mapObj.on('zoomend moveend spiderfied', () => setTimeout(reAplicarEstados, 500));
+
+        mapObj.on('popupopen', async (e) => {
+            const marker  = e.popup._source;
+            if (!marker) return;
+            const wrapper = e.popup._wrapper;
+            const span    = wrapper ? wrapper.querySelector('.bodega-nombre') : null;
+            const chk     = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+            const nombre = span.textContent.trim();
+            window._markerActual = marker;
+            if (marker.options) marker.options.alt = nombre;
+            chk.checked = await getStatus(nombre);
+        });
+
+        reAplicarEstados();
+
+        // ── POLLING: actualizar desde la nube cada 15 segundos ──
+        if (NUBE_ACTIVA) {
+            console.log('[Vamys] Polling activo: sincronizando cada 15s desde JSONBin');
+            setInterval(async () => {
+                try {
+                    _estadoNube = null; // forzar re-lectura
+                    await reAplicarEstados();
+                } catch(e) { console.warn('[Vamys] Error en polling:', e); }
+            }, 15000);
+        }
+
+        // ── REINTENTAR escrituras fallidas guardadas en cola ──
+        if (NUBE_ACTIVA) {
+            setInterval(async () => {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    if (cola.length === 0) return;
+                    console.log(`[Vamys] Reintentando ${cola.length} escrituras pendientes...`);
+                    const exitosas = [];
+                    for (const item of cola) {
+                        const ok = await escribirNube({ entregas: item });
+                        if (ok) exitosas.push(item);
+                    }
+                    // Quitar las exitosas de la cola
+                    const restantes = cola.filter(c => !exitosas.includes(c));
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(restantes));
+                    if (exitosas.length > 0) {
+                        mostrarSync(`✓ ${exitosas.length} pendientes sincronizados`, 'rgba(0,150,50,0.8)');
+                    }
+                } catch(e) { console.warn('[Vamys] Error reintentando cola:', e); }
+            }, 30000);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", inicializarVamys);
+    } else {
+        inicializarVamys();
+    }
+</script>
+</body>
+<script>
+    
+    
+            var map_923bb90fc750abd4a8542ac06f71a4b7 = L.map(
+                "map_923bb90fc750abd4a8542ac06f71a4b7",
+                {
+                    center: [-5.446289715625, -80.76678114375],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_1388ecee952caa56866ffe222c62c477 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1388ecee952caa56866ffe222c62c477.addTo(map_923bb90fc750abd4a8542ac06f71a4b7);
+        
+    
+            var feature_group_8f83da34192d369ecfc4c3ef4d422bfc = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_d8f838ddfdb2d4f17074214fef7407e1 = L.markerClusterGroup(
+                {
+  "spiderfyOnMaxZoom": true,
+  "disableClusteringAtZoom": 17,
+  "maxClusterRadius": 60,
+}
+            );
+        
+    
+            var marker_b7229344c7ca0ec48921eca3077a4e43 = L.marker(
+                [-5.2649081, -80.6779816],
+                {
+  "alt": "MANUEL SERGIO COBE\u00d1AS SILVA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_d7fe884c5822d11f9295218e8f2a763e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9c42f974df50f560e77b3ddb5530a62c = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_c20c5c1a7ca5f3bc725d2f7cc979a819 = $(`<div id="html_c20c5c1a7ca5f3bc725d2f7cc979a819" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MANUEL SERGIO COBEÑAS SILVA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MANUEL SERGIO COBEÑAS SILVA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2649081,-80.6779816','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_9c42f974df50f560e77b3ddb5530a62c.setContent(html_c20c5c1a7ca5f3bc725d2f7cc979a819);
+            
+        
+
+        marker_b7229344c7ca0ec48921eca3077a4e43.bindPopup(popup_9c42f974df50f560e77b3ddb5530a62c)
+        ;
+
+        
+    
+    
+            marker_b7229344c7ca0ec48921eca3077a4e43.bindTooltip(
+                `<div>
+                     MANUEL SERGIO COBEÑAS SILVA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b7229344c7ca0ec48921eca3077a4e43.setIcon(icon_d7fe884c5822d11f9295218e8f2a763e);
+            
+    
+            var marker_e2b5d6759fe1b4075e3dc5c3b583b162 = L.marker(
+                [-5.2649081, -80.6779816],
+                {
+  "alt": "MANUEL SERGIO COBE\u00d1AS SILVA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_36bd33f9839cb4e0cee7a79fd4639dda = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1cf7813831722f307e4873dccf19c330 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_a410b28a1dc7c18286c0184db38703fc = $(`<div id="html_a410b28a1dc7c18286c0184db38703fc" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MANUEL SERGIO COBEÑAS SILVA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MANUEL SERGIO COBEÑAS SILVA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2649081,-80.6779816','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_1cf7813831722f307e4873dccf19c330.setContent(html_a410b28a1dc7c18286c0184db38703fc);
+            
+        
+
+        marker_e2b5d6759fe1b4075e3dc5c3b583b162.bindPopup(popup_1cf7813831722f307e4873dccf19c330)
+        ;
+
+        
+    
+    
+            marker_e2b5d6759fe1b4075e3dc5c3b583b162.bindTooltip(
+                `<div>
+                     MANUEL SERGIO COBEÑAS SILVA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e2b5d6759fe1b4075e3dc5c3b583b162.setIcon(icon_36bd33f9839cb4e0cee7a79fd4639dda);
+            
+    
+            var marker_bd79a11ff8f8df0df72e777a97e274a4 = L.marker(
+                [-5.2660952, -80.6777052],
+                {
+  "alt": "VICTOR ADAN CORDOVA LOPEZ",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_a8435a51e63b2f0a18eeb1d6492e8b4a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_56d430476e99df048b1c80500f23f3ee = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_44f3d42e708247c891c7caa2747d1db3 = $(`<div id="html_44f3d42e708247c891c7caa2747d1db3" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">VICTOR ADAN CORDOVA LOPEZ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">VICTOR ADAN CORDOVA LOPEZ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2660952,-80.6777052','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_56d430476e99df048b1c80500f23f3ee.setContent(html_44f3d42e708247c891c7caa2747d1db3);
+            
+        
+
+        marker_bd79a11ff8f8df0df72e777a97e274a4.bindPopup(popup_56d430476e99df048b1c80500f23f3ee)
+        ;
+
+        
+    
+    
+            marker_bd79a11ff8f8df0df72e777a97e274a4.bindTooltip(
+                `<div>
+                     VICTOR ADAN CORDOVA LOPEZ — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bd79a11ff8f8df0df72e777a97e274a4.setIcon(icon_a8435a51e63b2f0a18eeb1d6492e8b4a);
+            
+    
+            var marker_ec5d6d42f3a32b8bee9487dff0dbe1bc = L.marker(
+                [-5.2657236, -80.6776298],
+                {
+  "alt": "ELADIO BLAS SEMINARIO TRELLES",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_782de68ffbb8bc28d652940e5cb4d0cf = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_753293b09e4250f472ef4ca6ff46709b = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_c8ea9927f99ecbb2780452833a9e6d3c = $(`<div id="html_c8ea9927f99ecbb2780452833a9e6d3c" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ELADIO BLAS SEMINARIO TRELLES</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ELADIO BLAS SEMINARIO TRELLES</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>No especificada     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2657236,-80.6776298','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_753293b09e4250f472ef4ca6ff46709b.setContent(html_c8ea9927f99ecbb2780452833a9e6d3c);
+            
+        
+
+        marker_ec5d6d42f3a32b8bee9487dff0dbe1bc.bindPopup(popup_753293b09e4250f472ef4ca6ff46709b)
+        ;
+
+        
+    
+    
+            marker_ec5d6d42f3a32b8bee9487dff0dbe1bc.bindTooltip(
+                `<div>
+                     ELADIO BLAS SEMINARIO TRELLES — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ec5d6d42f3a32b8bee9487dff0dbe1bc.setIcon(icon_782de68ffbb8bc28d652940e5cb4d0cf);
+            
+    
+            var marker_42dbbbac5e386aaaf6192483cb68bf55 = L.marker(
+                [-5.2657055, -80.677321],
+                {
+  "alt": "JULIO CESAR COBE\u00d1AS YARLEQUE",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_b6aa8bb65b5791fa555627f78848d09a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_dd64894440625f87685e66bcba961304 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_efc6e1728bd3a5dc53fe78e10a1f6da2 = $(`<div id="html_efc6e1728bd3a5dc53fe78e10a1f6da2" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JULIO CESAR COBEÑAS YARLEQUE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JULIO CESAR COBEÑAS YARLEQUE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2657055,-80.677321','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_dd64894440625f87685e66bcba961304.setContent(html_efc6e1728bd3a5dc53fe78e10a1f6da2);
+            
+        
+
+        marker_42dbbbac5e386aaaf6192483cb68bf55.bindPopup(popup_dd64894440625f87685e66bcba961304)
+        ;
+
+        
+    
+    
+            marker_42dbbbac5e386aaaf6192483cb68bf55.bindTooltip(
+                `<div>
+                     JULIO CESAR COBEÑAS YARLEQUE — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_42dbbbac5e386aaaf6192483cb68bf55.setIcon(icon_b6aa8bb65b5791fa555627f78848d09a);
+            
+    
+            var marker_99d827163423488ebbd5e3f4d5ede129 = L.marker(
+                [-5.3966135, -80.7411092],
+                {
+  "alt": "SUPER LUNA S.R.L.",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_91414c70410a7c0311e6d129dd8cc4e4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_46e56b6fcad6339ab8430cbc380ca114 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_0156c938d6fb20edea75b6cbf181bdac = $(`<div id="html_0156c938d6fb20edea75b6cbf181bdac" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SUPER LUNA S.R.L.</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SUPER LUNA S.R.L.</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CAL.JUAN VELASCO ALVARADO NRO. 225 LA UNION-PIURA     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.3966135,-80.7411092','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_46e56b6fcad6339ab8430cbc380ca114.setContent(html_0156c938d6fb20edea75b6cbf181bdac);
+            
+        
+
+        marker_99d827163423488ebbd5e3f4d5ede129.bindPopup(popup_46e56b6fcad6339ab8430cbc380ca114)
+        ;
+
+        
+    
+    
+            marker_99d827163423488ebbd5e3f4d5ede129.bindTooltip(
+                `<div>
+                     SUPER LUNA S.R.L. — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_99d827163423488ebbd5e3f4d5ede129.setIcon(icon_91414c70410a7c0311e6d129dd8cc4e4);
+            
+    
+            var marker_901798c30400bd62f4b22b7a61075931 = L.marker(
+                [-5.3966135, -80.7411092],
+                {
+  "alt": "SUPER LUNA S.R.L.",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_0e10b5461039df3ac478dc744e9ee2ab = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ff0649fcae927e3da76d5145351fac8d = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_7149ee25f449d955e7f5bdf148a96a3d = $(`<div id="html_7149ee25f449d955e7f5bdf148a96a3d" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SUPER LUNA S.R.L.</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SUPER LUNA S.R.L.</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CAL.JUAN VELASCO ALVARADO NRO. 225 LA UNION-PIURA     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.3966135,-80.7411092','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_ff0649fcae927e3da76d5145351fac8d.setContent(html_7149ee25f449d955e7f5bdf148a96a3d);
+            
+        
+
+        marker_901798c30400bd62f4b22b7a61075931.bindPopup(popup_ff0649fcae927e3da76d5145351fac8d)
+        ;
+
+        
+    
+    
+            marker_901798c30400bd62f4b22b7a61075931.bindTooltip(
+                `<div>
+                     SUPER LUNA S.R.L. — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_901798c30400bd62f4b22b7a61075931.setIcon(icon_0e10b5461039df3ac478dc744e9ee2ab);
+            
+    
+            var marker_de54865c3b8334545114752c5de42a75 = L.marker(
+                [-5.4005396, -80.7419755],
+                {
+  "alt": "MILAGROS DE JESUS LALUPU CHULLE",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_d9c4afde25516bf5fb96ac44133c053e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_801193eaeda2a7aad2377570863f67ea = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_b3e088dc7d57b162cdcb912673c12236 = $(`<div id="html_b3e088dc7d57b162cdcb912673c12236" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MILAGROS DE JESUS LALUPU CHULLE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MILAGROS DE JESUS LALUPU CHULLE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PASAJE 21 DE JULIO PUESTO 29 MERCADO LA UNION     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4005396,-80.7419755','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_801193eaeda2a7aad2377570863f67ea.setContent(html_b3e088dc7d57b162cdcb912673c12236);
+            
+        
+
+        marker_de54865c3b8334545114752c5de42a75.bindPopup(popup_801193eaeda2a7aad2377570863f67ea)
+        ;
+
+        
+    
+    
+            marker_de54865c3b8334545114752c5de42a75.bindTooltip(
+                `<div>
+                     MILAGROS DE JESUS LALUPU CHULLE — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_de54865c3b8334545114752c5de42a75.setIcon(icon_d9c4afde25516bf5fb96ac44133c053e);
+            
+    
+            var marker_ee8ac3c8f6060366599c84b76791ccd5 = L.marker(
+                [-5.4005396, -80.7419755],
+                {
+  "alt": "MILAGROS DE JESUS LALUPU CHULLE",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_90d1556d2f183d4a2f46ae4ba6ed727a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2db40273fd849dd48f518bbf870a3c48 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_d456824006f8cf488f9a9442ebb8d67c = $(`<div id="html_d456824006f8cf488f9a9442ebb8d67c" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MILAGROS DE JESUS LALUPU CHULLE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MILAGROS DE JESUS LALUPU CHULLE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PASAJE 21 DE JULIO PUESTO 29 MERCADO LA UNION     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4005396,-80.7419755','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_2db40273fd849dd48f518bbf870a3c48.setContent(html_d456824006f8cf488f9a9442ebb8d67c);
+            
+        
+
+        marker_ee8ac3c8f6060366599c84b76791ccd5.bindPopup(popup_2db40273fd849dd48f518bbf870a3c48)
+        ;
+
+        
+    
+    
+            marker_ee8ac3c8f6060366599c84b76791ccd5.bindTooltip(
+                `<div>
+                     MILAGROS DE JESUS LALUPU CHULLE — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ee8ac3c8f6060366599c84b76791ccd5.setIcon(icon_90d1556d2f183d4a2f46ae4ba6ed727a);
+            
+    
+            var marker_dea06ed5915a07427c5aa17fc515d818 = L.marker(
+                [-5.4009714, -80.7410202],
+                {
+  "alt": "MILTON MARTINEZ SERNAQUE",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_caf07aae9ea64f30f1aedbfcca6c06fa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0d17fee7a64dcaa76a8c8191f6ad8c31 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_e73bb2fd9d4547245b979c0de1b08e71 = $(`<div id="html_e73bb2fd9d4547245b979c0de1b08e71" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MILTON MARTINEZ SERNAQUE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MILTON MARTINEZ SERNAQUE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PSTO.S/N MERCADILLO SAN JOSE LA UNI     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4009714,-80.7410202','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_0d17fee7a64dcaa76a8c8191f6ad8c31.setContent(html_e73bb2fd9d4547245b979c0de1b08e71);
+            
+        
+
+        marker_dea06ed5915a07427c5aa17fc515d818.bindPopup(popup_0d17fee7a64dcaa76a8c8191f6ad8c31)
+        ;
+
+        
+    
+    
+            marker_dea06ed5915a07427c5aa17fc515d818.bindTooltip(
+                `<div>
+                     MILTON MARTINEZ SERNAQUE — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dea06ed5915a07427c5aa17fc515d818.setIcon(icon_caf07aae9ea64f30f1aedbfcca6c06fa);
+            
+    
+            var marker_c3e1a9554b9a14bc8f03e09d1ae3a3b3 = L.marker(
+                [-5.400291, -80.7409806],
+                {
+  "alt": "PEDRO CESAR VITE ANCAJIMA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_89d384c917359c30c6d5c413a77adbb3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c152e8585ba247e474edce4650d26e22 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_d96e472aa9e85add20643939e5c8f689 = $(`<div id="html_d96e472aa9e85add20643939e5c8f689" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PEDRO CESAR VITE ANCAJIMA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PEDRO CESAR VITE ANCAJIMA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.400291,-80.7409806','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_c152e8585ba247e474edce4650d26e22.setContent(html_d96e472aa9e85add20643939e5c8f689);
+            
+        
+
+        marker_c3e1a9554b9a14bc8f03e09d1ae3a3b3.bindPopup(popup_c152e8585ba247e474edce4650d26e22)
+        ;
+
+        
+    
+    
+            marker_c3e1a9554b9a14bc8f03e09d1ae3a3b3.bindTooltip(
+                `<div>
+                     PEDRO CESAR VITE ANCAJIMA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c3e1a9554b9a14bc8f03e09d1ae3a3b3.setIcon(icon_89d384c917359c30c6d5c413a77adbb3);
+            
+    
+            var marker_eb06b614375e274605675e80447c0f31 = L.marker(
+                [-5.4009087, -80.7410332],
+                {
+  "alt": "MARCO ANTONIO MORANTE GALAN",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_afbed4af8865f474e9000f26cbfc559d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_32bcc3930280947d1c18a1a8d3c84a83 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_556ca656ad1e75e683df1438dbc97061 = $(`<div id="html_556ca656ad1e75e683df1438dbc97061" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARCO ANTONIO MORANTE GALAN</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARCO ANTONIO MORANTE GALAN</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>No especificada     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4009087,-80.7410332','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_32bcc3930280947d1c18a1a8d3c84a83.setContent(html_556ca656ad1e75e683df1438dbc97061);
+            
+        
+
+        marker_eb06b614375e274605675e80447c0f31.bindPopup(popup_32bcc3930280947d1c18a1a8d3c84a83)
+        ;
+
+        
+    
+    
+            marker_eb06b614375e274605675e80447c0f31.bindTooltip(
+                `<div>
+                     MARCO ANTONIO MORANTE GALAN — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_eb06b614375e274605675e80447c0f31.setIcon(icon_afbed4af8865f474e9000f26cbfc559d);
+            
+    
+            var marker_55b9f5cfe285d983d167908c9aef3da2 = L.marker(
+                [-5.4009087, -80.7410332],
+                {
+  "alt": "MARCO ANTONIO MORANTE GALAN",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_e64d7c8ba97a677347c4d340188f8059 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_23989381f60edabcb0930a8f2d6fb1bb = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_25a35a6fa54f9fc1de9127817f72c7f4 = $(`<div id="html_25a35a6fa54f9fc1de9127817f72c7f4" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARCO ANTONIO MORANTE GALAN</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARCO ANTONIO MORANTE GALAN</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>No especificada     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4009087,-80.7410332','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_23989381f60edabcb0930a8f2d6fb1bb.setContent(html_25a35a6fa54f9fc1de9127817f72c7f4);
+            
+        
+
+        marker_55b9f5cfe285d983d167908c9aef3da2.bindPopup(popup_23989381f60edabcb0930a8f2d6fb1bb)
+        ;
+
+        
+    
+    
+            marker_55b9f5cfe285d983d167908c9aef3da2.bindTooltip(
+                `<div>
+                     MARCO ANTONIO MORANTE GALAN — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_55b9f5cfe285d983d167908c9aef3da2.setIcon(icon_e64d7c8ba97a677347c4d340188f8059);
+            
+    
+            var marker_7c5046628a5d7c1a909907e0628b404f = L.marker(
+                [-5.4009521, -80.7412303],
+                {
+  "alt": "SARITA SANTOS ROJAS",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_7b940612e0e5c4244910c8138ee3e8e8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ffa6128adacdffedfd373e7ba37fd8f6 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_4530c03a228b71d61da93bc29f246b2d = $(`<div id="html_4530c03a228b71d61da93bc29f246b2d" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SARITA SANTOS ROJAS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SARITA SANTOS ROJAS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MCDO SAN JOSE - PSTO 47 - LA UNION     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4009521,-80.7412303','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_ffa6128adacdffedfd373e7ba37fd8f6.setContent(html_4530c03a228b71d61da93bc29f246b2d);
+            
+        
+
+        marker_7c5046628a5d7c1a909907e0628b404f.bindPopup(popup_ffa6128adacdffedfd373e7ba37fd8f6)
+        ;
+
+        
+    
+    
+            marker_7c5046628a5d7c1a909907e0628b404f.bindTooltip(
+                `<div>
+                     SARITA SANTOS ROJAS — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7c5046628a5d7c1a909907e0628b404f.setIcon(icon_7b940612e0e5c4244910c8138ee3e8e8);
+            
+    
+            var marker_d921a91b2ca0ff71027a39a544f9aa81 = L.marker(
+                [-5.4006935, -80.7414412],
+                {
+  "alt": "RODAIL SAAVEDRA CORDOVA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_94ae6d940094922fafc12a831b6cb2c8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6a38c1894a385b4b411ac8a2cc883361 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_88f46431488c865e0c3c17607a034676 = $(`<div id="html_88f46431488c865e0c3c17607a034676" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">RODAIL SAAVEDRA CORDOVA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">RODAIL SAAVEDRA CORDOVA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PUESTO 78 MERCADO LA UNION-PIURA     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4006935,-80.7414412','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_6a38c1894a385b4b411ac8a2cc883361.setContent(html_88f46431488c865e0c3c17607a034676);
+            
+        
+
+        marker_d921a91b2ca0ff71027a39a544f9aa81.bindPopup(popup_6a38c1894a385b4b411ac8a2cc883361)
+        ;
+
+        
+    
+    
+            marker_d921a91b2ca0ff71027a39a544f9aa81.bindTooltip(
+                `<div>
+                     RODAIL SAAVEDRA CORDOVA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d921a91b2ca0ff71027a39a544f9aa81.setIcon(icon_94ae6d940094922fafc12a831b6cb2c8);
+            
+    
+            var marker_5051639c1081b66c670167b8e87944b1 = L.marker(
+                [-5.400522, -80.7419618],
+                {
+  "alt": "CORINA FRANCISCA ZETA ANTON",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_9565da378e3455d6b6ed26b688df335e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4deda4b2f6fe3bc8aa4aa1e8a7f8f61a = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_417744ac660b65ca5ee48086ee381835 = $(`<div id="html_417744ac660b65ca5ee48086ee381835" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">CORINA FRANCISCA ZETA ANTON</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">CORINA FRANCISCA ZETA ANTON</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.400522,-80.7419618','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_4deda4b2f6fe3bc8aa4aa1e8a7f8f61a.setContent(html_417744ac660b65ca5ee48086ee381835);
+            
+        
+
+        marker_5051639c1081b66c670167b8e87944b1.bindPopup(popup_4deda4b2f6fe3bc8aa4aa1e8a7f8f61a)
+        ;
+
+        
+    
+    
+            marker_5051639c1081b66c670167b8e87944b1.bindTooltip(
+                `<div>
+                     CORINA FRANCISCA ZETA ANTON — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5051639c1081b66c670167b8e87944b1.setIcon(icon_9565da378e3455d6b6ed26b688df335e);
+            
+    
+            var marker_3e4f08a38c77012bceb4ca4e4049c7a6 = L.marker(
+                [-5.4005313, -80.7419561],
+                {
+  "alt": "ANTONIA CLODOMIRA HERNANDEZ SILUPU",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_7d8bc8a63aabbad4ebea87d03d5e1b79 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a6b8b75715c0962b475f7dc264e95b04 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_a620a47adfd38acc5a2deb00dce7232b = $(`<div id="html_a620a47adfd38acc5a2deb00dce7232b" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ANTONIA CLODOMIRA HERNANDEZ SILUPU</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ANTONIA CLODOMIRA HERNANDEZ SILUPU</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PASAJE 21 DE JULIO PTO 24     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4005313,-80.7419561','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_a6b8b75715c0962b475f7dc264e95b04.setContent(html_a620a47adfd38acc5a2deb00dce7232b);
+            
+        
+
+        marker_3e4f08a38c77012bceb4ca4e4049c7a6.bindPopup(popup_a6b8b75715c0962b475f7dc264e95b04)
+        ;
+
+        
+    
+    
+            marker_3e4f08a38c77012bceb4ca4e4049c7a6.bindTooltip(
+                `<div>
+                     ANTONIA CLODOMIRA HERNANDEZ SILUPU — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3e4f08a38c77012bceb4ca4e4049c7a6.setIcon(icon_7d8bc8a63aabbad4ebea87d03d5e1b79);
+            
+    
+            var marker_6f7ddf8b1e574f335de774e4661cc832 = L.marker(
+                [-5.4005313, -80.7419561],
+                {
+  "alt": "ANTONIA CLODOMIRA HERNANDEZ SILUPU",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_3c525536923b01a9fc85849243f1140e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_560f36992065c223ffa392ededf83e34 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_b5fbd251bb572fb205ce05531915ee18 = $(`<div id="html_b5fbd251bb572fb205ce05531915ee18" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ANTONIA CLODOMIRA HERNANDEZ SILUPU</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ANTONIA CLODOMIRA HERNANDEZ SILUPU</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PASAJE 21 DE JULIO PTO 24     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.4005313,-80.7419561','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_560f36992065c223ffa392ededf83e34.setContent(html_b5fbd251bb572fb205ce05531915ee18);
+            
+        
+
+        marker_6f7ddf8b1e574f335de774e4661cc832.bindPopup(popup_560f36992065c223ffa392ededf83e34)
+        ;
+
+        
+    
+    
+            marker_6f7ddf8b1e574f335de774e4661cc832.bindTooltip(
+                `<div>
+                     ANTONIA CLODOMIRA HERNANDEZ SILUPU — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6f7ddf8b1e574f335de774e4661cc832.setIcon(icon_3c525536923b01a9fc85849243f1140e);
+            
+    
+            var marker_a7a1bae2cc2971fbd19f8277a92b1076 = L.marker(
+                [-5.5544453, -80.8217595],
+                {
+  "alt": "SEGUNDO MATEO SANDOVAL LLAUCE",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_1d41be7bd76a182110d6c61e45b9fa15 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5ce2dc9c34dc5efcb644f8814731a78f = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_ad35540ca4865bded8384626e581d970 = $(`<div id="html_ad35540ca4865bded8384626e581d970" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SEGUNDO MATEO SANDOVAL LLAUCE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SEGUNDO MATEO SANDOVAL LLAUCE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CESAR PINGLO 206     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5544453,-80.8217595','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_5ce2dc9c34dc5efcb644f8814731a78f.setContent(html_ad35540ca4865bded8384626e581d970);
+            
+        
+
+        marker_a7a1bae2cc2971fbd19f8277a92b1076.bindPopup(popup_5ce2dc9c34dc5efcb644f8814731a78f)
+        ;
+
+        
+    
+    
+            marker_a7a1bae2cc2971fbd19f8277a92b1076.bindTooltip(
+                `<div>
+                     SEGUNDO MATEO SANDOVAL LLAUCE — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a7a1bae2cc2971fbd19f8277a92b1076.setIcon(icon_1d41be7bd76a182110d6c61e45b9fa15);
+            
+    
+            var marker_e698b097316a0bd3dc15f09220b61f0f = L.marker(
+                [-5.554183, -80.8218255],
+                {
+  "alt": "AURELIA CORDOVA CORDOVA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_2d3031249ed5bd5d0b9399d53d6d1a3b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4f224e62099531b103b5d2a58024273e = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_02f05097c858f22a3720fad81e4c613a = $(`<div id="html_02f05097c858f22a3720fad81e4c613a" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">AURELIA CORDOVA CORDOVA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">AURELIA CORDOVA CORDOVA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado anexo Puesto 12     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.554183,-80.8218255','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_4f224e62099531b103b5d2a58024273e.setContent(html_02f05097c858f22a3720fad81e4c613a);
+            
+        
+
+        marker_e698b097316a0bd3dc15f09220b61f0f.bindPopup(popup_4f224e62099531b103b5d2a58024273e)
+        ;
+
+        
+    
+    
+            marker_e698b097316a0bd3dc15f09220b61f0f.bindTooltip(
+                `<div>
+                     AURELIA CORDOVA CORDOVA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e698b097316a0bd3dc15f09220b61f0f.setIcon(icon_2d3031249ed5bd5d0b9399d53d6d1a3b);
+            
+    
+            var marker_eedf63510823c7d3f520cfc5eb1c7447 = L.marker(
+                [-5.554183, -80.8218255],
+                {
+  "alt": "AURELIA CORDOVA CORDOVA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_3e5e5a359ce4581a82643535a01bbb37 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a1ce54ce13905c9613ff41596eeac207 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_e9994623faf24745d3a98e856cb8bab5 = $(`<div id="html_e9994623faf24745d3a98e856cb8bab5" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">AURELIA CORDOVA CORDOVA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">AURELIA CORDOVA CORDOVA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado anexo Puesto 12     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.554183,-80.8218255','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_a1ce54ce13905c9613ff41596eeac207.setContent(html_e9994623faf24745d3a98e856cb8bab5);
+            
+        
+
+        marker_eedf63510823c7d3f520cfc5eb1c7447.bindPopup(popup_a1ce54ce13905c9613ff41596eeac207)
+        ;
+
+        
+    
+    
+            marker_eedf63510823c7d3f520cfc5eb1c7447.bindTooltip(
+                `<div>
+                     AURELIA CORDOVA CORDOVA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_eedf63510823c7d3f520cfc5eb1c7447.setIcon(icon_3e5e5a359ce4581a82643535a01bbb37);
+            
+    
+            var marker_2f4974608f9a46160ad387afe45fcbb8 = L.marker(
+                [-5.5531937, -80.8222241],
+                {
+  "alt": "INO\u00d1AN TU\u00d1OQUE YULIANA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_37bc42fc724584739bbcdb24a97d5e08 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_95b197105b42ce9f58e3bf60b5c29d21 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_c1d823a5e7fc9de68ef8cbb8e3763864 = $(`<div id="html_c1d823a5e7fc9de68ef8cbb8e3763864" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">INOÑAN TUÑOQUE YULIANA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">INOÑAN TUÑOQUE YULIANA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MERCADO SECHURA PTO 55     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5531937,-80.8222241','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_95b197105b42ce9f58e3bf60b5c29d21.setContent(html_c1d823a5e7fc9de68ef8cbb8e3763864);
+            
+        
+
+        marker_2f4974608f9a46160ad387afe45fcbb8.bindPopup(popup_95b197105b42ce9f58e3bf60b5c29d21)
+        ;
+
+        
+    
+    
+            marker_2f4974608f9a46160ad387afe45fcbb8.bindTooltip(
+                `<div>
+                     INOÑAN TUÑOQUE YULIANA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2f4974608f9a46160ad387afe45fcbb8.setIcon(icon_37bc42fc724584739bbcdb24a97d5e08);
+            
+    
+            var marker_84cb04b53a80a9a125afe6ca40c222a3 = L.marker(
+                [-5.5537737, -80.8222847],
+                {
+  "alt": "MANUELA MORALES CRUZ",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_8d55e1ef678ff196d976f6f699c81ce2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d4b9e6b974eb50cec207733ace0bc546 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_bddb3d324e863f0c02b56cc93615f040 = $(`<div id="html_bddb3d324e863f0c02b56cc93615f040" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MANUELA MORALES CRUZ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MANUELA MORALES CRUZ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PUESTO 33 MERCADO SECHURA PLATAFORMA 2     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5537737,-80.8222847','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_d4b9e6b974eb50cec207733ace0bc546.setContent(html_bddb3d324e863f0c02b56cc93615f040);
+            
+        
+
+        marker_84cb04b53a80a9a125afe6ca40c222a3.bindPopup(popup_d4b9e6b974eb50cec207733ace0bc546)
+        ;
+
+        
+    
+    
+            marker_84cb04b53a80a9a125afe6ca40c222a3.bindTooltip(
+                `<div>
+                     MANUELA MORALES CRUZ — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_84cb04b53a80a9a125afe6ca40c222a3.setIcon(icon_8d55e1ef678ff196d976f6f699c81ce2);
+            
+    
+            var marker_5c541142ef147e51152f2609a8f84337 = L.marker(
+                [-5.5537566, -80.8217996],
+                {
+  "alt": "ESTRELLA MARIALIZ QUEREVALU ECHE",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_bf7b1203a214f5bb8b6e068e67488c1a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bb5897f6cfd4ab1d5bc351277f30b51e = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_a3370c52a9127402fcb14acfffc3f19c = $(`<div id="html_a3370c52a9127402fcb14acfffc3f19c" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ESTRELLA MARIALIZ QUEREVALU ECHE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ESTRELLA MARIALIZ QUEREVALU ECHE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Cesar Pinglo 117     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5537566,-80.8217996','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_bb5897f6cfd4ab1d5bc351277f30b51e.setContent(html_a3370c52a9127402fcb14acfffc3f19c);
+            
+        
+
+        marker_5c541142ef147e51152f2609a8f84337.bindPopup(popup_bb5897f6cfd4ab1d5bc351277f30b51e)
+        ;
+
+        
+    
+    
+            marker_5c541142ef147e51152f2609a8f84337.bindTooltip(
+                `<div>
+                     ESTRELLA MARIALIZ QUEREVALU ECHE — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5c541142ef147e51152f2609a8f84337.setIcon(icon_bf7b1203a214f5bb8b6e068e67488c1a);
+            
+    
+            var marker_72d01dc016834bcdfcd9d38b612aa84a = L.marker(
+                [-5.5536787, -80.8217978],
+                {
+  "alt": "JOSE JEANKERLY YARLEQUE ROSAS",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_4cd6bb05a486cd91701259c9ade7f8ad = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8281acefad2724aee8895268286e03d2 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_d431f5adae499ffc9961edbd4ecd711e = $(`<div id="html_d431f5adae499ffc9961edbd4ecd711e" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JOSE JEANKERLY YARLEQUE ROSAS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JOSE JEANKERLY YARLEQUE ROSAS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JR LOS LAURELES C-8 AH VÍCTOR RAUL     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5536787,-80.8217978','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_8281acefad2724aee8895268286e03d2.setContent(html_d431f5adae499ffc9961edbd4ecd711e);
+            
+        
+
+        marker_72d01dc016834bcdfcd9d38b612aa84a.bindPopup(popup_8281acefad2724aee8895268286e03d2)
+        ;
+
+        
+    
+    
+            marker_72d01dc016834bcdfcd9d38b612aa84a.bindTooltip(
+                `<div>
+                     JOSE JEANKERLY YARLEQUE ROSAS — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_72d01dc016834bcdfcd9d38b612aa84a.setIcon(icon_4cd6bb05a486cd91701259c9ade7f8ad);
+            
+    
+            var marker_240575b55926238f1097efb9db71f84e = L.marker(
+                [-5.5534272, -80.8218246],
+                {
+  "alt": "CARLOS ALBERTO MARTINEZ AMAYA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_d81d4f00d4b8aa3ce8a7aa92227819da = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d8ac40db8e4a4e6e82d8f8af6c7d8e6b = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_f467b06351a7c3957df82e612e23e0b5 = $(`<div id="html_f467b06351a7c3957df82e612e23e0b5" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">CARLOS ALBERTO MARTINEZ AMAYA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">CARLOS ALBERTO MARTINEZ AMAYA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado sechura     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5534272,-80.8218246','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_d8ac40db8e4a4e6e82d8f8af6c7d8e6b.setContent(html_f467b06351a7c3957df82e612e23e0b5);
+            
+        
+
+        marker_240575b55926238f1097efb9db71f84e.bindPopup(popup_d8ac40db8e4a4e6e82d8f8af6c7d8e6b)
+        ;
+
+        
+    
+    
+            marker_240575b55926238f1097efb9db71f84e.bindTooltip(
+                `<div>
+                     CARLOS ALBERTO MARTINEZ AMAYA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_240575b55926238f1097efb9db71f84e.setIcon(icon_d81d4f00d4b8aa3ce8a7aa92227819da);
+            
+    
+            var marker_799f72e503cccc672239324de021eb64 = L.marker(
+                [-5.5536946, -80.8223337],
+                {
+  "alt": "EDGARD JOHAN SUCLUPE SIESQUEN",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_d115bdf4aa32353e12567ef75b75de4c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_90c822a4105af048dcce7f69dc6a683f = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_17129c05947881cc48119a8bb0e6220f = $(`<div id="html_17129c05947881cc48119a8bb0e6220f" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">EDGARD JOHAN SUCLUPE SIESQUEN</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">EDGARD JOHAN SUCLUPE SIESQUEN</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>INT. MERCADO SECHURA-SECHURA     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5536946,-80.8223337','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_90c822a4105af048dcce7f69dc6a683f.setContent(html_17129c05947881cc48119a8bb0e6220f);
+            
+        
+
+        marker_799f72e503cccc672239324de021eb64.bindPopup(popup_90c822a4105af048dcce7f69dc6a683f)
+        ;
+
+        
+    
+    
+            marker_799f72e503cccc672239324de021eb64.bindTooltip(
+                `<div>
+                     EDGARD JOHAN SUCLUPE SIESQUEN — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_799f72e503cccc672239324de021eb64.setIcon(icon_d115bdf4aa32353e12567ef75b75de4c);
+            
+    
+            var marker_51ba9a498065af798ff4b4f54339e169 = L.marker(
+                [-5.5537944, -80.822345],
+                {
+  "alt": "MILTON LIMA CASTILLO",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_c77ab908a659d33bd0593774bc29645d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_64142eaf693a74a44e861f9c78d182cc = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_24d2f6f904da050168ed5aceacc7441e = $(`<div id="html_24d2f6f904da050168ed5aceacc7441e" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MILTON LIMA CASTILLO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MILTON LIMA CASTILLO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado Puesto 41     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5537944,-80.822345','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_64142eaf693a74a44e861f9c78d182cc.setContent(html_24d2f6f904da050168ed5aceacc7441e);
+            
+        
+
+        marker_51ba9a498065af798ff4b4f54339e169.bindPopup(popup_64142eaf693a74a44e861f9c78d182cc)
+        ;
+
+        
+    
+    
+            marker_51ba9a498065af798ff4b4f54339e169.bindTooltip(
+                `<div>
+                     MILTON LIMA CASTILLO — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_51ba9a498065af798ff4b4f54339e169.setIcon(icon_c77ab908a659d33bd0593774bc29645d);
+            
+    
+            var marker_4208b69fd0d118322642c3746c293418 = L.marker(
+                [-5.5537944, -80.822345],
+                {
+  "alt": "MILTON LIMA CASTILLO",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_63046694968cadc5a10d2358ce686b22 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f9ea615935bb609b86ecfd14b3d33109 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_379f6531f5d9c684fdc421ab17fe68b0 = $(`<div id="html_379f6531f5d9c684fdc421ab17fe68b0" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MILTON LIMA CASTILLO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MILTON LIMA CASTILLO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado Puesto 41     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5537944,-80.822345','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_f9ea615935bb609b86ecfd14b3d33109.setContent(html_379f6531f5d9c684fdc421ab17fe68b0);
+            
+        
+
+        marker_4208b69fd0d118322642c3746c293418.bindPopup(popup_f9ea615935bb609b86ecfd14b3d33109)
+        ;
+
+        
+    
+    
+            marker_4208b69fd0d118322642c3746c293418.bindTooltip(
+                `<div>
+                     MILTON LIMA CASTILLO — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4208b69fd0d118322642c3746c293418.setIcon(icon_63046694968cadc5a10d2358ce686b22);
+            
+    
+            var marker_647a04a71cf0ffb3a447d6a97fe19492 = L.marker(
+                [-5.553913, -80.8224837],
+                {
+  "alt": "COSTANCIA PURIZACA DE OLIVAREZ",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_6bf55deec4a64ffe1bc039214178878c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_eecda8a68670307c0ae13ccf09ad6999 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_604852384e7c1ef19cffff06f821cc3a = $(`<div id="html_604852384e7c1ef19cffff06f821cc3a" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">COSTANCIA PURIZACA DE OLIVAREZ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">COSTANCIA PURIZACA DE OLIVAREZ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE SAN MARTÍN 112     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.553913,-80.8224837','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_eecda8a68670307c0ae13ccf09ad6999.setContent(html_604852384e7c1ef19cffff06f821cc3a);
+            
+        
+
+        marker_647a04a71cf0ffb3a447d6a97fe19492.bindPopup(popup_eecda8a68670307c0ae13ccf09ad6999)
+        ;
+
+        
+    
+    
+            marker_647a04a71cf0ffb3a447d6a97fe19492.bindTooltip(
+                `<div>
+                     COSTANCIA PURIZACA DE OLIVAREZ — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_647a04a71cf0ffb3a447d6a97fe19492.setIcon(icon_6bf55deec4a64ffe1bc039214178878c);
+            
+    
+            var marker_3b756d45866390b9c5eb96aa5dd76829 = L.marker(
+                [-5.5537383, -80.8223733],
+                {
+  "alt": "PEDRO MONTALVAN CORDOVA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_2e73a0aed77ac9999c1a336a99d2b10e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c9e7300c37b65e7dacd49989c5ff4198 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_fb09f898c8d7781dbd662661d8250b01 = $(`<div id="html_fb09f898c8d7781dbd662661d8250b01" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PEDRO MONTALVAN CORDOVA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PEDRO MONTALVAN CORDOVA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>San Martín 1ra cuadra MERCADO     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5537383,-80.8223733','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_c9e7300c37b65e7dacd49989c5ff4198.setContent(html_fb09f898c8d7781dbd662661d8250b01);
+            
+        
+
+        marker_3b756d45866390b9c5eb96aa5dd76829.bindPopup(popup_c9e7300c37b65e7dacd49989c5ff4198)
+        ;
+
+        
+    
+    
+            marker_3b756d45866390b9c5eb96aa5dd76829.bindTooltip(
+                `<div>
+                     PEDRO MONTALVAN CORDOVA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3b756d45866390b9c5eb96aa5dd76829.setIcon(icon_2e73a0aed77ac9999c1a336a99d2b10e);
+            
+    
+            var marker_f4a0d5e4439a39701662a1a6dbd4336b = L.marker(
+                [-5.5537383, -80.8223733],
+                {
+  "alt": "PEDRO MONTALVAN CORDOVA",
+}
+            ).addTo(marker_cluster_d8f838ddfdb2d4f17074214fef7407e1);
+        
+    
+            var icon_ddda79361be6856a0a74385296e35519 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_649c081f25b1d4c8bc0ff81f694f7915 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_628176c8fb74017c4bc8d7c151caa8ef = $(`<div id="html_628176c8fb74017c4bc8d7c151caa8ef" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PEDRO MONTALVAN CORDOVA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PEDRO MONTALVAN CORDOVA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: EDDINSON CECILIO DIOSES SAAVEDRA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>San Martín 1ra cuadra MERCADO     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.5537383,-80.8223733','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_649c081f25b1d4c8bc0ff81f694f7915.setContent(html_628176c8fb74017c4bc8d7c151caa8ef);
+            
+        
+
+        marker_f4a0d5e4439a39701662a1a6dbd4336b.bindPopup(popup_649c081f25b1d4c8bc0ff81f694f7915)
+        ;
+
+        
+    
+    
+            marker_f4a0d5e4439a39701662a1a6dbd4336b.bindTooltip(
+                `<div>
+                     PEDRO MONTALVAN CORDOVA — EDDINSON CECILIO DIOSES SAAVEDRA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f4a0d5e4439a39701662a1a6dbd4336b.setIcon(icon_ddda79361be6856a0a74385296e35519);
+            
+    
+            marker_cluster_d8f838ddfdb2d4f17074214fef7407e1.addTo(feature_group_8f83da34192d369ecfc4c3ef4d422bfc);
+        
+    
+            feature_group_8f83da34192d369ecfc4c3ef4d422bfc.addTo(map_923bb90fc750abd4a8542ac06f71a4b7);
+        
+    
+        function geo_json_be9a789f8947809ff69f781bbd632acd_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_be9a789f8947809ff69f781bbd632acd_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_be9a789f8947809ff69f781bbd632acd = L.geoJson(null, {
+                onEachFeature: geo_json_be9a789f8947809ff69f781bbd632acd_onEachFeature,
+            
+                pointToLayer: geo_json_be9a789f8947809ff69f781bbd632acd_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_be9a789f8947809ff69f781bbd632acd_add (data) {
+            geo_json_be9a789f8947809ff69f781bbd632acd
+                .addData(data);
+        }
+            geo_json_be9a789f8947809ff69f781bbd632acd_add({"features": [{"geometry": {"coordinates": [-80.6779816, -5.2649081], "type": "Point"}, "properties": {"name": "MANUEL SERGIO COBE\u00d1AS SILVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6779816, -5.2649081], "type": "Point"}, "properties": {"name": "MANUEL SERGIO COBE\u00d1AS SILVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6777052, -5.2660952], "type": "Point"}, "properties": {"name": "VICTOR ADAN CORDOVA LOPEZ", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6776298, -5.2657236], "type": "Point"}, "properties": {"name": "ELADIO BLAS SEMINARIO TRELLES", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.677321, -5.2657055], "type": "Point"}, "properties": {"name": "JULIO CESAR COBE\u00d1AS YARLEQUE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7411092, -5.3966135], "type": "Point"}, "properties": {"name": "SUPER LUNA S.R.L.", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7411092, -5.3966135], "type": "Point"}, "properties": {"name": "SUPER LUNA S.R.L.", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7419755, -5.4005396], "type": "Point"}, "properties": {"name": "MILAGROS DE JESUS LALUPU CHULLE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7419755, -5.4005396], "type": "Point"}, "properties": {"name": "MILAGROS DE JESUS LALUPU CHULLE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7410202, -5.4009714], "type": "Point"}, "properties": {"name": "MILTON MARTINEZ SERNAQUE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7409806, -5.400291], "type": "Point"}, "properties": {"name": "PEDRO CESAR VITE ANCAJIMA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7410332, -5.4009087], "type": "Point"}, "properties": {"name": "MARCO ANTONIO MORANTE GALAN", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7410332, -5.4009087], "type": "Point"}, "properties": {"name": "MARCO ANTONIO MORANTE GALAN", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7412303, -5.4009521], "type": "Point"}, "properties": {"name": "SARITA SANTOS ROJAS", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7414412, -5.4006935], "type": "Point"}, "properties": {"name": "RODAIL SAAVEDRA CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7419618, -5.400522], "type": "Point"}, "properties": {"name": "CORINA FRANCISCA ZETA ANTON", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7419561, -5.4005313], "type": "Point"}, "properties": {"name": "ANTONIA CLODOMIRA HERNANDEZ SILUPU", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7419561, -5.4005313], "type": "Point"}, "properties": {"name": "ANTONIA CLODOMIRA HERNANDEZ SILUPU", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8217595, -5.5544453], "type": "Point"}, "properties": {"name": "SEGUNDO MATEO SANDOVAL LLAUCE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8218255, -5.554183], "type": "Point"}, "properties": {"name": "AURELIA CORDOVA CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8218255, -5.554183], "type": "Point"}, "properties": {"name": "AURELIA CORDOVA CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8222241, -5.5531937], "type": "Point"}, "properties": {"name": "INO\u00d1AN TU\u00d1OQUE YULIANA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8222847, -5.5537737], "type": "Point"}, "properties": {"name": "MANUELA MORALES CRUZ", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8217996, -5.5537566], "type": "Point"}, "properties": {"name": "ESTRELLA MARIALIZ QUEREVALU ECHE", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8217978, -5.5536787], "type": "Point"}, "properties": {"name": "JOSE JEANKERLY YARLEQUE ROSAS", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8218246, -5.5534272], "type": "Point"}, "properties": {"name": "CARLOS ALBERTO MARTINEZ AMAYA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8223337, -5.5536946], "type": "Point"}, "properties": {"name": "EDGARD JOHAN SUCLUPE SIESQUEN", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.822345, -5.5537944], "type": "Point"}, "properties": {"name": "MILTON LIMA CASTILLO", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.822345, -5.5537944], "type": "Point"}, "properties": {"name": "MILTON LIMA CASTILLO", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8224837, -5.553913], "type": "Point"}, "properties": {"name": "COSTANCIA PURIZACA DE OLIVAREZ", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8223733, -5.5537383], "type": "Point"}, "properties": {"name": "PEDRO MONTALVAN CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8223733, -5.5537383], "type": "Point"}, "properties": {"name": "PEDRO MONTALVAN CORDOVA", "vendedor": "EDDINSON CECILIO DIOSES SAAVEDRA"}, "type": "Feature"}], "type": "FeatureCollection"});
+        geo_json_be9a789f8947809ff69f781bbd632acd.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+    geo_json_be9a789f8947809ff69f781bbd632acd.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create('div');
+    
+    let handleObject = feature => {
+        if (feature === null) {
+            return '';
+        } else if (typeof(feature)=='object') {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = ["name", "vendedor"];
+    let aliases = ["Cliente:", "Vendedor:"];
+    let table = '<table>' +
+        String(
+        fields.map(
+        (v,i)=>
+        `<tr>
+            <th>${aliases[i]}</th>
+            
+            <td>${handleObject(layer.feature.properties[v])}</td>
+        </tr>`).join(''))
+    +'</table>';
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  "sticky": true,
+  "className": "foliumtooltip",
+});
+                     
+    
+            geo_json_be9a789f8947809ff69f781bbd632acd.addTo(map_923bb90fc750abd4a8542ac06f71a4b7);
+        
+    
+            var geo_json_be9a789f8947809ff69f781bbd632acdsearchControl = new L.Control.Search({
+                layer: geo_json_be9a789f8947809ff69f781bbd632acd,
+                
+                propertyName: 'name',
+                
+                collapsed: false,
+                textPlaceholder: '🔍 Buscar cliente o bodega...',
+                position:'topleft',
+            
+                initial: false,
+                
+                zoom: 18,
+                
+                hideMarkerOnCollapse: true
+            
+                });
+                geo_json_be9a789f8947809ff69f781bbd632acdsearchControl.on('search:locationfound', function(e) {
+                    geo_json_be9a789f8947809ff69f781bbd632acd.setStyle(function(feature){
+                        return feature.properties.style
+                    })
+                    
+                    e.layer.setStyle({
+  "weight": 3,
+  "searchAtStart": false,
+  "minLength": 1,
+  "autoCollapse": false,
+  "autoType": true,
+});
+                    
+                    if(e.layer._popup)
+                        e.layer.openPopup();
+                })
+                geo_json_be9a789f8947809ff69f781bbd632acdsearchControl.on('search:collapsed', function(e) {
+                        geo_json_be9a789f8947809ff69f781bbd632acd.setStyle(function(feature){
+                            return feature.properties.style
+                    });
+                });
+            map_923bb90fc750abd4a8542ac06f71a4b7.addControl( geo_json_be9a789f8947809ff69f781bbd632acdsearchControl );
+
+        
+    
+            var layer_control_69b1bd28b3b8b3b0ffbf8a0b635ae064_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_1388ecee952caa56866ffe222c62c477,
+                },
+                overlays :  {
+                    "EDDINSON CECILIO DIOSES SAAVEDRA (32)" : feature_group_8f83da34192d369ecfc4c3ef4d422bfc,
+                },
+            };
+            let layer_control_69b1bd28b3b8b3b0ffbf8a0b635ae064 = L.control.layers(
+                layer_control_69b1bd28b3b8b3b0ffbf8a0b635ae064_layers.base_layers,
+                layer_control_69b1bd28b3b8b3b0ffbf8a0b635ae064_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_923bb90fc750abd4a8542ac06f71a4b7);
+
+        
+    
+            var locate_control_9a4b881c68fecf6c7c704077d879930c = L.control.locate(
+                {"flyTo": true, "keepCurrentZoomLevel": true, "locateOptions": {"enableHighAccuracy": true, "maxZoom": 16}, "strings": {"popup": "Estas aqui!", "title": "Mi ubicacion"}}
+            ).addTo(map_923bb90fc750abd4a8542ac06f71a4b7);
+            
+                locate_control_9a4b881c68fecf6c7c704077d879930c.start();
+            
+        
+</script>
+</html>
