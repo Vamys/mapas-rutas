@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+<style>
+    .folium-map {
+        width: 100% !important;
+        height: 100vh !important;
+        position: absolute !important;
+        top: 0; left: 0;
+        z-index: 1;
+    }
+    .leaflet-control-search {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+        border-radius: 25px !important;
+        overflow: hidden;
+    }
+    .leaflet-control-search .search-input {
+        padding: 8px 15px !important;
+        border-radius: 25px !important;
+        border: 1px solid #eee !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-control-search.search-exp .search-input { width: 250px !important; }
+    .leaflet-control-search .search-button {
+        background-color: #fff !important;
+        border-radius: 50% !important;
+        width: 34px !important; height: 34px !important;
+    }
+    .leaflet-control-layers {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        border-radius: 12px !important;
+        padding: 10px !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-bar {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }
+    .leaflet-bar a {
+        background-color: white !important;
+        color: #333 !important;
+        border: 1px solid #f0f0f0 !important;
+    }
+    .leaflet-bar a:first-child { border-radius: 8px 8px 0 0 !important; }
+    .leaflet-bar a:last-child  { border-radius: 0 0 8px 8px !important; }
+    .leaflet-tooltip {
+        background: rgba(255,255,255,0.95) !important;
+        border: none !important;
+        border-radius: 6px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
+    }
+    /* Mejoras al buscador para que parezca una lista */
+    .leaflet-control-search .search-tip {
+        padding: 12px !important;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px !important;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #333;
+        background: #fff;
+    }
+    .leaflet-control-search .search-tip:hover {
+        background: #3498db !important;
+        color: #fff !important;
+    }
+    .leaflet-control-search .search-tooltip {
+        max-height: 400px !important;
+        width: 100% !important;
+        min-width: 280px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+        border: none !important;
+        margin-top: 10px !important;
+    }
+    .leaflet-control-search .search-input {
+        height: 40px !important;
+        font-size: 16px !important;
+    }
+    /* Estilo para pines entregados */
+    .marker-delivered {
+        filter: grayscale(100%) brightness(70%) opacity(0.6) !important;
+        transition: all 0.3s ease;
+    }
+    .marker-delivered i {
+        color: #eee !important;
+    }
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_1a645390e93c5119d0d373b0dfc9e66c {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    
+                    <style>
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    </style>
+            
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.css"/>
+</head>
+<body>
+    
+    
+<div id="nav-panel" style="
+    display:none; position:fixed; bottom:20px; left:20px;
+    width:300px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">&#128640; Rutas de Navegacion</h3>
+        <button onclick="document.getElementById('nav-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">&#215;</button>
+    </div>
+    <div id="nav-links-container" style="max-height:400px;overflow-y:auto;"></div>
+</div>
+
+<button onclick="toggleNavPanel()" style="
+    position:fixed; bottom:20px; left:20px; z-index:9998;
+    background:#4285F4; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    &#128506; VER RUTAS GOOGLE MAPS
+</button>
+
+<script>
+    var infoRutas = {"KATHERINE REBECA DE JESUS CARDOZA LEE": [{"nombre": "Tramo 1  (CORDOVA CASTILLO MELVA MAGALY \u2192 JAZMIN ESTELA GARCIA HUAMAN)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.1757973,-80.6710676&waypoints=-5.1750302%2C-80.6698587%7C-5.1750302%2C-80.6698587%7C-5.1753257%2C-80.6699588%7C-5.1753257%2C-80.6699588%7C-5.1756049%2C-80.6699976%7C-5.1756272%2C-80.6698921%7C-5.1754491%2C-80.6705743%7C-5.1761675%2C-80.6712162%7C-5.1757997%2C-80.6710703"}, {"nombre": "Tramo 2  (JAZMIN ESTELA GARCIA HUAMAN \u2192 ROSA SEMINARIO RAMOS)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.1760761,-80.6717536&waypoints=-5.1757973%2C-80.6710676%7C-5.1758526%2C-80.671115"}]};
+    var listaClientes = [{"nombre": "CORDOVA CASTILLO MELVA MAGALY", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1750302, "lng": -80.6698587}, {"nombre": "CORDOVA CASTILLO MELVA MAGALY", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1750302, "lng": -80.6698587}, {"nombre": "DALILA HERNANDEZ GARCIA", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1756272, "lng": -80.6698921}, {"nombre": "DEISY ARROYO PARRILLA", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1761675, "lng": -80.6712162}, {"nombre": "DENNER CHINCHAY SANTOS", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1753257, "lng": -80.6699588}, {"nombre": "DENNER CHINCHAY SANTOS", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1753257, "lng": -80.6699588}, {"nombre": "DINO MARCHENA CHINININ", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1758526, "lng": -80.671115}, {"nombre": "JAZMIN ESTELA GARCIA HUAMAN", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1757973, "lng": -80.6710676}, {"nombre": "MARIA MERCEDES CASTRO YARLEQUE", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1756049, "lng": -80.6699976}, {"nombre": "ROSA ELIZABETH NU\u00d1EZ GARCIA", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1757997, "lng": -80.6710703}, {"nombre": "ROSA SEMINARIO RAMOS", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1760761, "lng": -80.6717536}, {"nombre": "SANTOS SILVA YNGA", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE", "lat": -5.1754491, "lng": -80.6705743}];
+
+    function toggleNavPanel() {
+        var p = document.getElementById('nav-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+             renderRutas();
+             document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+
+    function toggleListPanel() {
+        var p = document.getElementById('list-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+            renderListaClientes();
+            document.getElementById('nav-panel').style.display = 'none';
+        }
+    }
+
+    function renderRutas() {
+        var c = document.getElementById('nav-links-container');
+        c.innerHTML = '';
+        for (var vend in infoRutas) {
+            var sec = document.createElement('div');
+            sec.style.marginBottom = '15px';
+            sec.innerHTML = '<strong style="color:#666;font-size:13px;display:block;margin-bottom:5px;">👤 ' + vend + '</strong>';
+            infoRutas[vend].forEach(function(link) {
+                var a = document.createElement('a');
+                a.href = link.url; a.target = '_blank';
+                a.textContent = link.nombre;
+                a.style.cssText = 'display:block;background:#f1f3f4;color:#1a73e8;' +
+                    'padding:8px 12px;border-radius:8px;margin-bottom:5px;' +
+                    'text-decoration:none;font-size:12px;font-weight:600;';
+                a.onmouseover = function() { this.style.background = '#e8f0fe'; };
+                a.onmouseout  = function() { this.style.background = '#f1f3f4'; };
+                sec.appendChild(a);
+            });
+            c.appendChild(sec);
+        }
+    }
+
+    function renderListaClientes(filtro = '') {
+        var c = document.getElementById('list-container');
+        c.innerHTML = '';
+        var filtrados = listaClientes.filter(cl => 
+            cl.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+            cl.vendedor.toLowerCase().includes(filtro.toLowerCase())
+        );
+
+        filtrados.forEach(function(cl) {
+            var d = document.createElement('div');
+            d.style.cssText = 'background:#fff; border:1px solid #eee; padding:10px; border-radius:8px; margin-bottom:8px; cursor:pointer; transition: 0.2s;';
+            d.innerHTML = '<div style="font-weight:bold; color:#333; font-size:13px;">' + cl.nombre + '</div>' +
+                          '<div style="font-size:11px; color:#777;">👤 ' + cl.vendedor + '</div>';
+            
+            d.onclick = function() {
+                irAlCliente(cl.lat, cl.lng, cl.nombre);
+            };
+            d.onmouseover = function() { this.style.background = '#f8f9fa'; this.style.borderColor = '#3498db'; };
+            d.onmouseout  = function() { this.style.background = '#fff'; this.style.borderColor = '#eee'; };
+            c.appendChild(d);
+        });
+    }
+
+    function irAlCliente(lat, lng, nombre) {
+        if (!window._mapaListo) return;
+        window._mapaListo.setView([lat, lng], 18);
+        
+        // Buscar el marcador y abrir popup
+        window._mapaListo.eachLayer(function(layer) {
+            if (layer instanceof L.Marker && layer.options && (layer.options.alt === nombre || (layer.options.tooltip && layer.options.tooltip.getContent().includes(nombre)))) {
+                layer.openPopup();
+            }
+        });
+
+        if (window.innerWidth < 768) {
+            document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+</script>
+
+<div id="list-panel" style="
+    display:none; position:fixed; bottom:80px; left:20px;
+    width:320px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">📋 Lista de Clientes</h3>
+        <button onclick="document.getElementById('list-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">×</button>
+    </div>
+    <input type="text" placeholder="Filtrar clientes..." onkeyup="renderListaClientes(this.value)" style="
+        width:100%; padding:8px 12px; border-radius:8px; border:1px solid #ddd; margin-bottom:10px; box-sizing: border-box;
+    ">
+    <div id="list-container" style="max-height:400px;overflow-y:auto; padding-right:5px;"></div>
+</div>
+
+<button onclick="toggleListPanel()" style="
+    position:fixed; bottom:20px; left:220px; z-index:9998;
+    background:#27ae60; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    📋 LISTADO
+</button>
+    
+            <div class="folium-map" id="map_1a645390e93c5119d0d373b0dfc9e66c" ></div>
+        
+
+<!-- Boton volver al menu principal -->
+<a href="index.html" style="
+    position:fixed; top:15px; left:50px; z-index:9998;
+    background:white; color:#333;
+    border:2px solid #ccc; border-radius:8px;
+    padding:8px 15px; font-weight:bold;
+    text-decoration:none; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8592; VOLVER AL MENU
+</a>
+
+<!-- Boton reset de entregas -->
+<button onclick="resetEntregas()" style="
+    position:fixed; top:15px; left:230px; z-index:9998;
+    background:#e74c3c; color:white;
+    border:none; border-radius:8px;
+    padding:10px 15px; font-weight:bold;
+    cursor:pointer; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8635; RESET ENTREGAS
+</button>
+
+<!-- Indicador de sincronizacion -->
+<div id="sync-indicator" style="
+    position:fixed; bottom:15px; right:15px; z-index:9999;
+    background:rgba(0,0,0,0.7); color:white;
+    padding:6px 12px; border-radius:20px;
+    font-size:11px; font-family:'Segoe UI',sans-serif;
+    display:none; transition:opacity 0.3s;">
+    &#9729; Sincronizando...
+</div>
+
+<script>
+    // --- CONFIGURACION NUBE ---
+    
+    const JSONBIN_BIN_ID = '';
+    const JSONBIN_API_KEY = '$2a$10$XbSEDYDqGr6WwHfnYP2gQu07YA10s.clBAD4NP8ZDflkUr0ihvtA2';
+    const NUBE_ACTIVA = false;
+    
+
+    window._mapaListo   = null;
+    window._markerActual = null;
+
+    window.resetEntregas = async function() {
+        if (!confirm("¿Estás seguro de que quieres reiniciar TODOS los estados de entrega de esta ruta?")) return;
+        
+        // 1. Limpiar localStorage
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('entregas_')) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+        
+        // 2. Limpiar nube
+        if (NUBE_ACTIVA) {
+            mostrarSync('&#9729; Reiniciando en nube...', 'rgba(0,100,200,0.8)');
+            _estadoNube = {};
+            const payload = { entregas: {}, ultima_sync: new Date().toISOString() };
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+                mostrarSync('&#10003; Entregas reiniciadas en nube', 'rgba(0,150,50,0.8)');
+            } catch(e) {}
+        }
+        
+        // 3. Re-aplicar visualmente (todos a false)
+        if (window._mapaListo) {
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    window.marcarVisual(layer, false);
+                }
+            });
+        }
+        
+        // 4. Si el popup de un marcador está abierto, actualizar su checkbox
+        if (window._markerActual && window._markerActual.isPopupOpen()) {
+             const popup = window._markerActual.getPopup();
+             const wrapper = popup ? popup._wrapper : null;
+             const chk = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+             if (chk) chk.checked = false;
+        }
+    };
+
+    function mostrarSync(texto, color) {
+        const el = document.getElementById('sync-indicator');
+        if (!el) return;
+        el.textContent = texto;
+        el.style.background = color || 'rgba(0,0,0,0.7)';
+        el.style.display = 'block';
+        el.style.opacity = '1';
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }, 2000);
+    }
+
+    // --- VISUAL ---
+    window.marcarVisual = function(marker, entregado) {
+        if (!marker) return;
+        
+        // Guardar el estado en las opciones del marker para persistencia
+        if (!marker.options) marker.options = {};
+        marker.options.isDelivered = entregado;
+
+        if (marker._icon) {
+            if (entregado) {
+                marker._icon.classList.add('marker-delivered');
+            } else {
+                marker._icon.classList.remove('marker-delivered');
+            }
+        }
+    };
+
+    // --- JSONBIN CLOUD API ---
+    async function leerNube() {
+        if (!NUBE_ACTIVA) return null;
+        try {
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            return data.record || data;
+        } catch(e) { return null; }
+    }
+
+    async function escribirNube(estadoCompleto) {
+        if (!NUBE_ACTIVA) return false;
+        mostrarSync('&#9729; Sincronizando...', 'rgba(0,100,200,0.8)');
+        try {
+            // Leer estado actual para hacer MERGE (evitar sobrescribir cambios de otros)
+            const actual = await leerNube();
+            const entregasActuales = (actual && actual.entregas) ? actual.entregas : {};
+
+            // Merge: combinar estado actual en nube + nuevos cambios
+            const merged = { ...entregasActuales, ...estadoCompleto.entregas };
+            const payload = {
+                entregas: merged,
+                ultima_sync: new Date().toISOString()
+            };
+
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY
+                },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                mostrarSync('&#10003; Guardado en nube', 'rgba(0,150,50,0.8)');
+                return true;
+            }
+        } catch(e) { console.warn('Error escribiendo en nube:', e); }
+        mostrarSync('&#9888; Solo guardado local', 'rgba(200,100,0,0.8)');
+        return false;
+    }
+
+    // --- LOCAL STORAGE FALLBACK ---
+    function guardarLocal(id, delivered) {
+        try { localStorage.setItem('entregas_' + id, delivered); } catch(e){}
+    }
+    function leerLocal(id) {
+        const v = localStorage.getItem('entregas_' + id);
+        return v === 'true' || v === true;
+    }
+    function leerTodosLocal() {
+        const res = {};
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('entregas_')) {
+                    res[key.replace('entregas_', '')] = localStorage.getItem(key) === 'true';
+                }
+            }
+        } catch(e){}
+        return res;
+    }
+
+    // --- ESTADO UNIFICADO ---
+    let _estadoNube = null;
+
+    async function cargarEstados() {
+        // Prioridad: Nube > Local
+        const nube = await leerNube();
+        if (nube && nube.entregas) {
+            _estadoNube = nube.entregas;
+            // Sincronizar nube -> local
+            Object.entries(_estadoNube).forEach(([id, data]) => {
+                const val = (typeof data === 'object') ? data.entregado : data;
+                guardarLocal(id, val);
+            });
+            return _estadoNube;
+        }
+        // Fallback local
+        return leerTodosLocal();
+    }
+
+    async function getStatus(id) {
+        if (_estadoNube && id in _estadoNube) {
+            const val = _estadoNube[id];
+            return (typeof val === 'object') ? !!val.entregado : !!val;
+        }
+        return leerLocal(id);
+    }
+
+    // --- GUARDAR ENTREGA ---
+    window.guardarEstadoEntrega = async function(btn) {
+        try {
+            const popup = btn.closest('.leaflet-popup-content') || btn.closest('.leaflet-popup-content-wrapper');
+            const span = popup ? popup.querySelector('.bodega-nombre') : null;
+            const chk  = popup ? popup.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+
+            const nombre      = span.textContent.trim();
+            const nuevoEstado = chk.checked;
+
+            // 1. Guardar local de inmediato (UX sin espera)
+            guardarLocal(nombre, nuevoEstado);
+
+            // 2. Actualizar visual
+            if (window._markerActual) window.marcarVisual(window._markerActual, nuevoEstado);
+            else reAplicarEstados();
+
+            // 3. Feedback inmediato en boton
+            const orig = btn.innerHTML;
+            btn.innerHTML = 'GUARDANDO...';
+            btn.style.background = '#0d6efd';
+
+            // 4. Subir a la nube con merge
+            const entregaData = {
+                entregado: nuevoEstado,
+                fecha: new Date().toISOString()
+            };
+            if (_estadoNube) _estadoNube[nombre] = entregaData;
+            else _estadoNube = { [nombre]: entregaData };
+
+            const nubeOk = await escribirNube({ entregas: { [nombre]: entregaData } });
+
+            // Si fallo la nube, guardar en cola de reintentos
+            if (!nubeOk && NUBE_ACTIVA) {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    cola.push({ [nombre]: entregaData });
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(cola));
+                    console.log('[Vamys] Guardado en cola de reintentos');
+                } catch(qe) {}
+            }
+
+            btn.innerHTML = nubeOk ? '✓ GUARDADO EN NUBE' : '✓ GUARDADO LOCAL';
+            btn.style.background = nubeOk ? '#155724' : '#856404';
+            setTimeout(() => { btn.innerHTML = orig; btn.style.background = '#28a745'; }, 1500);
+
+        } catch (err) {
+            console.error("Error al guardar:", err);
+        }
+    };
+
+    async function reAplicarEstados() {
+        if (!window._mapaListo) return;
+        try {
+            const estados = await cargarEstados();
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    const val = estados[layer.options.alt];
+                    const entregado = (typeof val === 'object') ? !!val?.entregado : !!val;
+                    window.marcarVisual(layer, entregado);
+                }
+            });
+        } catch(e) { console.error("Error re-aplicando estados:", e); }
+    }
+
+    function inicializarVamys() {
+        const mapEl = document.querySelector('.folium-map');
+        if (!mapEl) { setTimeout(inicializarVamys, 500); return; }
+        if (mapEl.offsetHeight === 0) { mapEl.style.height = '100vh'; mapEl.style.width = '100vw'; }
+
+        let mapObj = null;
+        try {
+            if (mapEl.id && window[mapEl.id] && typeof window[mapEl.id].on === 'function') {
+                mapObj = window[mapEl.id];
+            } else {
+                for (let key in window) {
+                    if (key.startsWith('map_') && window[key] && typeof window[key].on === 'function') {
+                        if (window[key].eachLayer) { mapObj = window[key]; break; }
+                    }
+                }
+            }
+        } catch(e){}
+
+        if (!mapObj) { setTimeout(inicializarVamys, 500); return; }
+
+        window._mapaListo  = mapObj;
+        mapEl._leaflet_map = mapObj;
+
+        // Escuchar cuando se agrega cualquier capa (muy útil para clusters)
+        mapObj.on('layeradd', async (e) => {
+            if (e.layer instanceof L.Marker && e.layer.options && e.layer.options.alt) {
+                const entregado = await getStatus(e.layer.options.alt);
+                window.marcarVisual(e.layer, entregado);
+            }
+        });
+
+        // Mantener moveend/zoomend solo como backup ocasional
+        mapObj.on('zoomend moveend spiderfied', () => setTimeout(reAplicarEstados, 500));
+
+        mapObj.on('popupopen', async (e) => {
+            const marker  = e.popup._source;
+            if (!marker) return;
+            const wrapper = e.popup._wrapper;
+            const span    = wrapper ? wrapper.querySelector('.bodega-nombre') : null;
+            const chk     = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+            const nombre = span.textContent.trim();
+            window._markerActual = marker;
+            if (marker.options) marker.options.alt = nombre;
+            chk.checked = await getStatus(nombre);
+        });
+
+        reAplicarEstados();
+
+        // ── POLLING: actualizar desde la nube cada 15 segundos ──
+        if (NUBE_ACTIVA) {
+            console.log('[Vamys] Polling activo: sincronizando cada 15s desde JSONBin');
+            setInterval(async () => {
+                try {
+                    _estadoNube = null; // forzar re-lectura
+                    await reAplicarEstados();
+                } catch(e) { console.warn('[Vamys] Error en polling:', e); }
+            }, 15000);
+        }
+
+        // ── REINTENTAR escrituras fallidas guardadas en cola ──
+        if (NUBE_ACTIVA) {
+            setInterval(async () => {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    if (cola.length === 0) return;
+                    console.log(`[Vamys] Reintentando ${cola.length} escrituras pendientes...`);
+                    const exitosas = [];
+                    for (const item of cola) {
+                        const ok = await escribirNube({ entregas: item });
+                        if (ok) exitosas.push(item);
+                    }
+                    // Quitar las exitosas de la cola
+                    const restantes = cola.filter(c => !exitosas.includes(c));
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(restantes));
+                    if (exitosas.length > 0) {
+                        mostrarSync(`✓ ${exitosas.length} pendientes sincronizados`, 'rgba(0,150,50,0.8)');
+                    }
+                } catch(e) { console.warn('[Vamys] Error reintentando cola:', e); }
+            }, 30000);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", inicializarVamys);
+    } else {
+        inicializarVamys();
+    }
+</script>
+</body>
+<script>
+    
+    
+            var map_1a645390e93c5119d0d373b0dfc9e66c = L.map(
+                "map_1a645390e93c5119d0d373b0dfc9e66c",
+                {
+                    center: [-5.1755905166666665, -80.67052680833334],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_e24fbef0760b76eb747496f0c7dd51e3 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e24fbef0760b76eb747496f0c7dd51e3.addTo(map_1a645390e93c5119d0d373b0dfc9e66c);
+        
+    
+            var feature_group_3013b73053acd38dfca721ed31d1e0c6 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_43f461be7112a1472778e3eedbedf8f5 = L.markerClusterGroup(
+                {
+  "spiderfyOnMaxZoom": true,
+  "disableClusteringAtZoom": 17,
+  "maxClusterRadius": 60,
+}
+            );
+        
+    
+            var marker_3b09c8f16304b74f40c9a6eef7f7ef46 = L.marker(
+                [-5.1750302, -80.6698587],
+                {
+  "alt": "CORDOVA CASTILLO MELVA MAGALY",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_06979ae253369edc09c219b2b06939b1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9291ff2b415ed3321c0bb79cb1382c1d = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_f30d798f3c721e237158bde656bead6f = $(`<div id="html_f30d798f3c721e237158bde656bead6f" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">CORDOVA CASTILLO MELVA MAGALY</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">CORDOVA CASTILLO MELVA MAGALY</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MERCADO CAPULLANAS PUESTO 137 Y PUESTO 138 Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1750302,-80.6698587','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_9291ff2b415ed3321c0bb79cb1382c1d.setContent(html_f30d798f3c721e237158bde656bead6f);
+            
+        
+
+        marker_3b09c8f16304b74f40c9a6eef7f7ef46.bindPopup(popup_9291ff2b415ed3321c0bb79cb1382c1d)
+        ;
+
+        
+    
+    
+            marker_3b09c8f16304b74f40c9a6eef7f7ef46.bindTooltip(
+                `<div>
+                     CORDOVA CASTILLO MELVA MAGALY — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3b09c8f16304b74f40c9a6eef7f7ef46.setIcon(icon_06979ae253369edc09c219b2b06939b1);
+            
+    
+            var marker_b4657977a24e45acea144ea98a5f925f = L.marker(
+                [-5.1750302, -80.6698587],
+                {
+  "alt": "CORDOVA CASTILLO MELVA MAGALY",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_0d1989fa23e98587153700e6afd6620f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_752f7cc4973b37e6d4afa7b59779a00f = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_c1fd02a373033910b0c0f86bbcd3b8e8 = $(`<div id="html_c1fd02a373033910b0c0f86bbcd3b8e8" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">CORDOVA CASTILLO MELVA MAGALY</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">CORDOVA CASTILLO MELVA MAGALY</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MERCADO CAPULLANAS PUESTO 137 Y PUESTO 138 Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1750302,-80.6698587','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_752f7cc4973b37e6d4afa7b59779a00f.setContent(html_c1fd02a373033910b0c0f86bbcd3b8e8);
+            
+        
+
+        marker_b4657977a24e45acea144ea98a5f925f.bindPopup(popup_752f7cc4973b37e6d4afa7b59779a00f)
+        ;
+
+        
+    
+    
+            marker_b4657977a24e45acea144ea98a5f925f.bindTooltip(
+                `<div>
+                     CORDOVA CASTILLO MELVA MAGALY — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b4657977a24e45acea144ea98a5f925f.setIcon(icon_0d1989fa23e98587153700e6afd6620f);
+            
+    
+            var marker_6f5652e75c514ae817188da4232d3329 = L.marker(
+                [-5.1753257, -80.6699588],
+                {
+  "alt": "DENNER CHINCHAY SANTOS",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_6fb0f2615256401ad2f245b3be83ed19 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_056357773ddcaf87dab4ea67567b528b = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_768774e8963850b97cd452d36d4dce71 = $(`<div id="html_768774e8963850b97cd452d36d4dce71" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">DENNER CHINCHAY SANTOS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">DENNER CHINCHAY SANTOS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PUESTO N 72 / MERCADO CAPULLANAS Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1753257,-80.6699588','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_056357773ddcaf87dab4ea67567b528b.setContent(html_768774e8963850b97cd452d36d4dce71);
+            
+        
+
+        marker_6f5652e75c514ae817188da4232d3329.bindPopup(popup_056357773ddcaf87dab4ea67567b528b)
+        ;
+
+        
+    
+    
+            marker_6f5652e75c514ae817188da4232d3329.bindTooltip(
+                `<div>
+                     DENNER CHINCHAY SANTOS — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6f5652e75c514ae817188da4232d3329.setIcon(icon_6fb0f2615256401ad2f245b3be83ed19);
+            
+    
+            var marker_d398d7049b33816819b0fde9f8ba0504 = L.marker(
+                [-5.1753257, -80.6699588],
+                {
+  "alt": "DENNER CHINCHAY SANTOS",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_cab5759e205651df9309420a4262b6fd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d192c76e67bf80fbaeda335eed789ad8 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_1ffbd0ec87956907a0d8466844215864 = $(`<div id="html_1ffbd0ec87956907a0d8466844215864" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">DENNER CHINCHAY SANTOS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">DENNER CHINCHAY SANTOS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PUESTO N 72 / MERCADO CAPULLANAS Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1753257,-80.6699588','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_d192c76e67bf80fbaeda335eed789ad8.setContent(html_1ffbd0ec87956907a0d8466844215864);
+            
+        
+
+        marker_d398d7049b33816819b0fde9f8ba0504.bindPopup(popup_d192c76e67bf80fbaeda335eed789ad8)
+        ;
+
+        
+    
+    
+            marker_d398d7049b33816819b0fde9f8ba0504.bindTooltip(
+                `<div>
+                     DENNER CHINCHAY SANTOS — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d398d7049b33816819b0fde9f8ba0504.setIcon(icon_cab5759e205651df9309420a4262b6fd);
+            
+    
+            var marker_b7ae32eaf2ee2c15ee9b6c9d7803be67 = L.marker(
+                [-5.1756049, -80.6699976],
+                {
+  "alt": "MARIA MERCEDES CASTRO YARLEQUE",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_b8c268c6b5b7a869785f2319e9bf2678 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_27d1764ce3ac020eeeda8c10fdf62cc3 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_6af55256d026efce1e155b7e828d24b9 = $(`<div id="html_6af55256d026efce1e155b7e828d24b9" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA MERCEDES CASTRO YARLEQUE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA MERCEDES CASTRO YARLEQUE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PUESTO 33 / MCDO CAPULLANAS Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1756049,-80.6699976','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_27d1764ce3ac020eeeda8c10fdf62cc3.setContent(html_6af55256d026efce1e155b7e828d24b9);
+            
+        
+
+        marker_b7ae32eaf2ee2c15ee9b6c9d7803be67.bindPopup(popup_27d1764ce3ac020eeeda8c10fdf62cc3)
+        ;
+
+        
+    
+    
+            marker_b7ae32eaf2ee2c15ee9b6c9d7803be67.bindTooltip(
+                `<div>
+                     MARIA MERCEDES CASTRO YARLEQUE — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b7ae32eaf2ee2c15ee9b6c9d7803be67.setIcon(icon_b8c268c6b5b7a869785f2319e9bf2678);
+            
+    
+            var marker_2aac6c376f37735cc177accd3588e110 = L.marker(
+                [-5.1756272, -80.6698921],
+                {
+  "alt": "DALILA HERNANDEZ GARCIA",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_c61ad5b171cef27225d135a6971073cf = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_268eec717e05597488257907ceea5e6a = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_fac4c28d08138cd379ca46a7717a17dc = $(`<div id="html_fac4c28d08138cd379ca46a7717a17dc" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">DALILA HERNANDEZ GARCIA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">DALILA HERNANDEZ GARCIA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PUESTO 59 / MCDO CAPULLANAS Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1756272,-80.6698921','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_268eec717e05597488257907ceea5e6a.setContent(html_fac4c28d08138cd379ca46a7717a17dc);
+            
+        
+
+        marker_2aac6c376f37735cc177accd3588e110.bindPopup(popup_268eec717e05597488257907ceea5e6a)
+        ;
+
+        
+    
+    
+            marker_2aac6c376f37735cc177accd3588e110.bindTooltip(
+                `<div>
+                     DALILA HERNANDEZ GARCIA — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2aac6c376f37735cc177accd3588e110.setIcon(icon_c61ad5b171cef27225d135a6971073cf);
+            
+    
+            var marker_568c9c49742448e36ce0a7da7698fc4c = L.marker(
+                [-5.1754491, -80.6705743],
+                {
+  "alt": "SANTOS SILVA YNGA",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_0d225bae974680ef34ec30539cf710fd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cc43ecd9199f1f1f098e5e5880738960 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_5debbc22bf300b6866f01d6c86c52f14 = $(`<div id="html_5debbc22bf300b6866f01d6c86c52f14" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SANTOS SILVA YNGA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SANTOS SILVA YNGA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MERCADO CAPULLANAS PUESTO 44 Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1754491,-80.6705743','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_cc43ecd9199f1f1f098e5e5880738960.setContent(html_5debbc22bf300b6866f01d6c86c52f14);
+            
+        
+
+        marker_568c9c49742448e36ce0a7da7698fc4c.bindPopup(popup_cc43ecd9199f1f1f098e5e5880738960)
+        ;
+
+        
+    
+    
+            marker_568c9c49742448e36ce0a7da7698fc4c.bindTooltip(
+                `<div>
+                     SANTOS SILVA YNGA — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_568c9c49742448e36ce0a7da7698fc4c.setIcon(icon_0d225bae974680ef34ec30539cf710fd);
+            
+    
+            var marker_48b832ec14716ad3da9c02bcda61d5c3 = L.marker(
+                [-5.1761675, -80.6712162],
+                {
+  "alt": "DEISY ARROYO PARRILLA",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_364cc6debb5791f5c5b0c0d023d7804d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_be9f387490b8c821a4678ba3afa04785 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_5da54a07a388582db4e0efdf190e5f87 = $(`<div id="html_5da54a07a388582db4e0efdf190e5f87" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">DEISY ARROYO PARRILLA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">DEISY ARROYO PARRILLA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>N8 SECTOR 4 /  MERCADO CAPULLANAS Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1761675,-80.6712162','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_be9f387490b8c821a4678ba3afa04785.setContent(html_5da54a07a388582db4e0efdf190e5f87);
+            
+        
+
+        marker_48b832ec14716ad3da9c02bcda61d5c3.bindPopup(popup_be9f387490b8c821a4678ba3afa04785)
+        ;
+
+        
+    
+    
+            marker_48b832ec14716ad3da9c02bcda61d5c3.bindTooltip(
+                `<div>
+                     DEISY ARROYO PARRILLA — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_48b832ec14716ad3da9c02bcda61d5c3.setIcon(icon_364cc6debb5791f5c5b0c0d023d7804d);
+            
+    
+            var marker_01ad7d4d97c768c859b24fc8a2dd6095 = L.marker(
+                [-5.1757997, -80.6710703],
+                {
+  "alt": "ROSA ELIZABETH NU\u00d1EZ GARCIA",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_af11776fc9f94ec1552b377221b5a291 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_11300f94868bb0146533f4a93323f8b2 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_97a8fb004775e5e35d8c705743eb69c7 = $(`<div id="html_97a8fb004775e5e35d8c705743eb69c7" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ROSA ELIZABETH NUÑEZ GARCIA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ROSA ELIZABETH NUÑEZ GARCIA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PUESTO 17 / CAPULLANAS Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1757997,-80.6710703','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_11300f94868bb0146533f4a93323f8b2.setContent(html_97a8fb004775e5e35d8c705743eb69c7);
+            
+        
+
+        marker_01ad7d4d97c768c859b24fc8a2dd6095.bindPopup(popup_11300f94868bb0146533f4a93323f8b2)
+        ;
+
+        
+    
+    
+            marker_01ad7d4d97c768c859b24fc8a2dd6095.bindTooltip(
+                `<div>
+                     ROSA ELIZABETH NUÑEZ GARCIA — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_01ad7d4d97c768c859b24fc8a2dd6095.setIcon(icon_af11776fc9f94ec1552b377221b5a291);
+            
+    
+            var marker_792a6d41f8e009dc2eca96077038179d = L.marker(
+                [-5.1757973, -80.6710676],
+                {
+  "alt": "JAZMIN ESTELA GARCIA HUAMAN",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_74c7e35a89db8b7c8b54d42c660efff0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c0a9fc02131ac73e96dcdbafe232a967 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_ca66eeeb8e39b708cc42348c68504413 = $(`<div id="html_ca66eeeb8e39b708cc42348c68504413" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JAZMIN ESTELA GARCIA HUAMAN</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JAZMIN ESTELA GARCIA HUAMAN</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MERCADO CAPULLANAS PUESTO 13 Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1757973,-80.6710676','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_c0a9fc02131ac73e96dcdbafe232a967.setContent(html_ca66eeeb8e39b708cc42348c68504413);
+            
+        
+
+        marker_792a6d41f8e009dc2eca96077038179d.bindPopup(popup_c0a9fc02131ac73e96dcdbafe232a967)
+        ;
+
+        
+    
+    
+            marker_792a6d41f8e009dc2eca96077038179d.bindTooltip(
+                `<div>
+                     JAZMIN ESTELA GARCIA HUAMAN — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_792a6d41f8e009dc2eca96077038179d.setIcon(icon_74c7e35a89db8b7c8b54d42c660efff0);
+            
+    
+            var marker_96ea5b39218b201bf91ae5f2e797e481 = L.marker(
+                [-5.1758526, -80.671115],
+                {
+  "alt": "DINO MARCHENA CHINININ",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_18eda00dd3682913476b0c1e959ede5b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7d2a51215b00fc7ae74a20391283083c = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_30a96680d842ee78adaeb646f03298c9 = $(`<div id="html_30a96680d842ee78adaeb646f03298c9" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">DINO MARCHENA CHINININ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">DINO MARCHENA CHINININ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CAPULLANAS MAYORISTA PUESTO 12 Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1758526,-80.671115','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_7d2a51215b00fc7ae74a20391283083c.setContent(html_30a96680d842ee78adaeb646f03298c9);
+            
+        
+
+        marker_96ea5b39218b201bf91ae5f2e797e481.bindPopup(popup_7d2a51215b00fc7ae74a20391283083c)
+        ;
+
+        
+    
+    
+            marker_96ea5b39218b201bf91ae5f2e797e481.bindTooltip(
+                `<div>
+                     DINO MARCHENA CHINININ — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_96ea5b39218b201bf91ae5f2e797e481.setIcon(icon_18eda00dd3682913476b0c1e959ede5b);
+            
+    
+            var marker_33eb1411a69166788e945a957fb03aff = L.marker(
+                [-5.1760761, -80.6717536],
+                {
+  "alt": "ROSA SEMINARIO RAMOS",
+}
+            ).addTo(marker_cluster_43f461be7112a1472778e3eedbedf8f5);
+        
+    
+            var icon_888b5206143fcf4534dc77acae03fdf2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_11c9dfca21a9a330494693555cb1aedb = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_451894d0f13663d4d6bf6ebe6021f6bc = $(`<div id="html_451894d0f13663d4d6bf6ebe6021f6bc" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ROSA SEMINARIO RAMOS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ROSA SEMINARIO RAMOS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: KATHERINE REBECA DE JESUS CARDOZA LEE         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PUESTO 133 / INTERIOR CAPULLANAS Veintiséis de Octubre Veintiséis de Octubre Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1760761,-80.6717536','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_11c9dfca21a9a330494693555cb1aedb.setContent(html_451894d0f13663d4d6bf6ebe6021f6bc);
+            
+        
+
+        marker_33eb1411a69166788e945a957fb03aff.bindPopup(popup_11c9dfca21a9a330494693555cb1aedb)
+        ;
+
+        
+    
+    
+            marker_33eb1411a69166788e945a957fb03aff.bindTooltip(
+                `<div>
+                     ROSA SEMINARIO RAMOS — KATHERINE REBECA DE JESUS CARDOZA LEE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_33eb1411a69166788e945a957fb03aff.setIcon(icon_888b5206143fcf4534dc77acae03fdf2);
+            
+    
+            marker_cluster_43f461be7112a1472778e3eedbedf8f5.addTo(feature_group_3013b73053acd38dfca721ed31d1e0c6);
+        
+    
+            feature_group_3013b73053acd38dfca721ed31d1e0c6.addTo(map_1a645390e93c5119d0d373b0dfc9e66c);
+        
+    
+        function geo_json_714dd9fe47e43c10beda4841d1e6126c_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_714dd9fe47e43c10beda4841d1e6126c_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_714dd9fe47e43c10beda4841d1e6126c = L.geoJson(null, {
+                onEachFeature: geo_json_714dd9fe47e43c10beda4841d1e6126c_onEachFeature,
+            
+                pointToLayer: geo_json_714dd9fe47e43c10beda4841d1e6126c_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_714dd9fe47e43c10beda4841d1e6126c_add (data) {
+            geo_json_714dd9fe47e43c10beda4841d1e6126c
+                .addData(data);
+        }
+            geo_json_714dd9fe47e43c10beda4841d1e6126c_add({"features": [{"geometry": {"coordinates": [-80.6698587, -5.1750302], "type": "Point"}, "properties": {"name": "CORDOVA CASTILLO MELVA MAGALY", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6698587, -5.1750302], "type": "Point"}, "properties": {"name": "CORDOVA CASTILLO MELVA MAGALY", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6699588, -5.1753257], "type": "Point"}, "properties": {"name": "DENNER CHINCHAY SANTOS", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6699588, -5.1753257], "type": "Point"}, "properties": {"name": "DENNER CHINCHAY SANTOS", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6699976, -5.1756049], "type": "Point"}, "properties": {"name": "MARIA MERCEDES CASTRO YARLEQUE", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6698921, -5.1756272], "type": "Point"}, "properties": {"name": "DALILA HERNANDEZ GARCIA", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6705743, -5.1754491], "type": "Point"}, "properties": {"name": "SANTOS SILVA YNGA", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6712162, -5.1761675], "type": "Point"}, "properties": {"name": "DEISY ARROYO PARRILLA", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6710703, -5.1757997], "type": "Point"}, "properties": {"name": "ROSA ELIZABETH NU\u00d1EZ GARCIA", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6710676, -5.1757973], "type": "Point"}, "properties": {"name": "JAZMIN ESTELA GARCIA HUAMAN", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.671115, -5.1758526], "type": "Point"}, "properties": {"name": "DINO MARCHENA CHINININ", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6717536, -5.1760761], "type": "Point"}, "properties": {"name": "ROSA SEMINARIO RAMOS", "vendedor": "KATHERINE REBECA DE JESUS CARDOZA LEE"}, "type": "Feature"}], "type": "FeatureCollection"});
+        geo_json_714dd9fe47e43c10beda4841d1e6126c.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+    geo_json_714dd9fe47e43c10beda4841d1e6126c.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create('div');
+    
+    let handleObject = feature => {
+        if (feature === null) {
+            return '';
+        } else if (typeof(feature)=='object') {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = ["name", "vendedor"];
+    let aliases = ["Cliente:", "Vendedor:"];
+    let table = '<table>' +
+        String(
+        fields.map(
+        (v,i)=>
+        `<tr>
+            <th>${aliases[i]}</th>
+            
+            <td>${handleObject(layer.feature.properties[v])}</td>
+        </tr>`).join(''))
+    +'</table>';
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  "sticky": true,
+  "className": "foliumtooltip",
+});
+                     
+    
+            geo_json_714dd9fe47e43c10beda4841d1e6126c.addTo(map_1a645390e93c5119d0d373b0dfc9e66c);
+        
+    
+            var geo_json_714dd9fe47e43c10beda4841d1e6126csearchControl = new L.Control.Search({
+                layer: geo_json_714dd9fe47e43c10beda4841d1e6126c,
+                
+                propertyName: 'name',
+                
+                collapsed: false,
+                textPlaceholder: '🔍 Buscar cliente o bodega...',
+                position:'topleft',
+            
+                initial: false,
+                
+                zoom: 18,
+                
+                hideMarkerOnCollapse: true
+            
+                });
+                geo_json_714dd9fe47e43c10beda4841d1e6126csearchControl.on('search:locationfound', function(e) {
+                    geo_json_714dd9fe47e43c10beda4841d1e6126c.setStyle(function(feature){
+                        return feature.properties.style
+                    })
+                    
+                    e.layer.setStyle({
+  "weight": 3,
+  "searchAtStart": false,
+  "minLength": 1,
+  "autoCollapse": false,
+  "autoType": true,
+});
+                    
+                    if(e.layer._popup)
+                        e.layer.openPopup();
+                })
+                geo_json_714dd9fe47e43c10beda4841d1e6126csearchControl.on('search:collapsed', function(e) {
+                        geo_json_714dd9fe47e43c10beda4841d1e6126c.setStyle(function(feature){
+                            return feature.properties.style
+                    });
+                });
+            map_1a645390e93c5119d0d373b0dfc9e66c.addControl( geo_json_714dd9fe47e43c10beda4841d1e6126csearchControl );
+
+        
+    
+            var layer_control_601059232db9eb44e8c92548f1553d67_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_e24fbef0760b76eb747496f0c7dd51e3,
+                },
+                overlays :  {
+                    "KATHERINE REBECA DE JESUS CARDOZA LEE (12)" : feature_group_3013b73053acd38dfca721ed31d1e0c6,
+                },
+            };
+            let layer_control_601059232db9eb44e8c92548f1553d67 = L.control.layers(
+                layer_control_601059232db9eb44e8c92548f1553d67_layers.base_layers,
+                layer_control_601059232db9eb44e8c92548f1553d67_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_1a645390e93c5119d0d373b0dfc9e66c);
+
+        
+    
+            var locate_control_9bfb437477cadf537ad3b5779421034c = L.control.locate(
+                {"flyTo": true, "keepCurrentZoomLevel": true, "locateOptions": {"enableHighAccuracy": true, "maxZoom": 16}, "strings": {"popup": "Estas aqui!", "title": "Mi ubicacion"}}
+            ).addTo(map_1a645390e93c5119d0d373b0dfc9e66c);
+            
+                locate_control_9bfb437477cadf537ad3b5779421034c.start();
+            
+        
+</script>
+</html>
