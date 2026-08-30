@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+<style>
+    .folium-map {
+        width: 100% !important;
+        height: 100vh !important;
+        position: absolute !important;
+        top: 0; left: 0;
+        z-index: 1;
+    }
+    .leaflet-control-search {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+        border-radius: 25px !important;
+        overflow: hidden;
+    }
+    .leaflet-control-search .search-input {
+        padding: 8px 15px !important;
+        border-radius: 25px !important;
+        border: 1px solid #eee !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-control-search.search-exp .search-input { width: 250px !important; }
+    .leaflet-control-search .search-button {
+        background-color: #fff !important;
+        border-radius: 50% !important;
+        width: 34px !important; height: 34px !important;
+    }
+    .leaflet-control-layers {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        border-radius: 12px !important;
+        padding: 10px !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-bar {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }
+    .leaflet-bar a {
+        background-color: white !important;
+        color: #333 !important;
+        border: 1px solid #f0f0f0 !important;
+    }
+    .leaflet-bar a:first-child { border-radius: 8px 8px 0 0 !important; }
+    .leaflet-bar a:last-child  { border-radius: 0 0 8px 8px !important; }
+    .leaflet-tooltip {
+        background: rgba(255,255,255,0.95) !important;
+        border: none !important;
+        border-radius: 6px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
+    }
+    /* Mejoras al buscador para que parezca una lista */
+    .leaflet-control-search .search-tip {
+        padding: 12px !important;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px !important;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #333;
+        background: #fff;
+    }
+    .leaflet-control-search .search-tip:hover {
+        background: #3498db !important;
+        color: #fff !important;
+    }
+    .leaflet-control-search .search-tooltip {
+        max-height: 400px !important;
+        width: 100% !important;
+        min-width: 280px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+        border: none !important;
+        margin-top: 10px !important;
+    }
+    .leaflet-control-search .search-input {
+        height: 40px !important;
+        font-size: 16px !important;
+    }
+    /* Estilo para pines entregados */
+    .marker-delivered {
+        filter: grayscale(100%) brightness(70%) opacity(0.6) !important;
+        transition: all 0.3s ease;
+    }
+    .marker-delivered i {
+        color: #eee !important;
+    }
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_0d4e2fdf91d80320d3e0a9033011590c {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    
+                    <style>
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    </style>
+            
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.css"/>
+</head>
+<body>
+    
+    
+<div id="nav-panel" style="
+    display:none; position:fixed; bottom:20px; left:20px;
+    width:300px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">&#128640; Rutas de Navegacion</h3>
+        <button onclick="document.getElementById('nav-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">&#215;</button>
+    </div>
+    <div id="nav-links-container" style="max-height:400px;overflow-y:auto;"></div>
+</div>
+
+<button onclick="toggleNavPanel()" style="
+    position:fixed; bottom:20px; left:20px; z-index:9998;
+    background:#4285F4; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    &#128506; VER RUTAS GOOGLE MAPS
+</button>
+
+<script>
+    var infoRutas = {"DOMITILA QUISPE MIRANDA": [{"nombre": "Tramo 1  (GUISSELA DEL CARMEN QUEREVALU VILLEGAS \u2192 MARIA DEL SOCORRO QUEREVALU QUEREVALU)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.2784384,-81.1222111&waypoints=-5.2798434%2C-81.1228667%7C-5.2791355%2C-81.123189%7C-5.1084531%2C-81.1100249%7C-5.108467%2C-81.1100983%7C-5.279877%2C-81.120474%7C-5.2799637%2C-81.1226833%7C-5.2817028%2C-81.1216465%7C-5.2810154%2C-81.1223912%7C-5.2791355%2C-81.123189"}, {"nombre": "Tramo 2  (MARIA DEL SOCORRO QUEREVALU QUEREVALU \u2192 QUEREVALU QUEREVALU JOSEFA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.1326802,-81.1700443&waypoints=-5.2784384%2C-81.1222111%7C-5.2785205%2C-81.1181717%7C-5.2785649%2C-81.1173058%7C-5.109143%2C-81.117261%7C-5.1338495%2C-81.1709369%7C-5.1359352%2C-81.1706593%7C-5.1322208%2C-81.1710683%7C-5.1322744%2C-81.1719819%7C-5.1325935%2C-81.1703353"}, {"nombre": "Tramo 3  (QUEREVALU QUEREVALU JOSEFA \u2192 MARIA ADELA PASAPERA ANCAJIMA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.1340833,-81.1706698&waypoints=-5.1326802%2C-81.1700443%7C-5.1318796%2C-81.169973"}], "LEONARDO VIERA CHAVEZ": [{"nombre": "Tramo 1  (CHERO DE VALLEJOS LIDIA ESTHER \u2192 RAFAEL JULIAN PEREZ MEZA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.0928378,-81.0989593&waypoints=-5.085972%2C-81.111278%7C-5.0920726%2C-81.0989253%7C-5.0920769%2C-81.0988741%7C-5.0920769%2C-81.0988741%7C-5.0902335%2C-81.1125338%7C-5.0899168%2C-81.1130847%7C-5.0920726%2C-81.0989253%7C-5.0928504%2C-81.0989557%7C-5.0927039%2C-81.0993198"}, {"nombre": "Tramo 2  (RAFAEL JULIAN PEREZ MEZA \u2192 RAFAEL JULIAN PEREZ MEZA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-5.0928378,-81.0989593"}]};
+    var listaClientes = [{"nombre": "ANA MARIA QUEREVALU QUEREVALU", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1322744, "lng": -81.1719819}, {"nombre": "CHERO DE VALLEJOS LIDIA ESTHER", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.085972, "lng": -81.111278}, {"nombre": "FERNANDEZ MIRANDA JOSEFA", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0928504, "lng": -81.0989557}, {"nombre": "F\u00c1TIMA ORDINOLA CORNEJO", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.108467, "lng": -81.1100983}, {"nombre": "GUISSELA DEL CARMEN QUEREVALU VILLEGAS", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2798434, "lng": -81.1228667}, {"nombre": "JUANA MARLENE LLENQUE VILELA", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1338495, "lng": -81.1709369}, {"nombre": "Jhoan Josu\u00e9 ipanaque Cienfuegos", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0920726, "lng": -81.0989253}, {"nombre": "Jhoan Josu\u00e9 ipanaque Cienfuegos", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0920726, "lng": -81.0989253}, {"nombre": "KAREN MIRELLA QUEREVALU ZETA", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1322208, "lng": -81.1710683}, {"nombre": "MARCELA PATRICIA PURIZACA PAZO", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2785649, "lng": -81.1173058}, {"nombre": "MARCOS SAMUEL PORTOCARRERO GARCIA", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0920769, "lng": -81.0988741}, {"nombre": "MARCOS SAMUEL PORTOCARRERO GARCIA", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0920769, "lng": -81.0988741}, {"nombre": "MARIA ADELA PASAPERA ANCAJIMA", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1340833, "lng": -81.1706698}, {"nombre": "MARIA DEL SOCORRO QUEREVALU QUEREVALU", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2784384, "lng": -81.1222111}, {"nombre": "MARIA MARGARITA QUEREVALU SANTOS", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2810154, "lng": -81.1223912}, {"nombre": "MARIA SANTOS QUEREVALU QUEREVALU", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1359352, "lng": -81.1706593}, {"nombre": "MELISA EVELIN PUESCAS MONCADA", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2799637, "lng": -81.1226833}, {"nombre": "NEGOCIOS Y SERVICIOS GENERALES CALLE E.I.R.L.", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0902335, "lng": -81.1125338}, {"nombre": "NORMA CHAPILLIQUEN QUEREVALU", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2785205, "lng": -81.1181717}, {"nombre": "QUEREVALU PUESCAS CLARA", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1325935, "lng": -81.1703353}, {"nombre": "QUEREVALU QUEREVALU JOSEFA", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1326802, "lng": -81.1700443}, {"nombre": "RAFAEL JULIAN PEREZ MEZA", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0928378, "lng": -81.0989593}, {"nombre": "ROSA ELENA CHAPILLIQUEN TEMOCHE", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.279877, "lng": -81.120474}, {"nombre": "ROSMERY YESENIA PAZO MARTINEZ", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2817028, "lng": -81.1216465}, {"nombre": "SANDOVAL BALDERA JOSE OSCAR", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.109143, "lng": -81.117261}, {"nombre": "SANTAMARIA SANDOVAL RAUL", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2791355, "lng": -81.123189}, {"nombre": "SANTAMARIA SANDOVAL RAUL", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.2791355, "lng": -81.123189}, {"nombre": "SOLUCIONES ALIMENTICIAS 102 S.R.L.", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1084531, "lng": -81.1100249}, {"nombre": "TODO MAX E.I.R.L.", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0927039, "lng": -81.0993198}, {"nombre": "YOVANNA YOLI QUEREVALU PUESCAS", "vendedor": "DOMITILA QUISPE MIRANDA", "lat": -5.1318796, "lng": -81.169973}, {"nombre": "YULI LILIANA CRUZ HIJUELA", "vendedor": "LEONARDO VIERA CHAVEZ", "lat": -5.0899168, "lng": -81.1130847}];
+
+    function toggleNavPanel() {
+        var p = document.getElementById('nav-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+             renderRutas();
+             document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+
+    function toggleListPanel() {
+        var p = document.getElementById('list-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+            renderListaClientes();
+            document.getElementById('nav-panel').style.display = 'none';
+        }
+    }
+
+    function renderRutas() {
+        var c = document.getElementById('nav-links-container');
+        c.innerHTML = '';
+        for (var vend in infoRutas) {
+            var sec = document.createElement('div');
+            sec.style.marginBottom = '15px';
+            sec.innerHTML = '<strong style="color:#666;font-size:13px;display:block;margin-bottom:5px;">👤 ' + vend + '</strong>';
+            infoRutas[vend].forEach(function(link) {
+                var a = document.createElement('a');
+                a.href = link.url; a.target = '_blank';
+                a.textContent = link.nombre;
+                a.style.cssText = 'display:block;background:#f1f3f4;color:#1a73e8;' +
+                    'padding:8px 12px;border-radius:8px;margin-bottom:5px;' +
+                    'text-decoration:none;font-size:12px;font-weight:600;';
+                a.onmouseover = function() { this.style.background = '#e8f0fe'; };
+                a.onmouseout  = function() { this.style.background = '#f1f3f4'; };
+                sec.appendChild(a);
+            });
+            c.appendChild(sec);
+        }
+    }
+
+    function renderListaClientes(filtro = '') {
+        var c = document.getElementById('list-container');
+        c.innerHTML = '';
+        var filtrados = listaClientes.filter(cl => 
+            cl.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+            cl.vendedor.toLowerCase().includes(filtro.toLowerCase())
+        );
+
+        filtrados.forEach(function(cl) {
+            var d = document.createElement('div');
+            d.style.cssText = 'background:#fff; border:1px solid #eee; padding:10px; border-radius:8px; margin-bottom:8px; cursor:pointer; transition: 0.2s;';
+            d.innerHTML = '<div style="font-weight:bold; color:#333; font-size:13px;">' + cl.nombre + '</div>' +
+                          '<div style="font-size:11px; color:#777;">👤 ' + cl.vendedor + '</div>';
+            
+            d.onclick = function() {
+                irAlCliente(cl.lat, cl.lng, cl.nombre);
+            };
+            d.onmouseover = function() { this.style.background = '#f8f9fa'; this.style.borderColor = '#3498db'; };
+            d.onmouseout  = function() { this.style.background = '#fff'; this.style.borderColor = '#eee'; };
+            c.appendChild(d);
+        });
+    }
+
+    function irAlCliente(lat, lng, nombre) {
+        if (!window._mapaListo) return;
+        window._mapaListo.setView([lat, lng], 18);
+        
+        // Buscar el marcador y abrir popup
+        window._mapaListo.eachLayer(function(layer) {
+            if (layer instanceof L.Marker && layer.options && (layer.options.alt === nombre || (layer.options.tooltip && layer.options.tooltip.getContent().includes(nombre)))) {
+                layer.openPopup();
+            }
+        });
+
+        if (window.innerWidth < 768) {
+            document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+</script>
+
+<div id="list-panel" style="
+    display:none; position:fixed; bottom:80px; left:20px;
+    width:320px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">📋 Lista de Clientes</h3>
+        <button onclick="document.getElementById('list-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">×</button>
+    </div>
+    <input type="text" placeholder="Filtrar clientes..." onkeyup="renderListaClientes(this.value)" style="
+        width:100%; padding:8px 12px; border-radius:8px; border:1px solid #ddd; margin-bottom:10px; box-sizing: border-box;
+    ">
+    <div id="list-container" style="max-height:400px;overflow-y:auto; padding-right:5px;"></div>
+</div>
+
+<button onclick="toggleListPanel()" style="
+    position:fixed; bottom:20px; left:220px; z-index:9998;
+    background:#27ae60; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    📋 LISTADO
+</button>
+    
+            <div class="folium-map" id="map_0d4e2fdf91d80320d3e0a9033011590c" ></div>
+        
+
+<!-- Boton volver al menu principal -->
+<a href="index.html" style="
+    position:fixed; top:15px; left:50px; z-index:9998;
+    background:white; color:#333;
+    border:2px solid #ccc; border-radius:8px;
+    padding:8px 15px; font-weight:bold;
+    text-decoration:none; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8592; VOLVER AL MENU
+</a>
+
+<!-- Boton reset de entregas -->
+<button onclick="resetEntregas()" style="
+    position:fixed; top:15px; left:230px; z-index:9998;
+    background:#e74c3c; color:white;
+    border:none; border-radius:8px;
+    padding:10px 15px; font-weight:bold;
+    cursor:pointer; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8635; RESET ENTREGAS
+</button>
+
+<!-- Indicador de sincronizacion -->
+<div id="sync-indicator" style="
+    position:fixed; bottom:15px; right:15px; z-index:9999;
+    background:rgba(0,0,0,0.7); color:white;
+    padding:6px 12px; border-radius:20px;
+    font-size:11px; font-family:'Segoe UI',sans-serif;
+    display:none; transition:opacity 0.3s;">
+    &#9729; Sincronizando...
+</div>
+
+<script>
+    // --- CONFIGURACION NUBE ---
+    
+    const JSONBIN_BIN_ID = '';
+    const JSONBIN_API_KEY = '$2a$10$XbSEDYDqGr6WwHfnYP2gQu07YA10s.clBAD4NP8ZDflkUr0ihvtA2';
+    const NUBE_ACTIVA = false;
+    
+
+    window._mapaListo   = null;
+    window._markerActual = null;
+
+    window.resetEntregas = async function() {
+        if (!confirm("¿Estás seguro de que quieres reiniciar TODOS los estados de entrega de esta ruta?")) return;
+        
+        // 1. Limpiar localStorage
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('entregas_')) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+        
+        // 2. Limpiar nube
+        if (NUBE_ACTIVA) {
+            mostrarSync('&#9729; Reiniciando en nube...', 'rgba(0,100,200,0.8)');
+            _estadoNube = {};
+            const payload = { entregas: {}, ultima_sync: new Date().toISOString() };
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+                mostrarSync('&#10003; Entregas reiniciadas en nube', 'rgba(0,150,50,0.8)');
+            } catch(e) {}
+        }
+        
+        // 3. Re-aplicar visualmente (todos a false)
+        if (window._mapaListo) {
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    window.marcarVisual(layer, false);
+                }
+            });
+        }
+        
+        // 4. Si el popup de un marcador está abierto, actualizar su checkbox
+        if (window._markerActual && window._markerActual.isPopupOpen()) {
+             const popup = window._markerActual.getPopup();
+             const wrapper = popup ? popup._wrapper : null;
+             const chk = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+             if (chk) chk.checked = false;
+        }
+    };
+
+    function mostrarSync(texto, color) {
+        const el = document.getElementById('sync-indicator');
+        if (!el) return;
+        el.textContent = texto;
+        el.style.background = color || 'rgba(0,0,0,0.7)';
+        el.style.display = 'block';
+        el.style.opacity = '1';
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }, 2000);
+    }
+
+    // --- VISUAL ---
+    window.marcarVisual = function(marker, entregado) {
+        if (!marker) return;
+        
+        // Guardar el estado en las opciones del marker para persistencia
+        if (!marker.options) marker.options = {};
+        marker.options.isDelivered = entregado;
+
+        if (marker._icon) {
+            if (entregado) {
+                marker._icon.classList.add('marker-delivered');
+            } else {
+                marker._icon.classList.remove('marker-delivered');
+            }
+        }
+    };
+
+    // --- JSONBIN CLOUD API ---
+    async function leerNube() {
+        if (!NUBE_ACTIVA) return null;
+        try {
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            return data.record || data;
+        } catch(e) { return null; }
+    }
+
+    async function escribirNube(estadoCompleto) {
+        if (!NUBE_ACTIVA) return false;
+        mostrarSync('&#9729; Sincronizando...', 'rgba(0,100,200,0.8)');
+        try {
+            // Leer estado actual para hacer MERGE (evitar sobrescribir cambios de otros)
+            const actual = await leerNube();
+            const entregasActuales = (actual && actual.entregas) ? actual.entregas : {};
+
+            // Merge: combinar estado actual en nube + nuevos cambios
+            const merged = { ...entregasActuales, ...estadoCompleto.entregas };
+            const payload = {
+                entregas: merged,
+                ultima_sync: new Date().toISOString()
+            };
+
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY
+                },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                mostrarSync('&#10003; Guardado en nube', 'rgba(0,150,50,0.8)');
+                return true;
+            }
+        } catch(e) { console.warn('Error escribiendo en nube:', e); }
+        mostrarSync('&#9888; Solo guardado local', 'rgba(200,100,0,0.8)');
+        return false;
+    }
+
+    // --- LOCAL STORAGE FALLBACK ---
+    function guardarLocal(id, delivered) {
+        try { localStorage.setItem('entregas_' + id, delivered); } catch(e){}
+    }
+    function leerLocal(id) {
+        const v = localStorage.getItem('entregas_' + id);
+        return v === 'true' || v === true;
+    }
+    function leerTodosLocal() {
+        const res = {};
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('entregas_')) {
+                    res[key.replace('entregas_', '')] = localStorage.getItem(key) === 'true';
+                }
+            }
+        } catch(e){}
+        return res;
+    }
+
+    // --- ESTADO UNIFICADO ---
+    let _estadoNube = null;
+
+    async function cargarEstados() {
+        // Prioridad: Nube > Local
+        const nube = await leerNube();
+        if (nube && nube.entregas) {
+            _estadoNube = nube.entregas;
+            // Sincronizar nube -> local
+            Object.entries(_estadoNube).forEach(([id, data]) => {
+                const val = (typeof data === 'object') ? data.entregado : data;
+                guardarLocal(id, val);
+            });
+            return _estadoNube;
+        }
+        // Fallback local
+        return leerTodosLocal();
+    }
+
+    async function getStatus(id) {
+        if (_estadoNube && id in _estadoNube) {
+            const val = _estadoNube[id];
+            return (typeof val === 'object') ? !!val.entregado : !!val;
+        }
+        return leerLocal(id);
+    }
+
+    // --- GUARDAR ENTREGA ---
+    window.guardarEstadoEntrega = async function(btn) {
+        try {
+            const popup = btn.closest('.leaflet-popup-content') || btn.closest('.leaflet-popup-content-wrapper');
+            const span = popup ? popup.querySelector('.bodega-nombre') : null;
+            const chk  = popup ? popup.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+
+            const nombre      = span.textContent.trim();
+            const nuevoEstado = chk.checked;
+
+            // 1. Guardar local de inmediato (UX sin espera)
+            guardarLocal(nombre, nuevoEstado);
+
+            // 2. Actualizar visual
+            if (window._markerActual) window.marcarVisual(window._markerActual, nuevoEstado);
+            else reAplicarEstados();
+
+            // 3. Feedback inmediato en boton
+            const orig = btn.innerHTML;
+            btn.innerHTML = 'GUARDANDO...';
+            btn.style.background = '#0d6efd';
+
+            // 4. Subir a la nube con merge
+            const entregaData = {
+                entregado: nuevoEstado,
+                fecha: new Date().toISOString()
+            };
+            if (_estadoNube) _estadoNube[nombre] = entregaData;
+            else _estadoNube = { [nombre]: entregaData };
+
+            const nubeOk = await escribirNube({ entregas: { [nombre]: entregaData } });
+
+            // Si fallo la nube, guardar en cola de reintentos
+            if (!nubeOk && NUBE_ACTIVA) {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    cola.push({ [nombre]: entregaData });
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(cola));
+                    console.log('[Vamys] Guardado en cola de reintentos');
+                } catch(qe) {}
+            }
+
+            btn.innerHTML = nubeOk ? '✓ GUARDADO EN NUBE' : '✓ GUARDADO LOCAL';
+            btn.style.background = nubeOk ? '#155724' : '#856404';
+            setTimeout(() => { btn.innerHTML = orig; btn.style.background = '#28a745'; }, 1500);
+
+        } catch (err) {
+            console.error("Error al guardar:", err);
+        }
+    };
+
+    async function reAplicarEstados() {
+        if (!window._mapaListo) return;
+        try {
+            const estados = await cargarEstados();
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    const val = estados[layer.options.alt];
+                    const entregado = (typeof val === 'object') ? !!val?.entregado : !!val;
+                    window.marcarVisual(layer, entregado);
+                }
+            });
+        } catch(e) { console.error("Error re-aplicando estados:", e); }
+    }
+
+    function inicializarVamys() {
+        const mapEl = document.querySelector('.folium-map');
+        if (!mapEl) { setTimeout(inicializarVamys, 500); return; }
+        if (mapEl.offsetHeight === 0) { mapEl.style.height = '100vh'; mapEl.style.width = '100vw'; }
+
+        let mapObj = null;
+        try {
+            if (mapEl.id && window[mapEl.id] && typeof window[mapEl.id].on === 'function') {
+                mapObj = window[mapEl.id];
+            } else {
+                for (let key in window) {
+                    if (key.startsWith('map_') && window[key] && typeof window[key].on === 'function') {
+                        if (window[key].eachLayer) { mapObj = window[key]; break; }
+                    }
+                }
+            }
+        } catch(e){}
+
+        if (!mapObj) { setTimeout(inicializarVamys, 500); return; }
+
+        window._mapaListo  = mapObj;
+        mapEl._leaflet_map = mapObj;
+
+        // Escuchar cuando se agrega cualquier capa (muy útil para clusters)
+        mapObj.on('layeradd', async (e) => {
+            if (e.layer instanceof L.Marker && e.layer.options && e.layer.options.alt) {
+                const entregado = await getStatus(e.layer.options.alt);
+                window.marcarVisual(e.layer, entregado);
+            }
+        });
+
+        // Mantener moveend/zoomend solo como backup ocasional
+        mapObj.on('zoomend moveend spiderfied', () => setTimeout(reAplicarEstados, 500));
+
+        mapObj.on('popupopen', async (e) => {
+            const marker  = e.popup._source;
+            if (!marker) return;
+            const wrapper = e.popup._wrapper;
+            const span    = wrapper ? wrapper.querySelector('.bodega-nombre') : null;
+            const chk     = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+            const nombre = span.textContent.trim();
+            window._markerActual = marker;
+            if (marker.options) marker.options.alt = nombre;
+            chk.checked = await getStatus(nombre);
+        });
+
+        reAplicarEstados();
+
+        // ── POLLING: actualizar desde la nube cada 15 segundos ──
+        if (NUBE_ACTIVA) {
+            console.log('[Vamys] Polling activo: sincronizando cada 15s desde JSONBin');
+            setInterval(async () => {
+                try {
+                    _estadoNube = null; // forzar re-lectura
+                    await reAplicarEstados();
+                } catch(e) { console.warn('[Vamys] Error en polling:', e); }
+            }, 15000);
+        }
+
+        // ── REINTENTAR escrituras fallidas guardadas en cola ──
+        if (NUBE_ACTIVA) {
+            setInterval(async () => {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    if (cola.length === 0) return;
+                    console.log(`[Vamys] Reintentando ${cola.length} escrituras pendientes...`);
+                    const exitosas = [];
+                    for (const item of cola) {
+                        const ok = await escribirNube({ entregas: item });
+                        if (ok) exitosas.push(item);
+                    }
+                    // Quitar las exitosas de la cola
+                    const restantes = cola.filter(c => !exitosas.includes(c));
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(restantes));
+                    if (exitosas.length > 0) {
+                        mostrarSync(`✓ ${exitosas.length} pendientes sincronizados`, 'rgba(0,150,50,0.8)');
+                    }
+                } catch(e) { console.warn('[Vamys] Error reintentando cola:', e); }
+            }, 30000);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", inicializarVamys);
+    } else {
+        inicializarVamys();
+    }
+</script>
+</body>
+<script>
+    
+    
+            var map_0d4e2fdf91d80320d3e0a9033011590c = L.map(
+                "map_0d4e2fdf91d80320d3e0a9033011590c",
+                {
+                    center: [-5.164535164516129, -81.12731972258062],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_7775ae360f00af622a40974c1eecc960 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_7775ae360f00af622a40974c1eecc960.addTo(map_0d4e2fdf91d80320d3e0a9033011590c);
+        
+    
+            var feature_group_2440ba5846d5737774edc3a8c7cea646 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2 = L.markerClusterGroup(
+                {
+  "spiderfyOnMaxZoom": true,
+  "disableClusteringAtZoom": 17,
+  "maxClusterRadius": 60,
+}
+            );
+        
+    
+            var marker_425c0b98b7a84f8288924ddc76e87a1c = L.marker(
+                [-5.2798434, -81.1228667],
+                {
+  "alt": "GUISSELA DEL CARMEN QUEREVALU VILLEGAS",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_be5a234c00db2471eb129ac12b911c14 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c1eda48d12da6627cd46e950a2e5b31a = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_d5bae952ba6a9f62cbdec3aa6d2af1dc = $(`<div id="html_d5bae952ba6a9f62cbdec3aa6d2af1dc" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">GUISSELA DEL CARMEN QUEREVALU VILLEGAS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">GUISSELA DEL CARMEN QUEREVALU VILLEGAS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle Miramar tortuga Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2798434,-81.1228667','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_c1eda48d12da6627cd46e950a2e5b31a.setContent(html_d5bae952ba6a9f62cbdec3aa6d2af1dc);
+            
+        
+
+        marker_425c0b98b7a84f8288924ddc76e87a1c.bindPopup(popup_c1eda48d12da6627cd46e950a2e5b31a)
+        ;
+
+        
+    
+    
+            marker_425c0b98b7a84f8288924ddc76e87a1c.bindTooltip(
+                `<div>
+                     GUISSELA DEL CARMEN QUEREVALU VILLEGAS — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_425c0b98b7a84f8288924ddc76e87a1c.setIcon(icon_be5a234c00db2471eb129ac12b911c14);
+            
+    
+            var marker_2b97860b0085ff2b3507a4021303ac3a = L.marker(
+                [-5.2791355, -81.123189],
+                {
+  "alt": "SANTAMARIA SANDOVAL RAUL",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_85724d5b8352ce59306d50825f83b4fb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fb60ae3736f2f6d09b5725e8ed08c15b = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_89acbf1bfc9facede6ba6a8ce79bb342 = $(`<div id="html_89acbf1bfc9facede6ba6a8ce79bb342" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SANTAMARIA SANDOVAL RAUL</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SANTAMARIA SANDOVAL RAUL</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>SANTAMARIA SANDOVAL RAUL La tortuga S/N Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2791355,-81.123189','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_fb60ae3736f2f6d09b5725e8ed08c15b.setContent(html_89acbf1bfc9facede6ba6a8ce79bb342);
+            
+        
+
+        marker_2b97860b0085ff2b3507a4021303ac3a.bindPopup(popup_fb60ae3736f2f6d09b5725e8ed08c15b)
+        ;
+
+        
+    
+    
+            marker_2b97860b0085ff2b3507a4021303ac3a.bindTooltip(
+                `<div>
+                     SANTAMARIA SANDOVAL RAUL — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2b97860b0085ff2b3507a4021303ac3a.setIcon(icon_85724d5b8352ce59306d50825f83b4fb);
+            
+    
+            var marker_c20df57985e017c9d455f29ac85d0d09 = L.marker(
+                [-5.1084531, -81.1100249],
+                {
+  "alt": "SOLUCIONES ALIMENTICIAS 102 S.R.L.",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_a99093239afe1983bd645405bfc88c20 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f3f3488d83406dca1bb21946cb20e6fe = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_ad4a8ab8113199849712b4c089d6324a = $(`<div id="html_ad4a8ab8113199849712b4c089d6324a" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SOLUCIONES ALIMENTICIAS 102 S.R.L.</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SOLUCIONES ALIMENTICIAS 102 S.R.L.</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>SOLUCIONES ALIMENTICIAS 102 S.R.L. Av complementaria paita Paita 200101Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1084531,-81.1100249','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_f3f3488d83406dca1bb21946cb20e6fe.setContent(html_ad4a8ab8113199849712b4c089d6324a);
+            
+        
+
+        marker_c20df57985e017c9d455f29ac85d0d09.bindPopup(popup_f3f3488d83406dca1bb21946cb20e6fe)
+        ;
+
+        
+    
+    
+            marker_c20df57985e017c9d455f29ac85d0d09.bindTooltip(
+                `<div>
+                     SOLUCIONES ALIMENTICIAS 102 S.R.L. — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c20df57985e017c9d455f29ac85d0d09.setIcon(icon_a99093239afe1983bd645405bfc88c20);
+            
+    
+            var marker_9a2d36f37c2262e8e941202f9269f2e3 = L.marker(
+                [-5.108467, -81.1100983],
+                {
+  "alt": "F\u00c1TIMA ORDINOLA CORNEJO",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_df14da2dbe5af4883fc035507c0881a7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2885ccb778d477ac45d38fec0a5be861 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_d341e3ad4fed425da9ebf28aa6624b02 = $(`<div id="html_d341e3ad4fed425da9ebf28aa6624b02" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">FÁTIMA ORDINOLA CORNEJO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">FÁTIMA ORDINOLA CORNEJO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Ah rosa de Guadalupe mz E lote 4 paita alta Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.108467,-81.1100983','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_2885ccb778d477ac45d38fec0a5be861.setContent(html_d341e3ad4fed425da9ebf28aa6624b02);
+            
+        
+
+        marker_9a2d36f37c2262e8e941202f9269f2e3.bindPopup(popup_2885ccb778d477ac45d38fec0a5be861)
+        ;
+
+        
+    
+    
+            marker_9a2d36f37c2262e8e941202f9269f2e3.bindTooltip(
+                `<div>
+                     FÁTIMA ORDINOLA CORNEJO — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9a2d36f37c2262e8e941202f9269f2e3.setIcon(icon_df14da2dbe5af4883fc035507c0881a7);
+            
+    
+            var marker_1cc8ed4caccbd24d359ce1e39d1cb641 = L.marker(
+                [-5.279877, -81.120474],
+                {
+  "alt": "ROSA ELENA CHAPILLIQUEN TEMOCHE",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_c50bd3c99f82e8c8583d0da2a045ea6e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_274b4dcf5b7ece9e853a0dfaaf1eef3d = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_61b951f33e7929de106acaf95b6035cc = $(`<div id="html_61b951f33e7929de106acaf95b6035cc" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ROSA ELENA CHAPILLIQUEN TEMOCHE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ROSA ELENA CHAPILLIQUEN TEMOCHE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle Piura s/n centro poblado la Tortuga Paita coffe market Paita  Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.279877,-81.120474','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_274b4dcf5b7ece9e853a0dfaaf1eef3d.setContent(html_61b951f33e7929de106acaf95b6035cc);
+            
+        
+
+        marker_1cc8ed4caccbd24d359ce1e39d1cb641.bindPopup(popup_274b4dcf5b7ece9e853a0dfaaf1eef3d)
+        ;
+
+        
+    
+    
+            marker_1cc8ed4caccbd24d359ce1e39d1cb641.bindTooltip(
+                `<div>
+                     ROSA ELENA CHAPILLIQUEN TEMOCHE — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1cc8ed4caccbd24d359ce1e39d1cb641.setIcon(icon_c50bd3c99f82e8c8583d0da2a045ea6e);
+            
+    
+            var marker_c4afc812b71300b97834c0da6e7cc64e = L.marker(
+                [-5.2799637, -81.1226833],
+                {
+  "alt": "MELISA EVELIN PUESCAS MONCADA",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_5a78999efe62e88c2b7981bda1030cd2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_58a1c958fd2d751a76bb87f8be2fc6ef = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_ad8e02208682a74103289dba533fcace = $(`<div id="html_ad8e02208682a74103289dba533fcace" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MELISA EVELIN PUESCAS MONCADA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MELISA EVELIN PUESCAS MONCADA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle  nuevo porvenir s/n referencia 2 calles atrás del colegio Jesús es mi pastor Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2799637,-81.1226833','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_58a1c958fd2d751a76bb87f8be2fc6ef.setContent(html_ad8e02208682a74103289dba533fcace);
+            
+        
+
+        marker_c4afc812b71300b97834c0da6e7cc64e.bindPopup(popup_58a1c958fd2d751a76bb87f8be2fc6ef)
+        ;
+
+        
+    
+    
+            marker_c4afc812b71300b97834c0da6e7cc64e.bindTooltip(
+                `<div>
+                     MELISA EVELIN PUESCAS MONCADA — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c4afc812b71300b97834c0da6e7cc64e.setIcon(icon_5a78999efe62e88c2b7981bda1030cd2);
+            
+    
+            var marker_e96a49e5f46c3f6a03821c7492d29cae = L.marker(
+                [-5.2817028, -81.1216465],
+                {
+  "alt": "ROSMERY YESENIA PAZO MARTINEZ",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_213aafb7d7ce188f458b5df3173086a4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4be7854651b5a4cad65dd2e9ba988078 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_bdb7146ac61a45348b6aa14fba07ff8a = $(`<div id="html_bdb7146ac61a45348b6aa14fba07ff8a" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ROSMERY YESENIA PAZO MARTINEZ</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ROSMERY YESENIA PAZO MARTINEZ</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle itamarati tortuga Paita  Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2817028,-81.1216465','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_4be7854651b5a4cad65dd2e9ba988078.setContent(html_bdb7146ac61a45348b6aa14fba07ff8a);
+            
+        
+
+        marker_e96a49e5f46c3f6a03821c7492d29cae.bindPopup(popup_4be7854651b5a4cad65dd2e9ba988078)
+        ;
+
+        
+    
+    
+            marker_e96a49e5f46c3f6a03821c7492d29cae.bindTooltip(
+                `<div>
+                     ROSMERY YESENIA PAZO MARTINEZ — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e96a49e5f46c3f6a03821c7492d29cae.setIcon(icon_213aafb7d7ce188f458b5df3173086a4);
+            
+    
+            var marker_1d94f6cbcc927728299fbd7cf3965696 = L.marker(
+                [-5.2810154, -81.1223912],
+                {
+  "alt": "MARIA MARGARITA QUEREVALU SANTOS",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_e487f3cad6cf7386c89778a8836a438c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_65d376956101a5452a0431835ca5ab86 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_4bcb51cda2203c1ff6863f27676b4817 = $(`<div id="html_4bcb51cda2203c1ff6863f27676b4817" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA MARGARITA QUEREVALU SANTOS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA MARGARITA QUEREVALU SANTOS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle libertad G1 lote 13 la tortuga Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2810154,-81.1223912','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_65d376956101a5452a0431835ca5ab86.setContent(html_4bcb51cda2203c1ff6863f27676b4817);
+            
+        
+
+        marker_1d94f6cbcc927728299fbd7cf3965696.bindPopup(popup_65d376956101a5452a0431835ca5ab86)
+        ;
+
+        
+    
+    
+            marker_1d94f6cbcc927728299fbd7cf3965696.bindTooltip(
+                `<div>
+                     MARIA MARGARITA QUEREVALU SANTOS — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1d94f6cbcc927728299fbd7cf3965696.setIcon(icon_e487f3cad6cf7386c89778a8836a438c);
+            
+    
+            var marker_71c9e990b34b00b32dda2976cc80af73 = L.marker(
+                [-5.2791355, -81.123189],
+                {
+  "alt": "SANTAMARIA SANDOVAL RAUL",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_3a8231dcbf87574369f7097879791d1d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_396fe7685c2c5b793106ddb11768b78f = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_cf4d2f75d0fbcc283f56aaaef8f37dd4 = $(`<div id="html_cf4d2f75d0fbcc283f56aaaef8f37dd4" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SANTAMARIA SANDOVAL RAUL</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SANTAMARIA SANDOVAL RAUL</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>SANTAMARIA SANDOVAL RAUL La tortuga S/N Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2791355,-81.123189','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_396fe7685c2c5b793106ddb11768b78f.setContent(html_cf4d2f75d0fbcc283f56aaaef8f37dd4);
+            
+        
+
+        marker_71c9e990b34b00b32dda2976cc80af73.bindPopup(popup_396fe7685c2c5b793106ddb11768b78f)
+        ;
+
+        
+    
+    
+            marker_71c9e990b34b00b32dda2976cc80af73.bindTooltip(
+                `<div>
+                     SANTAMARIA SANDOVAL RAUL — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_71c9e990b34b00b32dda2976cc80af73.setIcon(icon_3a8231dcbf87574369f7097879791d1d);
+            
+    
+            var marker_597a694d0a9ba0efff42ab033448da36 = L.marker(
+                [-5.2784384, -81.1222111],
+                {
+  "alt": "MARIA DEL SOCORRO QUEREVALU QUEREVALU",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_f8b56b81a21bc600eda7ee900b8ec5fd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_93e74aacef5364fa7f5a991b92bf8934 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_c161caa1dffefc4f133b16151b09b570 = $(`<div id="html_c161caa1dffefc4f133b16151b09b570" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA DEL SOCORRO QUEREVALU QUEREVALU</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA DEL SOCORRO QUEREVALU QUEREVALU</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle Ayabaca la tortuga Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2784384,-81.1222111','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_93e74aacef5364fa7f5a991b92bf8934.setContent(html_c161caa1dffefc4f133b16151b09b570);
+            
+        
+
+        marker_597a694d0a9ba0efff42ab033448da36.bindPopup(popup_93e74aacef5364fa7f5a991b92bf8934)
+        ;
+
+        
+    
+    
+            marker_597a694d0a9ba0efff42ab033448da36.bindTooltip(
+                `<div>
+                     MARIA DEL SOCORRO QUEREVALU QUEREVALU — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_597a694d0a9ba0efff42ab033448da36.setIcon(icon_f8b56b81a21bc600eda7ee900b8ec5fd);
+            
+    
+            var marker_019acc2afec01a06ef695a9480bc73a0 = L.marker(
+                [-5.2785205, -81.1181717],
+                {
+  "alt": "NORMA CHAPILLIQUEN QUEREVALU",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_7f52695d8e68dcec25070d5a19268439 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6e3bd8f52148a946927ef78230f56513 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_aeb458d460ed546f91c0d0fa4078a50a = $(`<div id="html_aeb458d460ed546f91c0d0fa4078a50a" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">NORMA CHAPILLIQUEN QUEREVALU</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">NORMA CHAPILLIQUEN QUEREVALU</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle vice sin número la tortuga Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2785205,-81.1181717','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_6e3bd8f52148a946927ef78230f56513.setContent(html_aeb458d460ed546f91c0d0fa4078a50a);
+            
+        
+
+        marker_019acc2afec01a06ef695a9480bc73a0.bindPopup(popup_6e3bd8f52148a946927ef78230f56513)
+        ;
+
+        
+    
+    
+            marker_019acc2afec01a06ef695a9480bc73a0.bindTooltip(
+                `<div>
+                     NORMA CHAPILLIQUEN QUEREVALU — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_019acc2afec01a06ef695a9480bc73a0.setIcon(icon_7f52695d8e68dcec25070d5a19268439);
+            
+    
+            var marker_9e2c6dfbc2eea9cebfb4833f0e4549db = L.marker(
+                [-5.2785649, -81.1173058],
+                {
+  "alt": "MARCELA PATRICIA PURIZACA PAZO",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_ecbd42e7f75e071f36fd9e6b59f89b90 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7b557edcafbd7d3107c261b9d6256c27 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_330da88ca4e1e579a09dad295324a23f = $(`<div id="html_330da88ca4e1e579a09dad295324a23f" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARCELA PATRICIA PURIZACA PAZO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARCELA PATRICIA PURIZACA PAZO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Av Vice mz 2 lote 4 la tortuga Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.2785649,-81.1173058','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_7b557edcafbd7d3107c261b9d6256c27.setContent(html_330da88ca4e1e579a09dad295324a23f);
+            
+        
+
+        marker_9e2c6dfbc2eea9cebfb4833f0e4549db.bindPopup(popup_7b557edcafbd7d3107c261b9d6256c27)
+        ;
+
+        
+    
+    
+            marker_9e2c6dfbc2eea9cebfb4833f0e4549db.bindTooltip(
+                `<div>
+                     MARCELA PATRICIA PURIZACA PAZO — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9e2c6dfbc2eea9cebfb4833f0e4549db.setIcon(icon_ecbd42e7f75e071f36fd9e6b59f89b90);
+            
+    
+            var marker_70ebf950ba060f88e1e3bdb39aceab01 = L.marker(
+                [-5.109143, -81.117261],
+                {
+  "alt": "SANDOVAL BALDERA JOSE OSCAR",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_09e66fc231f70e038b08441fc5ece985 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6e3bb8c6ccf2aebbf9444d7e6741950a = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_979c76f1ee6d5b577abfff1eba4595db = $(`<div id="html_979c76f1ee6d5b577abfff1eba4595db" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SANDOVAL BALDERA JOSE OSCAR</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SANDOVAL BALDERA JOSE OSCAR</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>AH 29 DE DICIEMBRE MZ L-21 Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.109143,-81.117261','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_6e3bb8c6ccf2aebbf9444d7e6741950a.setContent(html_979c76f1ee6d5b577abfff1eba4595db);
+            
+        
+
+        marker_70ebf950ba060f88e1e3bdb39aceab01.bindPopup(popup_6e3bb8c6ccf2aebbf9444d7e6741950a)
+        ;
+
+        
+    
+    
+            marker_70ebf950ba060f88e1e3bdb39aceab01.bindTooltip(
+                `<div>
+                     SANDOVAL BALDERA JOSE OSCAR — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_70ebf950ba060f88e1e3bdb39aceab01.setIcon(icon_09e66fc231f70e038b08441fc5ece985);
+            
+    
+            var marker_feb9a510bbc8bfb5921ba757fd072760 = L.marker(
+                [-5.1338495, -81.1709369],
+                {
+  "alt": "JUANA MARLENE LLENQUE VILELA",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_3e5ca4680b87e9f095a82dc394c28041 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6634c7f9691677d69b8ab6c40d6dad48 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_4e8c093baa46aebf574190f3e92e61f9 = $(`<div id="html_4e8c093baa46aebf574190f3e92e61f9" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JUANA MARLENE LLENQUE VILELA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JUANA MARLENE LLENQUE VILELA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle santa Isabel mz c Lt 2 YACILA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1338495,-81.1709369','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_6634c7f9691677d69b8ab6c40d6dad48.setContent(html_4e8c093baa46aebf574190f3e92e61f9);
+            
+        
+
+        marker_feb9a510bbc8bfb5921ba757fd072760.bindPopup(popup_6634c7f9691677d69b8ab6c40d6dad48)
+        ;
+
+        
+    
+    
+            marker_feb9a510bbc8bfb5921ba757fd072760.bindTooltip(
+                `<div>
+                     JUANA MARLENE LLENQUE VILELA — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_feb9a510bbc8bfb5921ba757fd072760.setIcon(icon_3e5ca4680b87e9f095a82dc394c28041);
+            
+    
+            var marker_722ba7413a99f6e81ebeb0ecd8fe4cac = L.marker(
+                [-5.1359352, -81.1706593],
+                {
+  "alt": "MARIA SANTOS QUEREVALU QUEREVALU",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_227207f8a3a1bc9fbdd45d6dc14d1c26 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cf301d0a11b43893959b18652a46004d = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_85be5dafd9cca610f0bb28fe7c112214 = $(`<div id="html_85be5dafd9cca610f0bb28fe7c112214" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA SANTOS QUEREVALU QUEREVALU</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA SANTOS QUEREVALU QUEREVALU</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle santa Isabel yacila Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1359352,-81.1706593','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_cf301d0a11b43893959b18652a46004d.setContent(html_85be5dafd9cca610f0bb28fe7c112214);
+            
+        
+
+        marker_722ba7413a99f6e81ebeb0ecd8fe4cac.bindPopup(popup_cf301d0a11b43893959b18652a46004d)
+        ;
+
+        
+    
+    
+            marker_722ba7413a99f6e81ebeb0ecd8fe4cac.bindTooltip(
+                `<div>
+                     MARIA SANTOS QUEREVALU QUEREVALU — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_722ba7413a99f6e81ebeb0ecd8fe4cac.setIcon(icon_227207f8a3a1bc9fbdd45d6dc14d1c26);
+            
+    
+            var marker_871e5c0cd5d5cc07a4d65f5742828169 = L.marker(
+                [-5.1322208, -81.1710683],
+                {
+  "alt": "KAREN MIRELLA QUEREVALU ZETA",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_7ca1ceecbd80b56ac923541b741a4717 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4448850ad6ab1cfc3f61e2b1ffb36c79 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_ec54f0c37713de803ff31ea82b6a3bca = $(`<div id="html_ec54f0c37713de803ff31ea82b6a3bca" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">KAREN MIRELLA QUEREVALU ZETA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">KAREN MIRELLA QUEREVALU ZETA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>San Benito s/n por la iglesia Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1322208,-81.1710683','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_4448850ad6ab1cfc3f61e2b1ffb36c79.setContent(html_ec54f0c37713de803ff31ea82b6a3bca);
+            
+        
+
+        marker_871e5c0cd5d5cc07a4d65f5742828169.bindPopup(popup_4448850ad6ab1cfc3f61e2b1ffb36c79)
+        ;
+
+        
+    
+    
+            marker_871e5c0cd5d5cc07a4d65f5742828169.bindTooltip(
+                `<div>
+                     KAREN MIRELLA QUEREVALU ZETA — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_871e5c0cd5d5cc07a4d65f5742828169.setIcon(icon_7ca1ceecbd80b56ac923541b741a4717);
+            
+    
+            var marker_544254afcd5efb55728bb442760e5fa0 = L.marker(
+                [-5.1322744, -81.1719819],
+                {
+  "alt": "ANA MARIA QUEREVALU QUEREVALU",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_3c8da2646b645c5f2710ac70754feb9d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2e117f296aa7ebd7c0587148737d51c3 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_5f706045003de3bd2c1e12ec787f6fc3 = $(`<div id="html_5f706045003de3bd2c1e12ec787f6fc3" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ANA MARIA QUEREVALU QUEREVALU</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ANA MARIA QUEREVALU QUEREVALU</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CA MIRAMAR MZA B 25 YACILA - PAITA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1322744,-81.1719819','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_2e117f296aa7ebd7c0587148737d51c3.setContent(html_5f706045003de3bd2c1e12ec787f6fc3);
+            
+        
+
+        marker_544254afcd5efb55728bb442760e5fa0.bindPopup(popup_2e117f296aa7ebd7c0587148737d51c3)
+        ;
+
+        
+    
+    
+            marker_544254afcd5efb55728bb442760e5fa0.bindTooltip(
+                `<div>
+                     ANA MARIA QUEREVALU QUEREVALU — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_544254afcd5efb55728bb442760e5fa0.setIcon(icon_3c8da2646b645c5f2710ac70754feb9d);
+            
+    
+            var marker_3b09a6343ba4baff217807491b57e6fc = L.marker(
+                [-5.1325935, -81.1703353],
+                {
+  "alt": "QUEREVALU PUESCAS CLARA",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_98926a1d7679c5c5a325b68ba23734dd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_171d4db72ca68c9ad12af194a64f7d16 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_e0fe88b4e5071c6eb5229971fa719fb3 = $(`<div id="html_e0fe88b4e5071c6eb5229971fa719fb3" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">QUEREVALU PUESCAS CLARA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">QUEREVALU PUESCAS CLARA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MZ E LOTE 20 YACILA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1325935,-81.1703353','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_171d4db72ca68c9ad12af194a64f7d16.setContent(html_e0fe88b4e5071c6eb5229971fa719fb3);
+            
+        
+
+        marker_3b09a6343ba4baff217807491b57e6fc.bindPopup(popup_171d4db72ca68c9ad12af194a64f7d16)
+        ;
+
+        
+    
+    
+            marker_3b09a6343ba4baff217807491b57e6fc.bindTooltip(
+                `<div>
+                     QUEREVALU PUESCAS CLARA — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3b09a6343ba4baff217807491b57e6fc.setIcon(icon_98926a1d7679c5c5a325b68ba23734dd);
+            
+    
+            var marker_07f9825b9051c4511ce08ce25a71131a = L.marker(
+                [-5.1326802, -81.1700443],
+                {
+  "alt": "QUEREVALU QUEREVALU JOSEFA",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_975253b794779736263c9d6e9c44daf1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0bdfbc69f5d672a1b510d84df24285bd = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_5836f1d0b696bb3e516358179cd581f1 = $(`<div id="html_5836f1d0b696bb3e516358179cd581f1" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">QUEREVALU QUEREVALU JOSEFA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">QUEREVALU QUEREVALU JOSEFA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALETA YACILA MZ Z LT 9 PAITA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1326802,-81.1700443','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_0bdfbc69f5d672a1b510d84df24285bd.setContent(html_5836f1d0b696bb3e516358179cd581f1);
+            
+        
+
+        marker_07f9825b9051c4511ce08ce25a71131a.bindPopup(popup_0bdfbc69f5d672a1b510d84df24285bd)
+        ;
+
+        
+    
+    
+            marker_07f9825b9051c4511ce08ce25a71131a.bindTooltip(
+                `<div>
+                     QUEREVALU QUEREVALU JOSEFA — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_07f9825b9051c4511ce08ce25a71131a.setIcon(icon_975253b794779736263c9d6e9c44daf1);
+            
+    
+            var marker_b31ed1d53b4dc1cb7f1cf85ffd6f0c45 = L.marker(
+                [-5.1318796, -81.169973],
+                {
+  "alt": "YOVANNA YOLI QUEREVALU PUESCAS",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_f7366b9b0e7c0ef70d659ab4d9de5c0c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7986683f410815d92f41a16b40d70163 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_47e26f57c7d3a11e3857a27a227970dc = $(`<div id="html_47e26f57c7d3a11e3857a27a227970dc" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">YOVANNA YOLI QUEREVALU PUESCAS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">YOVANNA YOLI QUEREVALU PUESCAS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE MIRAMAR SN YACILA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1318796,-81.169973','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_7986683f410815d92f41a16b40d70163.setContent(html_47e26f57c7d3a11e3857a27a227970dc);
+            
+        
+
+        marker_b31ed1d53b4dc1cb7f1cf85ffd6f0c45.bindPopup(popup_7986683f410815d92f41a16b40d70163)
+        ;
+
+        
+    
+    
+            marker_b31ed1d53b4dc1cb7f1cf85ffd6f0c45.bindTooltip(
+                `<div>
+                     YOVANNA YOLI QUEREVALU PUESCAS — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b31ed1d53b4dc1cb7f1cf85ffd6f0c45.setIcon(icon_f7366b9b0e7c0ef70d659ab4d9de5c0c);
+            
+    
+            var marker_70608bf6f0ee42c5def98873459a5e0d = L.marker(
+                [-5.1340833, -81.1706698],
+                {
+  "alt": "MARIA ADELA PASAPERA ANCAJIMA",
+}
+            ).addTo(marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2);
+        
+    
+            var icon_6f3b26551f5646b1ef284e358b1b4f8b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6f14d466f5a72231597209409bb10a3e = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_0e4882e55009ca073adb7e2a33a50cbe = $(`<div id="html_0e4882e55009ca073adb7e2a33a50cbe" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA ADELA PASAPERA ANCAJIMA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA ADELA PASAPERA ANCAJIMA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: DOMITILA QUISPE MIRANDA         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>AH.FRANCISCO BOLOGNESI MZ F LT 3 YA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.1340833,-81.1706698','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_6f14d466f5a72231597209409bb10a3e.setContent(html_0e4882e55009ca073adb7e2a33a50cbe);
+            
+        
+
+        marker_70608bf6f0ee42c5def98873459a5e0d.bindPopup(popup_6f14d466f5a72231597209409bb10a3e)
+        ;
+
+        
+    
+    
+            marker_70608bf6f0ee42c5def98873459a5e0d.bindTooltip(
+                `<div>
+                     MARIA ADELA PASAPERA ANCAJIMA — DOMITILA QUISPE MIRANDA
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_70608bf6f0ee42c5def98873459a5e0d.setIcon(icon_6f3b26551f5646b1ef284e358b1b4f8b);
+            
+    
+            marker_cluster_1f0fc641ecab46e8916b0d8be29ffad2.addTo(feature_group_2440ba5846d5737774edc3a8c7cea646);
+        
+    
+            feature_group_2440ba5846d5737774edc3a8c7cea646.addTo(map_0d4e2fdf91d80320d3e0a9033011590c);
+        
+    
+            var feature_group_1d855532fe495fb414fff721fb50e78a = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_676e430669cc729f619d2d6b35daf992 = L.markerClusterGroup(
+                {
+  "spiderfyOnMaxZoom": true,
+  "disableClusteringAtZoom": 17,
+  "maxClusterRadius": 60,
+}
+            );
+        
+    
+            var marker_aee76068431d705ff56b2a74838b8b1f = L.marker(
+                [-5.085972, -81.111278],
+                {
+  "alt": "CHERO DE VALLEJOS LIDIA ESTHER",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_934ca40d3e627f04c19d14fb9b020e98 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_21ef4fb9856ec93db33f0c5b5b74beb9 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_84edcfc6fd88f9e29af32e1edbccd51d = $(`<div id="html_84edcfc6fd88f9e29af32e1edbccd51d" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">CHERO DE VALLEJOS LIDIA ESTHER</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">CHERO DE VALLEJOS LIDIA ESTHER</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JR.JUNIN 428 INT1 CENTRO PAITA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.085972,-81.111278','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_21ef4fb9856ec93db33f0c5b5b74beb9.setContent(html_84edcfc6fd88f9e29af32e1edbccd51d);
+            
+        
+
+        marker_aee76068431d705ff56b2a74838b8b1f.bindPopup(popup_21ef4fb9856ec93db33f0c5b5b74beb9)
+        ;
+
+        
+    
+    
+            marker_aee76068431d705ff56b2a74838b8b1f.bindTooltip(
+                `<div>
+                     CHERO DE VALLEJOS LIDIA ESTHER — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_aee76068431d705ff56b2a74838b8b1f.setIcon(icon_934ca40d3e627f04c19d14fb9b020e98);
+            
+    
+            var marker_250005679301f29f5b6d7b2d6e8cb88a = L.marker(
+                [-5.0920726, -81.0989253],
+                {
+  "alt": "Jhoan Josu\u00e9 ipanaque Cienfuegos",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_4d660470eb3d3837f8ac4aacc7027be4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_819142d01c5089841a1f21caf7d8899e = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_731e306646de381641455df3f472b17e = $(`<div id="html_731e306646de381641455df3f472b17e" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">Jhoan Josué ipanaque Cienfuegos</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">Jhoan Josué ipanaque Cienfuegos</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado santa rosa Paita alta puesto 25 Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0920726,-81.0989253','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_819142d01c5089841a1f21caf7d8899e.setContent(html_731e306646de381641455df3f472b17e);
+            
+        
+
+        marker_250005679301f29f5b6d7b2d6e8cb88a.bindPopup(popup_819142d01c5089841a1f21caf7d8899e)
+        ;
+
+        
+    
+    
+            marker_250005679301f29f5b6d7b2d6e8cb88a.bindTooltip(
+                `<div>
+                     Jhoan Josué ipanaque Cienfuegos — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_250005679301f29f5b6d7b2d6e8cb88a.setIcon(icon_4d660470eb3d3837f8ac4aacc7027be4);
+            
+    
+            var marker_044bace1cc45028823e6f2eedec058ea = L.marker(
+                [-5.0920769, -81.0988741],
+                {
+  "alt": "MARCOS SAMUEL PORTOCARRERO GARCIA",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_3e5a3a3d4df52667c183689b27cf3b97 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_dc75899438995be96823cccb4e173961 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_653eaa3c95fea3001d155039ffbbc9b5 = $(`<div id="html_653eaa3c95fea3001d155039ffbbc9b5" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARCOS SAMUEL PORTOCARRERO GARCIA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARCOS SAMUEL PORTOCARRERO GARCIA</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado santa rosa 120 Paita alta Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0920769,-81.0988741','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_dc75899438995be96823cccb4e173961.setContent(html_653eaa3c95fea3001d155039ffbbc9b5);
+            
+        
+
+        marker_044bace1cc45028823e6f2eedec058ea.bindPopup(popup_dc75899438995be96823cccb4e173961)
+        ;
+
+        
+    
+    
+            marker_044bace1cc45028823e6f2eedec058ea.bindTooltip(
+                `<div>
+                     MARCOS SAMUEL PORTOCARRERO GARCIA — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_044bace1cc45028823e6f2eedec058ea.setIcon(icon_3e5a3a3d4df52667c183689b27cf3b97);
+            
+    
+            var marker_7f27fbdfa13a07b127ea925ca4bf1fb4 = L.marker(
+                [-5.0920769, -81.0988741],
+                {
+  "alt": "MARCOS SAMUEL PORTOCARRERO GARCIA",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_f1fd92fe7e633dbe9cd9e05476995c4f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7a9342c3118f002b945eb60748a11ff9 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_f2a3b50041c254075da149bd8e905f4c = $(`<div id="html_f2a3b50041c254075da149bd8e905f4c" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARCOS SAMUEL PORTOCARRERO GARCIA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARCOS SAMUEL PORTOCARRERO GARCIA</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado santa rosa 120 Paita alta Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0920769,-81.0988741','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_7a9342c3118f002b945eb60748a11ff9.setContent(html_f2a3b50041c254075da149bd8e905f4c);
+            
+        
+
+        marker_7f27fbdfa13a07b127ea925ca4bf1fb4.bindPopup(popup_7a9342c3118f002b945eb60748a11ff9)
+        ;
+
+        
+    
+    
+            marker_7f27fbdfa13a07b127ea925ca4bf1fb4.bindTooltip(
+                `<div>
+                     MARCOS SAMUEL PORTOCARRERO GARCIA — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7f27fbdfa13a07b127ea925ca4bf1fb4.setIcon(icon_f1fd92fe7e633dbe9cd9e05476995c4f);
+            
+    
+            var marker_74c3fa096b603e08b7146ad37b69e72a = L.marker(
+                [-5.0902335, -81.1125338],
+                {
+  "alt": "NEGOCIOS Y SERVICIOS GENERALES CALLE E.I.R.L.",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_07771c836d7e847f9ffad79486fb1b81 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d84c772b07e35790bc7dc228c281ca5a = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_e598b2ff25794cfc0ea5265f424a9741 = $(`<div id="html_e598b2ff25794cfc0ea5265f424a9741" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">NEGOCIOS Y SERVICIOS GENERALES CALLE E.I.R.L.</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">NEGOCIOS Y SERVICIOS GENERALES CALLE E.I.R.L.</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>NEGOCIOS Y SERVICIOS GENERALES CALLE E.I.R.L. OTR.PUESTO NRO. 10 OTR. PAITA BAJA Paita 200502Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0902335,-81.1125338','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_d84c772b07e35790bc7dc228c281ca5a.setContent(html_e598b2ff25794cfc0ea5265f424a9741);
+            
+        
+
+        marker_74c3fa096b603e08b7146ad37b69e72a.bindPopup(popup_d84c772b07e35790bc7dc228c281ca5a)
+        ;
+
+        
+    
+    
+            marker_74c3fa096b603e08b7146ad37b69e72a.bindTooltip(
+                `<div>
+                     NEGOCIOS Y SERVICIOS GENERALES CALLE E.I.R.L. — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_74c3fa096b603e08b7146ad37b69e72a.setIcon(icon_07771c836d7e847f9ffad79486fb1b81);
+            
+    
+            var marker_d0bb8f9dbd0d149a86afc5d3443f9db9 = L.marker(
+                [-5.0899168, -81.1130847],
+                {
+  "alt": "YULI LILIANA CRUZ HIJUELA",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_198beb64c6c3c1f476b5a7f6d471bab2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_765dfa216ca4997a1cd93654f0f24f8a = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_d3ad5c12d4eaa03bd409ff11643292c7 = $(`<div id="html_d3ad5c12d4eaa03bd409ff11643292c7" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">YULI LILIANA CRUZ HIJUELA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">YULI LILIANA CRUZ HIJUELA</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado modelo paita baja . Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0899168,-81.1130847','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_765dfa216ca4997a1cd93654f0f24f8a.setContent(html_d3ad5c12d4eaa03bd409ff11643292c7);
+            
+        
+
+        marker_d0bb8f9dbd0d149a86afc5d3443f9db9.bindPopup(popup_765dfa216ca4997a1cd93654f0f24f8a)
+        ;
+
+        
+    
+    
+            marker_d0bb8f9dbd0d149a86afc5d3443f9db9.bindTooltip(
+                `<div>
+                     YULI LILIANA CRUZ HIJUELA — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d0bb8f9dbd0d149a86afc5d3443f9db9.setIcon(icon_198beb64c6c3c1f476b5a7f6d471bab2);
+            
+    
+            var marker_6741f4fb1301430b134ea255927be4db = L.marker(
+                [-5.0920726, -81.0989253],
+                {
+  "alt": "Jhoan Josu\u00e9 ipanaque Cienfuegos",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_8383da3595da2e25938aa5d1ec6ad12a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c8b4f771401f674aaa8be1dbb37dd91a = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_64618d1d3769d4c79a1c980a7a8d190b = $(`<div id="html_64618d1d3769d4c79a1c980a7a8d190b" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">Jhoan Josué ipanaque Cienfuegos</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">Jhoan Josué ipanaque Cienfuegos</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado santa rosa Paita alta puesto 25 Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0920726,-81.0989253','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_c8b4f771401f674aaa8be1dbb37dd91a.setContent(html_64618d1d3769d4c79a1c980a7a8d190b);
+            
+        
+
+        marker_6741f4fb1301430b134ea255927be4db.bindPopup(popup_c8b4f771401f674aaa8be1dbb37dd91a)
+        ;
+
+        
+    
+    
+            marker_6741f4fb1301430b134ea255927be4db.bindTooltip(
+                `<div>
+                     Jhoan Josué ipanaque Cienfuegos — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6741f4fb1301430b134ea255927be4db.setIcon(icon_8383da3595da2e25938aa5d1ec6ad12a);
+            
+    
+            var marker_0d46c31a62d9bf9bc43d911bcf98797e = L.marker(
+                [-5.0928504, -81.0989557],
+                {
+  "alt": "FERNANDEZ MIRANDA JOSEFA",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_3581d38909a315d2e7047b0b48684795 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_34369f0e892b4c0bea281cb297709ef0 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_7358d9866fe3d3e900e31ddc48f40b14 = $(`<div id="html_7358d9866fe3d3e900e31ddc48f40b14" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">FERNANDEZ MIRANDA JOSEFA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">FERNANDEZ MIRANDA JOSEFA</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MZ.E1 LT.08 AH CIUDAD ROJA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0928504,-81.0989557','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_34369f0e892b4c0bea281cb297709ef0.setContent(html_7358d9866fe3d3e900e31ddc48f40b14);
+            
+        
+
+        marker_0d46c31a62d9bf9bc43d911bcf98797e.bindPopup(popup_34369f0e892b4c0bea281cb297709ef0)
+        ;
+
+        
+    
+    
+            marker_0d46c31a62d9bf9bc43d911bcf98797e.bindTooltip(
+                `<div>
+                     FERNANDEZ MIRANDA JOSEFA — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0d46c31a62d9bf9bc43d911bcf98797e.setIcon(icon_3581d38909a315d2e7047b0b48684795);
+            
+    
+            var marker_3450f0eb33d755d349ca6a70ca1a23bc = L.marker(
+                [-5.0927039, -81.0993198],
+                {
+  "alt": "TODO MAX E.I.R.L.",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_80783e0cf793d090efc534b286f0d479 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2e948db929a8676d715fd8516a3d13bd = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_f9c1bb039ec4e20993c4fd45f1658397 = $(`<div id="html_f9c1bb039ec4e20993c4fd45f1658397" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">TODO MAX E.I.R.L.</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">TODO MAX E.I.R.L.</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>TODO MAX E.I.R.L. PSTO NRO 4 MCDO STA ROSA - PAITA Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0927039,-81.0993198','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_2e948db929a8676d715fd8516a3d13bd.setContent(html_f9c1bb039ec4e20993c4fd45f1658397);
+            
+        
+
+        marker_3450f0eb33d755d349ca6a70ca1a23bc.bindPopup(popup_2e948db929a8676d715fd8516a3d13bd)
+        ;
+
+        
+    
+    
+            marker_3450f0eb33d755d349ca6a70ca1a23bc.bindTooltip(
+                `<div>
+                     TODO MAX E.I.R.L. — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3450f0eb33d755d349ca6a70ca1a23bc.setIcon(icon_80783e0cf793d090efc534b286f0d479);
+            
+    
+            var marker_5eadbac631726773db9d53d8c7d10803 = L.marker(
+                [-5.0928378, -81.0989593],
+                {
+  "alt": "RAFAEL JULIAN PEREZ MEZA",
+}
+            ).addTo(marker_cluster_676e430669cc729f619d2d6b35daf992);
+        
+    
+            var icon_51362c4f6c28e14b557e2588dbad8856 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bb29647ddbd637eb2b1b4d521b845873 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_460dc84e2073a4cb639b97855d09899f = $(`<div id="html_460dc84e2073a4cb639b97855d09899f" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid blue;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">RAFAEL JULIAN PEREZ MEZA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">RAFAEL JULIAN PEREZ MEZA</h4>         <span style="color:blue;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: LEONARDO VIERA CHAVEZ         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Mercado santa rosa paita alta Paita Paita Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-5.0928378,-81.0989593','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:blue;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_bb29647ddbd637eb2b1b4d521b845873.setContent(html_460dc84e2073a4cb639b97855d09899f);
+            
+        
+
+        marker_5eadbac631726773db9d53d8c7d10803.bindPopup(popup_bb29647ddbd637eb2b1b4d521b845873)
+        ;
+
+        
+    
+    
+            marker_5eadbac631726773db9d53d8c7d10803.bindTooltip(
+                `<div>
+                     RAFAEL JULIAN PEREZ MEZA — LEONARDO VIERA CHAVEZ
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5eadbac631726773db9d53d8c7d10803.setIcon(icon_51362c4f6c28e14b557e2588dbad8856);
+            
+    
+            marker_cluster_676e430669cc729f619d2d6b35daf992.addTo(feature_group_1d855532fe495fb414fff721fb50e78a);
+        
+    
+            feature_group_1d855532fe495fb414fff721fb50e78a.addTo(map_0d4e2fdf91d80320d3e0a9033011590c);
+        
+    
+        function geo_json_42fd2fc0cd0d29fc4786b682e232a4fc_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_42fd2fc0cd0d29fc4786b682e232a4fc_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_42fd2fc0cd0d29fc4786b682e232a4fc = L.geoJson(null, {
+                onEachFeature: geo_json_42fd2fc0cd0d29fc4786b682e232a4fc_onEachFeature,
+            
+                pointToLayer: geo_json_42fd2fc0cd0d29fc4786b682e232a4fc_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_42fd2fc0cd0d29fc4786b682e232a4fc_add (data) {
+            geo_json_42fd2fc0cd0d29fc4786b682e232a4fc
+                .addData(data);
+        }
+            geo_json_42fd2fc0cd0d29fc4786b682e232a4fc_add({"features": [{"geometry": {"coordinates": [-81.1228667, -5.2798434], "type": "Point"}, "properties": {"name": "GUISSELA DEL CARMEN QUEREVALU VILLEGAS", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.111278, -5.085972], "type": "Point"}, "properties": {"name": "CHERO DE VALLEJOS LIDIA ESTHER", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.0989253, -5.0920726], "type": "Point"}, "properties": {"name": "Jhoan Josu\u00e9 ipanaque Cienfuegos", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.123189, -5.2791355], "type": "Point"}, "properties": {"name": "SANTAMARIA SANDOVAL RAUL", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.0988741, -5.0920769], "type": "Point"}, "properties": {"name": "MARCOS SAMUEL PORTOCARRERO GARCIA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.0988741, -5.0920769], "type": "Point"}, "properties": {"name": "MARCOS SAMUEL PORTOCARRERO GARCIA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1100249, -5.1084531], "type": "Point"}, "properties": {"name": "SOLUCIONES ALIMENTICIAS 102 S.R.L.", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1125338, -5.0902335], "type": "Point"}, "properties": {"name": "NEGOCIOS Y SERVICIOS GENERALES CALLE E.I.R.L.", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1100983, -5.108467], "type": "Point"}, "properties": {"name": "F\u00c1TIMA ORDINOLA CORNEJO", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1130847, -5.0899168], "type": "Point"}, "properties": {"name": "YULI LILIANA CRUZ HIJUELA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.120474, -5.279877], "type": "Point"}, "properties": {"name": "ROSA ELENA CHAPILLIQUEN TEMOCHE", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1226833, -5.2799637], "type": "Point"}, "properties": {"name": "MELISA EVELIN PUESCAS MONCADA", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1216465, -5.2817028], "type": "Point"}, "properties": {"name": "ROSMERY YESENIA PAZO MARTINEZ", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1223912, -5.2810154], "type": "Point"}, "properties": {"name": "MARIA MARGARITA QUEREVALU SANTOS", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.123189, -5.2791355], "type": "Point"}, "properties": {"name": "SANTAMARIA SANDOVAL RAUL", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1222111, -5.2784384], "type": "Point"}, "properties": {"name": "MARIA DEL SOCORRO QUEREVALU QUEREVALU", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1181717, -5.2785205], "type": "Point"}, "properties": {"name": "NORMA CHAPILLIQUEN QUEREVALU", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1173058, -5.2785649], "type": "Point"}, "properties": {"name": "MARCELA PATRICIA PURIZACA PAZO", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.117261, -5.109143], "type": "Point"}, "properties": {"name": "SANDOVAL BALDERA JOSE OSCAR", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.0989253, -5.0920726], "type": "Point"}, "properties": {"name": "Jhoan Josu\u00e9 ipanaque Cienfuegos", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.0989557, -5.0928504], "type": "Point"}, "properties": {"name": "FERNANDEZ MIRANDA JOSEFA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.0993198, -5.0927039], "type": "Point"}, "properties": {"name": "TODO MAX E.I.R.L.", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.0989593, -5.0928378], "type": "Point"}, "properties": {"name": "RAFAEL JULIAN PEREZ MEZA", "vendedor": "LEONARDO VIERA CHAVEZ"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1709369, -5.1338495], "type": "Point"}, "properties": {"name": "JUANA MARLENE LLENQUE VILELA", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1706593, -5.1359352], "type": "Point"}, "properties": {"name": "MARIA SANTOS QUEREVALU QUEREVALU", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1710683, -5.1322208], "type": "Point"}, "properties": {"name": "KAREN MIRELLA QUEREVALU ZETA", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1719819, -5.1322744], "type": "Point"}, "properties": {"name": "ANA MARIA QUEREVALU QUEREVALU", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1703353, -5.1325935], "type": "Point"}, "properties": {"name": "QUEREVALU PUESCAS CLARA", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1700443, -5.1326802], "type": "Point"}, "properties": {"name": "QUEREVALU QUEREVALU JOSEFA", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.169973, -5.1318796], "type": "Point"}, "properties": {"name": "YOVANNA YOLI QUEREVALU PUESCAS", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}, {"geometry": {"coordinates": [-81.1706698, -5.1340833], "type": "Point"}, "properties": {"name": "MARIA ADELA PASAPERA ANCAJIMA", "vendedor": "DOMITILA QUISPE MIRANDA"}, "type": "Feature"}], "type": "FeatureCollection"});
+        geo_json_42fd2fc0cd0d29fc4786b682e232a4fc.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+    geo_json_42fd2fc0cd0d29fc4786b682e232a4fc.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create('div');
+    
+    let handleObject = feature => {
+        if (feature === null) {
+            return '';
+        } else if (typeof(feature)=='object') {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = ["name", "vendedor"];
+    let aliases = ["Cliente:", "Vendedor:"];
+    let table = '<table>' +
+        String(
+        fields.map(
+        (v,i)=>
+        `<tr>
+            <th>${aliases[i]}</th>
+            
+            <td>${handleObject(layer.feature.properties[v])}</td>
+        </tr>`).join(''))
+    +'</table>';
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  "sticky": true,
+  "className": "foliumtooltip",
+});
+                     
+    
+            geo_json_42fd2fc0cd0d29fc4786b682e232a4fc.addTo(map_0d4e2fdf91d80320d3e0a9033011590c);
+        
+    
+            var geo_json_42fd2fc0cd0d29fc4786b682e232a4fcsearchControl = new L.Control.Search({
+                layer: geo_json_42fd2fc0cd0d29fc4786b682e232a4fc,
+                
+                propertyName: 'name',
+                
+                collapsed: false,
+                textPlaceholder: '🔍 Buscar cliente o bodega...',
+                position:'topleft',
+            
+                initial: false,
+                
+                zoom: 18,
+                
+                hideMarkerOnCollapse: true
+            
+                });
+                geo_json_42fd2fc0cd0d29fc4786b682e232a4fcsearchControl.on('search:locationfound', function(e) {
+                    geo_json_42fd2fc0cd0d29fc4786b682e232a4fc.setStyle(function(feature){
+                        return feature.properties.style
+                    })
+                    
+                    e.layer.setStyle({
+  "weight": 3,
+  "searchAtStart": false,
+  "minLength": 1,
+  "autoCollapse": false,
+  "autoType": true,
+});
+                    
+                    if(e.layer._popup)
+                        e.layer.openPopup();
+                })
+                geo_json_42fd2fc0cd0d29fc4786b682e232a4fcsearchControl.on('search:collapsed', function(e) {
+                        geo_json_42fd2fc0cd0d29fc4786b682e232a4fc.setStyle(function(feature){
+                            return feature.properties.style
+                    });
+                });
+            map_0d4e2fdf91d80320d3e0a9033011590c.addControl( geo_json_42fd2fc0cd0d29fc4786b682e232a4fcsearchControl );
+
+        
+    
+            var layer_control_4d9f2f5cd21ff57d0392af73cab48ef9_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_7775ae360f00af622a40974c1eecc960,
+                },
+                overlays :  {
+                    "DOMITILA QUISPE MIRANDA (21)" : feature_group_2440ba5846d5737774edc3a8c7cea646,
+                    "LEONARDO VIERA CHAVEZ (10)" : feature_group_1d855532fe495fb414fff721fb50e78a,
+                },
+            };
+            let layer_control_4d9f2f5cd21ff57d0392af73cab48ef9 = L.control.layers(
+                layer_control_4d9f2f5cd21ff57d0392af73cab48ef9_layers.base_layers,
+                layer_control_4d9f2f5cd21ff57d0392af73cab48ef9_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_0d4e2fdf91d80320d3e0a9033011590c);
+
+        
+    
+            var locate_control_b67ede4587309173bc88014e5306fed7 = L.control.locate(
+                {"flyTo": true, "keepCurrentZoomLevel": true, "locateOptions": {"enableHighAccuracy": true, "maxZoom": 16}, "strings": {"popup": "Estas aqui!", "title": "Mi ubicacion"}}
+            ).addTo(map_0d4e2fdf91d80320d3e0a9033011590c);
+            
+                locate_control_b67ede4587309173bc88014e5306fed7.start();
+            
+        
+</script>
+</html>
