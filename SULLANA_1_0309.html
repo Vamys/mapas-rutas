@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+<style>
+    .folium-map {
+        width: 100% !important;
+        height: 100vh !important;
+        position: absolute !important;
+        top: 0; left: 0;
+        z-index: 1;
+    }
+    .leaflet-control-search {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+        border-radius: 25px !important;
+        overflow: hidden;
+    }
+    .leaflet-control-search .search-input {
+        padding: 8px 15px !important;
+        border-radius: 25px !important;
+        border: 1px solid #eee !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-control-search.search-exp .search-input { width: 250px !important; }
+    .leaflet-control-search .search-button {
+        background-color: #fff !important;
+        border-radius: 50% !important;
+        width: 34px !important; height: 34px !important;
+    }
+    .leaflet-control-layers {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        border-radius: 12px !important;
+        padding: 10px !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .leaflet-bar {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }
+    .leaflet-bar a {
+        background-color: white !important;
+        color: #333 !important;
+        border: 1px solid #f0f0f0 !important;
+    }
+    .leaflet-bar a:first-child { border-radius: 8px 8px 0 0 !important; }
+    .leaflet-bar a:last-child  { border-radius: 0 0 8px 8px !important; }
+    .leaflet-tooltip {
+        background: rgba(255,255,255,0.95) !important;
+        border: none !important;
+        border-radius: 6px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 600;
+    }
+    /* Mejoras al buscador para que parezca una lista */
+    .leaflet-control-search .search-tip {
+        padding: 12px !important;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px !important;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #333;
+        background: #fff;
+    }
+    .leaflet-control-search .search-tip:hover {
+        background: #3498db !important;
+        color: #fff !important;
+    }
+    .leaflet-control-search .search-tooltip {
+        max-height: 400px !important;
+        width: 100% !important;
+        min-width: 280px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+        border: none !important;
+        margin-top: 10px !important;
+    }
+    .leaflet-control-search .search-input {
+        height: 40px !important;
+        font-size: 16px !important;
+    }
+    /* Estilo para pines entregados */
+    .marker-delivered {
+        filter: grayscale(100%) brightness(70%) opacity(0.6) !important;
+        transition: all 0.3s ease;
+    }
+    .marker-delivered i {
+        color: #eee !important;
+    }
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_946559d6018ca0b3f168212469a6c45f {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    
+                    <style>
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    </style>
+            
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-locatecontrol/0.66.2/L.Control.Locate.min.css"/>
+</head>
+<body>
+    
+    
+<div id="nav-panel" style="
+    display:none; position:fixed; bottom:20px; left:20px;
+    width:300px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">&#128640; Rutas de Navegacion</h3>
+        <button onclick="document.getElementById('nav-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">&#215;</button>
+    </div>
+    <div id="nav-links-container" style="max-height:400px;overflow-y:auto;"></div>
+</div>
+
+<button onclick="toggleNavPanel()" style="
+    position:fixed; bottom:20px; left:20px; z-index:9998;
+    background:#4285F4; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    &#128506; VER RUTAS GOOGLE MAPS
+</button>
+
+<script>
+    var infoRutas = {"JACIEL MOGOLLON ALVARADO": [{"nombre": "Tramo 1  (JASMIN BEATRIZ RODRIGUEZ CORNEJO \u2192 LUIS FERNANDO CORNEJO ZAPATA)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.9001258,-80.8155336&waypoints=-4.9019314%2C-80.8146495%7C-4.9073168%2C-80.7465694%7C-4.9152949%2C-80.678827%7C-4.8945854%2C-80.6828445%7C-4.913728%2C-80.722761%7C-4.9146278%2C-80.7175017%7C-4.8920557%2C-80.6831433%7C-4.9003196%2C-80.8165181%7C-4.8988789%2C-80.8159489"}, {"nombre": "Tramo 2  (LUIS FERNANDO CORNEJO ZAPATA \u2192 JIMENEZ CORREA IRIS DEL PILAR)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.9079765,-80.7492284&waypoints=-4.9001258%2C-80.8155336%7C-4.8988807%2C-80.8144633%7C-4.8981948%2C-80.8143044%7C-4.8997894%2C-80.8139356%7C-4.9019314%2C-80.8146495%7C-4.9035677%2C-80.8152457%7C-4.9040252%2C-80.815197%7C-4.9073168%2C-80.7465694%7C-4.9072783%2C-80.7484136"}, {"nombre": "Tramo 3  (JIMENEZ CORREA IRIS DEL PILAR \u2192 LEIDY YULIANA SANDOVAL YARLEQUE)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.9047258,-80.7438108&waypoints=-4.9079765%2C-80.7492284%7C-4.904165%2C-80.745038%7C-4.9066386%2C-80.7487517%7C-4.9057378%2C-80.7477693%7C-4.904619%2C-80.7464236%7C-4.9044354%2C-80.7464318%7C-4.9041502%2C-80.7454126%7C-4.9040248%2C-80.7445294%7C-4.9042399%2C-80.7437565"}, {"nombre": "Tramo 4  (LEIDY YULIANA SANDOVAL YARLEQUE \u2192 CATALINA VILCHEZ CORREA DE MEJIAS)", "url": "https://www.google.com/maps/dir/?api=1&destination=-4.9065161,-80.7429232&waypoints=-4.9047258%2C-80.7438108"}]};
+    var listaClientes = [{"nombre": "ABARROTES Y SERV.CHINININ SAC", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.8945854, "lng": -80.6828445}, {"nombre": "Aquino bruno catalina", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9003196, "lng": -80.8165181}, {"nombre": "CATALINA VILCHEZ CORREA DE MEJIAS", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9065161, "lng": -80.7429232}, {"nombre": "CHINCHAY CORNEJO SANTIAGO", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.8981948, "lng": -80.8143044}, {"nombre": "GONZALES COLMENARES JUAN JORGE", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9035677, "lng": -80.8152457}, {"nombre": "HERNAN MORE ALVARADO", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9042399, "lng": -80.7437565}, {"nombre": "JASMIN BEATRIZ RODRIGUEZ CORNEJO", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9019314, "lng": -80.8146495}, {"nombre": "JASMIN BEATRIZ RODRIGUEZ CORNEJO", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9019314, "lng": -80.8146495}, {"nombre": "JIMENEZ CORREA IRIS DEL PILAR", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9079765, "lng": -80.7492284}, {"nombre": "JIMENEZ SAAVEDRA SEVERA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9044354, "lng": -80.7464318}, {"nombre": "JOSE LUIS ROMAN QUISPE", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9041502, "lng": -80.7454126}, {"nombre": "JUAREZ CHINCHAY CARMEN ROSA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.8997894, "lng": -80.8139356}, {"nombre": "JULIA MARIA MONTERO SOJO", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9040252, "lng": -80.815197}, {"nombre": "KARLA ELIZABETH GONZALES OLIVOS", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.913728, "lng": -80.722761}, {"nombre": "LEIDY YULIANA SANDOVAL YARLEQUE", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9047258, "lng": -80.7438108}, {"nombre": "LLACSAHUANGA CHUMACERO OSCAR", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.8920557, "lng": -80.6831433}, {"nombre": "LUIS FERNANDO CORNEJO ZAPATA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9001258, "lng": -80.8155336}, {"nombre": "MARIA HAYDEE YARLEQUE MOGOLLON", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9146278, "lng": -80.7175017}, {"nombre": "MARIA MAGDALENA JIMENEZ SANDOVAL", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9066386, "lng": -80.7487517}, {"nombre": "MARIA NERY JIMENEZ CORREA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9057378, "lng": -80.7477693}, {"nombre": "MOSCOL TALLEDO DAVID", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9073168, "lng": -80.7465694}, {"nombre": "MOSCOL TALLEDO DAVID", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9073168, "lng": -80.7465694}, {"nombre": "NELIDA ROJAS ROMAN", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9072783, "lng": -80.7484136}, {"nombre": "PE\u00d1A VILCHEZ KARINA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.8988807, "lng": -80.8144633}, {"nombre": "RAQUEL MOGOLL\u00d3N SALDARRIAGA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.904619, "lng": -80.7464236}, {"nombre": "SANDOVAL NU\u00d1EZ MARIA DEL C.", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.904165, "lng": -80.745038}, {"nombre": "SOSA FLORES FAUSTINA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.8988789, "lng": -80.8159489}, {"nombre": "VASQUEZ CELIS GEORGINA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9040248, "lng": -80.7445294}, {"nombre": "VASQUEZ REYES YESSICA PATRICIA", "vendedor": "JACIEL MOGOLLON ALVARADO", "lat": -4.9152949, "lng": -80.678827}];
+
+    function toggleNavPanel() {
+        var p = document.getElementById('nav-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+             renderRutas();
+             document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+
+    function toggleListPanel() {
+        var p = document.getElementById('list-panel');
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+        if (p.style.display === 'block') {
+            renderListaClientes();
+            document.getElementById('nav-panel').style.display = 'none';
+        }
+    }
+
+    function renderRutas() {
+        var c = document.getElementById('nav-links-container');
+        c.innerHTML = '';
+        for (var vend in infoRutas) {
+            var sec = document.createElement('div');
+            sec.style.marginBottom = '15px';
+            sec.innerHTML = '<strong style="color:#666;font-size:13px;display:block;margin-bottom:5px;">👤 ' + vend + '</strong>';
+            infoRutas[vend].forEach(function(link) {
+                var a = document.createElement('a');
+                a.href = link.url; a.target = '_blank';
+                a.textContent = link.nombre;
+                a.style.cssText = 'display:block;background:#f1f3f4;color:#1a73e8;' +
+                    'padding:8px 12px;border-radius:8px;margin-bottom:5px;' +
+                    'text-decoration:none;font-size:12px;font-weight:600;';
+                a.onmouseover = function() { this.style.background = '#e8f0fe'; };
+                a.onmouseout  = function() { this.style.background = '#f1f3f4'; };
+                sec.appendChild(a);
+            });
+            c.appendChild(sec);
+        }
+    }
+
+    function renderListaClientes(filtro = '') {
+        var c = document.getElementById('list-container');
+        c.innerHTML = '';
+        var filtrados = listaClientes.filter(cl => 
+            cl.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+            cl.vendedor.toLowerCase().includes(filtro.toLowerCase())
+        );
+
+        filtrados.forEach(function(cl) {
+            var d = document.createElement('div');
+            d.style.cssText = 'background:#fff; border:1px solid #eee; padding:10px; border-radius:8px; margin-bottom:8px; cursor:pointer; transition: 0.2s;';
+            d.innerHTML = '<div style="font-weight:bold; color:#333; font-size:13px;">' + cl.nombre + '</div>' +
+                          '<div style="font-size:11px; color:#777;">👤 ' + cl.vendedor + '</div>';
+            
+            d.onclick = function() {
+                irAlCliente(cl.lat, cl.lng, cl.nombre);
+            };
+            d.onmouseover = function() { this.style.background = '#f8f9fa'; this.style.borderColor = '#3498db'; };
+            d.onmouseout  = function() { this.style.background = '#fff'; this.style.borderColor = '#eee'; };
+            c.appendChild(d);
+        });
+    }
+
+    function irAlCliente(lat, lng, nombre) {
+        if (!window._mapaListo) return;
+        window._mapaListo.setView([lat, lng], 18);
+        
+        // Buscar el marcador y abrir popup
+        window._mapaListo.eachLayer(function(layer) {
+            if (layer instanceof L.Marker && layer.options && (layer.options.alt === nombre || (layer.options.tooltip && layer.options.tooltip.getContent().includes(nombre)))) {
+                layer.openPopup();
+            }
+        });
+
+        if (window.innerWidth < 768) {
+            document.getElementById('list-panel').style.display = 'none';
+        }
+    }
+</script>
+
+<div id="list-panel" style="
+    display:none; position:fixed; bottom:80px; left:20px;
+    width:320px; z-index:9999; background:white;
+    border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif; padding:15px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="margin:0;font-size:16px;color:#333;">📋 Lista de Clientes</h3>
+        <button onclick="document.getElementById('list-panel').style.display='none'"
+                style="border:none;background:none;cursor:pointer;font-size:20px;">×</button>
+    </div>
+    <input type="text" placeholder="Filtrar clientes..." onkeyup="renderListaClientes(this.value)" style="
+        width:100%; padding:8px 12px; border-radius:8px; border:1px solid #ddd; margin-bottom:10px; box-sizing: border-box;
+    ">
+    <div id="list-container" style="max-height:400px;overflow-y:auto; padding-right:5px;"></div>
+</div>
+
+<button onclick="toggleListPanel()" style="
+    position:fixed; bottom:20px; left:220px; z-index:9998;
+    background:#27ae60; color:white; border:none;
+    border-radius:50px; padding:12px 20px;
+    font-weight:bold; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    font-family:'Segoe UI',sans-serif;">
+    📋 LISTADO
+</button>
+    
+            <div class="folium-map" id="map_946559d6018ca0b3f168212469a6c45f" ></div>
+        
+
+<!-- Boton volver al menu principal -->
+<a href="index.html" style="
+    position:fixed; top:15px; left:50px; z-index:9998;
+    background:white; color:#333;
+    border:2px solid #ccc; border-radius:8px;
+    padding:8px 15px; font-weight:bold;
+    text-decoration:none; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8592; VOLVER AL MENU
+</a>
+
+<!-- Boton reset de entregas -->
+<button onclick="resetEntregas()" style="
+    position:fixed; top:15px; left:230px; z-index:9998;
+    background:#e74c3c; color:white;
+    border:none; border-radius:8px;
+    padding:10px 15px; font-weight:bold;
+    cursor:pointer; font-size:13px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    font-family:'Segoe UI',sans-serif;">
+    &#8635; RESET ENTREGAS
+</button>
+
+<!-- Indicador de sincronizacion -->
+<div id="sync-indicator" style="
+    position:fixed; bottom:15px; right:15px; z-index:9999;
+    background:rgba(0,0,0,0.7); color:white;
+    padding:6px 12px; border-radius:20px;
+    font-size:11px; font-family:'Segoe UI',sans-serif;
+    display:none; transition:opacity 0.3s;">
+    &#9729; Sincronizando...
+</div>
+
+<script>
+    // --- CONFIGURACION NUBE ---
+    
+    const JSONBIN_BIN_ID = '';
+    const JSONBIN_API_KEY = '$2a$10$XbSEDYDqGr6WwHfnYP2gQu07YA10s.clBAD4NP8ZDflkUr0ihvtA2';
+    const NUBE_ACTIVA = false;
+    
+
+    window._mapaListo   = null;
+    window._markerActual = null;
+
+    window.resetEntregas = async function() {
+        if (!confirm("¿Estás seguro de que quieres reiniciar TODOS los estados de entrega de esta ruta?")) return;
+        
+        // 1. Limpiar localStorage
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('entregas_')) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+        
+        // 2. Limpiar nube
+        if (NUBE_ACTIVA) {
+            mostrarSync('&#9729; Reiniciando en nube...', 'rgba(0,100,200,0.8)');
+            _estadoNube = {};
+            const payload = { entregas: {}, ultima_sync: new Date().toISOString() };
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+                mostrarSync('&#10003; Entregas reiniciadas en nube', 'rgba(0,150,50,0.8)');
+            } catch(e) {}
+        }
+        
+        // 3. Re-aplicar visualmente (todos a false)
+        if (window._mapaListo) {
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    window.marcarVisual(layer, false);
+                }
+            });
+        }
+        
+        // 4. Si el popup de un marcador está abierto, actualizar su checkbox
+        if (window._markerActual && window._markerActual.isPopupOpen()) {
+             const popup = window._markerActual.getPopup();
+             const wrapper = popup ? popup._wrapper : null;
+             const chk = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+             if (chk) chk.checked = false;
+        }
+    };
+
+    function mostrarSync(texto, color) {
+        const el = document.getElementById('sync-indicator');
+        if (!el) return;
+        el.textContent = texto;
+        el.style.background = color || 'rgba(0,0,0,0.7)';
+        el.style.display = 'block';
+        el.style.opacity = '1';
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }, 2000);
+    }
+
+    // --- VISUAL ---
+    window.marcarVisual = function(marker, entregado) {
+        if (!marker) return;
+        
+        // Guardar el estado en las opciones del marker para persistencia
+        if (!marker.options) marker.options = {};
+        marker.options.isDelivered = entregado;
+
+        if (marker._icon) {
+            if (entregado) {
+                marker._icon.classList.add('marker-delivered');
+            } else {
+                marker._icon.classList.remove('marker-delivered');
+            }
+        }
+    };
+
+    // --- JSONBIN CLOUD API ---
+    async function leerNube() {
+        if (!NUBE_ACTIVA) return null;
+        try {
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            return data.record || data;
+        } catch(e) { return null; }
+    }
+
+    async function escribirNube(estadoCompleto) {
+        if (!NUBE_ACTIVA) return false;
+        mostrarSync('&#9729; Sincronizando...', 'rgba(0,100,200,0.8)');
+        try {
+            // Leer estado actual para hacer MERGE (evitar sobrescribir cambios de otros)
+            const actual = await leerNube();
+            const entregasActuales = (actual && actual.entregas) ? actual.entregas : {};
+
+            // Merge: combinar estado actual en nube + nuevos cambios
+            const merged = { ...entregasActuales, ...estadoCompleto.entregas };
+            const payload = {
+                entregas: merged,
+                ultima_sync: new Date().toISOString()
+            };
+
+            const resp = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY
+                },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                mostrarSync('&#10003; Guardado en nube', 'rgba(0,150,50,0.8)');
+                return true;
+            }
+        } catch(e) { console.warn('Error escribiendo en nube:', e); }
+        mostrarSync('&#9888; Solo guardado local', 'rgba(200,100,0,0.8)');
+        return false;
+    }
+
+    // --- LOCAL STORAGE FALLBACK ---
+    function guardarLocal(id, delivered) {
+        try { localStorage.setItem('entregas_' + id, delivered); } catch(e){}
+    }
+    function leerLocal(id) {
+        const v = localStorage.getItem('entregas_' + id);
+        return v === 'true' || v === true;
+    }
+    function leerTodosLocal() {
+        const res = {};
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('entregas_')) {
+                    res[key.replace('entregas_', '')] = localStorage.getItem(key) === 'true';
+                }
+            }
+        } catch(e){}
+        return res;
+    }
+
+    // --- ESTADO UNIFICADO ---
+    let _estadoNube = null;
+
+    async function cargarEstados() {
+        // Prioridad: Nube > Local
+        const nube = await leerNube();
+        if (nube && nube.entregas) {
+            _estadoNube = nube.entregas;
+            // Sincronizar nube -> local
+            Object.entries(_estadoNube).forEach(([id, data]) => {
+                const val = (typeof data === 'object') ? data.entregado : data;
+                guardarLocal(id, val);
+            });
+            return _estadoNube;
+        }
+        // Fallback local
+        return leerTodosLocal();
+    }
+
+    async function getStatus(id) {
+        if (_estadoNube && id in _estadoNube) {
+            const val = _estadoNube[id];
+            return (typeof val === 'object') ? !!val.entregado : !!val;
+        }
+        return leerLocal(id);
+    }
+
+    // --- GUARDAR ENTREGA ---
+    window.guardarEstadoEntrega = async function(btn) {
+        try {
+            const popup = btn.closest('.leaflet-popup-content') || btn.closest('.leaflet-popup-content-wrapper');
+            const span = popup ? popup.querySelector('.bodega-nombre') : null;
+            const chk  = popup ? popup.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+
+            const nombre      = span.textContent.trim();
+            const nuevoEstado = chk.checked;
+
+            // 1. Guardar local de inmediato (UX sin espera)
+            guardarLocal(nombre, nuevoEstado);
+
+            // 2. Actualizar visual
+            if (window._markerActual) window.marcarVisual(window._markerActual, nuevoEstado);
+            else reAplicarEstados();
+
+            // 3. Feedback inmediato en boton
+            const orig = btn.innerHTML;
+            btn.innerHTML = 'GUARDANDO...';
+            btn.style.background = '#0d6efd';
+
+            // 4. Subir a la nube con merge
+            const entregaData = {
+                entregado: nuevoEstado,
+                fecha: new Date().toISOString()
+            };
+            if (_estadoNube) _estadoNube[nombre] = entregaData;
+            else _estadoNube = { [nombre]: entregaData };
+
+            const nubeOk = await escribirNube({ entregas: { [nombre]: entregaData } });
+
+            // Si fallo la nube, guardar en cola de reintentos
+            if (!nubeOk && NUBE_ACTIVA) {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    cola.push({ [nombre]: entregaData });
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(cola));
+                    console.log('[Vamys] Guardado en cola de reintentos');
+                } catch(qe) {}
+            }
+
+            btn.innerHTML = nubeOk ? '✓ GUARDADO EN NUBE' : '✓ GUARDADO LOCAL';
+            btn.style.background = nubeOk ? '#155724' : '#856404';
+            setTimeout(() => { btn.innerHTML = orig; btn.style.background = '#28a745'; }, 1500);
+
+        } catch (err) {
+            console.error("Error al guardar:", err);
+        }
+    };
+
+    async function reAplicarEstados() {
+        if (!window._mapaListo) return;
+        try {
+            const estados = await cargarEstados();
+            window._mapaListo.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer.options && layer.options.alt) {
+                    const val = estados[layer.options.alt];
+                    const entregado = (typeof val === 'object') ? !!val?.entregado : !!val;
+                    window.marcarVisual(layer, entregado);
+                }
+            });
+        } catch(e) { console.error("Error re-aplicando estados:", e); }
+    }
+
+    function inicializarVamys() {
+        const mapEl = document.querySelector('.folium-map');
+        if (!mapEl) { setTimeout(inicializarVamys, 500); return; }
+        if (mapEl.offsetHeight === 0) { mapEl.style.height = '100vh'; mapEl.style.width = '100vw'; }
+
+        let mapObj = null;
+        try {
+            if (mapEl.id && window[mapEl.id] && typeof window[mapEl.id].on === 'function') {
+                mapObj = window[mapEl.id];
+            } else {
+                for (let key in window) {
+                    if (key.startsWith('map_') && window[key] && typeof window[key].on === 'function') {
+                        if (window[key].eachLayer) { mapObj = window[key]; break; }
+                    }
+                }
+            }
+        } catch(e){}
+
+        if (!mapObj) { setTimeout(inicializarVamys, 500); return; }
+
+        window._mapaListo  = mapObj;
+        mapEl._leaflet_map = mapObj;
+
+        // Escuchar cuando se agrega cualquier capa (muy útil para clusters)
+        mapObj.on('layeradd', async (e) => {
+            if (e.layer instanceof L.Marker && e.layer.options && e.layer.options.alt) {
+                const entregado = await getStatus(e.layer.options.alt);
+                window.marcarVisual(e.layer, entregado);
+            }
+        });
+
+        // Mantener moveend/zoomend solo como backup ocasional
+        mapObj.on('zoomend moveend spiderfied', () => setTimeout(reAplicarEstados, 500));
+
+        mapObj.on('popupopen', async (e) => {
+            const marker  = e.popup._source;
+            if (!marker) return;
+            const wrapper = e.popup._wrapper;
+            const span    = wrapper ? wrapper.querySelector('.bodega-nombre') : null;
+            const chk     = wrapper ? wrapper.querySelector('.chk-entregado') : null;
+            if (!span || !chk) return;
+            const nombre = span.textContent.trim();
+            window._markerActual = marker;
+            if (marker.options) marker.options.alt = nombre;
+            chk.checked = await getStatus(nombre);
+        });
+
+        reAplicarEstados();
+
+        // ── POLLING: actualizar desde la nube cada 15 segundos ──
+        if (NUBE_ACTIVA) {
+            console.log('[Vamys] Polling activo: sincronizando cada 15s desde JSONBin');
+            setInterval(async () => {
+                try {
+                    _estadoNube = null; // forzar re-lectura
+                    await reAplicarEstados();
+                } catch(e) { console.warn('[Vamys] Error en polling:', e); }
+            }, 15000);
+        }
+
+        // ── REINTENTAR escrituras fallidas guardadas en cola ──
+        if (NUBE_ACTIVA) {
+            setInterval(async () => {
+                try {
+                    const cola = JSON.parse(localStorage.getItem('_vamys_retry_queue') || '[]');
+                    if (cola.length === 0) return;
+                    console.log(`[Vamys] Reintentando ${cola.length} escrituras pendientes...`);
+                    const exitosas = [];
+                    for (const item of cola) {
+                        const ok = await escribirNube({ entregas: item });
+                        if (ok) exitosas.push(item);
+                    }
+                    // Quitar las exitosas de la cola
+                    const restantes = cola.filter(c => !exitosas.includes(c));
+                    localStorage.setItem('_vamys_retry_queue', JSON.stringify(restantes));
+                    if (exitosas.length > 0) {
+                        mostrarSync(`✓ ${exitosas.length} pendientes sincronizados`, 'rgba(0,150,50,0.8)');
+                    }
+                } catch(e) { console.warn('[Vamys] Error reintentando cola:', e); }
+            }, 30000);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", inicializarVamys);
+    } else {
+        inicializarVamys();
+    }
+</script>
+</body>
+<script>
+    
+    
+            var map_946559d6018ca0b3f168212469a6c45f = L.map(
+                "map_946559d6018ca0b3f168212469a6c45f",
+                {
+                    center: [-4.904037162068966, -80.76141899310345],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_65437004ef3ed677dfe01c09f1ac5f4c = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_65437004ef3ed677dfe01c09f1ac5f4c.addTo(map_946559d6018ca0b3f168212469a6c45f);
+        
+    
+            var feature_group_c7dc7e27223471c47048d027be4a1d56 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_cluster_113920710fc0bd317ddae24f29587caf = L.markerClusterGroup(
+                {
+  "spiderfyOnMaxZoom": true,
+  "disableClusteringAtZoom": 17,
+  "maxClusterRadius": 60,
+}
+            );
+        
+    
+            var marker_1bbe91840273da5a81c292feb424ad18 = L.marker(
+                [-4.9019314, -80.8146495],
+                {
+  "alt": "JASMIN BEATRIZ RODRIGUEZ CORNEJO",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_857ea21f705189911cead1ca723c7f0c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f923308cd4c96013833379ef5c96b86c = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_b9d63e2679863fca4c5ec05ae889015b = $(`<div id="html_b9d63e2679863fca4c5ec05ae889015b" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JASMIN BEATRIZ RODRIGUEZ CORNEJO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JASMIN BEATRIZ RODRIGUEZ CORNEJO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle la victoria sojo Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9019314,-80.8146495','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_f923308cd4c96013833379ef5c96b86c.setContent(html_b9d63e2679863fca4c5ec05ae889015b);
+            
+        
+
+        marker_1bbe91840273da5a81c292feb424ad18.bindPopup(popup_f923308cd4c96013833379ef5c96b86c)
+        ;
+
+        
+    
+    
+            marker_1bbe91840273da5a81c292feb424ad18.bindTooltip(
+                `<div>
+                     JASMIN BEATRIZ RODRIGUEZ CORNEJO — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1bbe91840273da5a81c292feb424ad18.setIcon(icon_857ea21f705189911cead1ca723c7f0c);
+            
+    
+            var marker_66fd52ec0bd8c0db484466a036fb0f38 = L.marker(
+                [-4.9073168, -80.7465694],
+                {
+  "alt": "MOSCOL TALLEDO DAVID",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_ecb601f24f0937926531a6e9add534a6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_231f4cb550b0554cc61397b05b766505 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_db8b6958375f96c7983beda4ff168718 = $(`<div id="html_db8b6958375f96c7983beda4ff168718" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MOSCOL TALLEDO DAVID</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MOSCOL TALLEDO DAVID</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CA.SAN VALENTIN MZ.116 LT.02 Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9073168,-80.7465694','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_231f4cb550b0554cc61397b05b766505.setContent(html_db8b6958375f96c7983beda4ff168718);
+            
+        
+
+        marker_66fd52ec0bd8c0db484466a036fb0f38.bindPopup(popup_231f4cb550b0554cc61397b05b766505)
+        ;
+
+        
+    
+    
+            marker_66fd52ec0bd8c0db484466a036fb0f38.bindTooltip(
+                `<div>
+                     MOSCOL TALLEDO DAVID — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_66fd52ec0bd8c0db484466a036fb0f38.setIcon(icon_ecb601f24f0937926531a6e9add534a6);
+            
+    
+            var marker_88c71df8fd970849424eed5aa8f4c435 = L.marker(
+                [-4.9152949, -80.678827],
+                {
+  "alt": "VASQUEZ REYES YESSICA PATRICIA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_023e0385aae111c4e968973f2c8c8bf5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e9dc7580742840c6da806120026403c1 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_371f37f228aa0366395c55aa3cbb8521 = $(`<div id="html_371f37f228aa0366395c55aa3cbb8521" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">VASQUEZ REYES YESSICA PATRICIA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">VASQUEZ REYES YESSICA PATRICIA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>VASQUEZ REYES YESSICA PATRICIA MZA. DLOTE 01 PARQUE INDUSTRIAL ( EX TERMINAL PESQUERO ) PIURA - SULLANA  Sullana -Sullana Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9152949,-80.678827','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_e9dc7580742840c6da806120026403c1.setContent(html_371f37f228aa0366395c55aa3cbb8521);
+            
+        
+
+        marker_88c71df8fd970849424eed5aa8f4c435.bindPopup(popup_e9dc7580742840c6da806120026403c1)
+        ;
+
+        
+    
+    
+            marker_88c71df8fd970849424eed5aa8f4c435.bindTooltip(
+                `<div>
+                     VASQUEZ REYES YESSICA PATRICIA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_88c71df8fd970849424eed5aa8f4c435.setIcon(icon_023e0385aae111c4e968973f2c8c8bf5);
+            
+    
+            var marker_9fa18fa5a1e2a233292aeec726d4ba26 = L.marker(
+                [-4.8945854, -80.6828445],
+                {
+  "alt": "ABARROTES Y SERV.CHINININ SAC",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_ca6b0f32aa9c8702a99893def1e1c242 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_137491b1fb773342633c1dac92713950 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_30628aeaeffc37e9844d1da24ea01a06 = $(`<div id="html_30628aeaeffc37e9844d1da24ea01a06" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">ABARROTES Y SERV.CHINININ SAC</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">ABARROTES Y SERV.CHINININ SAC</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>ABARROTES Y SERV.CHINININ SAC CA.CUATRO 193 Y 199. Sullana 200601Sullana Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8945854,-80.6828445','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_137491b1fb773342633c1dac92713950.setContent(html_30628aeaeffc37e9844d1da24ea01a06);
+            
+        
+
+        marker_9fa18fa5a1e2a233292aeec726d4ba26.bindPopup(popup_137491b1fb773342633c1dac92713950)
+        ;
+
+        
+    
+    
+            marker_9fa18fa5a1e2a233292aeec726d4ba26.bindTooltip(
+                `<div>
+                     ABARROTES Y SERV.CHINININ SAC — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9fa18fa5a1e2a233292aeec726d4ba26.setIcon(icon_ca6b0f32aa9c8702a99893def1e1c242);
+            
+    
+            var marker_cc914eff0ba0cd59aa9aec95cf55dbde = L.marker(
+                [-4.913728, -80.722761],
+                {
+  "alt": "KARLA ELIZABETH GONZALES OLIVOS",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_b6124bb30b0baa4a0e75827ab83f98c3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_53d4bd3638ef2e91d600fb0d3435de17 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_4d262b9409f77a9316d9e41a34054fe3 = $(`<div id="html_4d262b9409f77a9316d9e41a34054fe3" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">KARLA ELIZABETH GONZALES OLIVOS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">KARLA ELIZABETH GONZALES OLIVOS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>KARLA ELIZABETH GONZALES OLIVOS CA. LOS COCOS URB.POP. NUEVO HORIZONTE MZ.G LT.6 Sullana Sullana Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.913728,-80.722761','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_53d4bd3638ef2e91d600fb0d3435de17.setContent(html_4d262b9409f77a9316d9e41a34054fe3);
+            
+        
+
+        marker_cc914eff0ba0cd59aa9aec95cf55dbde.bindPopup(popup_53d4bd3638ef2e91d600fb0d3435de17)
+        ;
+
+        
+    
+    
+            marker_cc914eff0ba0cd59aa9aec95cf55dbde.bindTooltip(
+                `<div>
+                     KARLA ELIZABETH GONZALES OLIVOS — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cc914eff0ba0cd59aa9aec95cf55dbde.setIcon(icon_b6124bb30b0baa4a0e75827ab83f98c3);
+            
+    
+            var marker_01833638dfab58e25890ffbeadd6d955 = L.marker(
+                [-4.9146278, -80.7175017],
+                {
+  "alt": "MARIA HAYDEE YARLEQUE MOGOLLON",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_144de608d91afc2e2225061754e7dbda = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6a35627a193f0d6e2a53f78861251a62 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_23b383b1f9f62412d26493c31bfe57cd = $(`<div id="html_23b383b1f9f62412d26493c31bfe57cd" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA HAYDEE YARLEQUE MOGOLLON</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA HAYDEE YARLEQUE MOGOLLON</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Av el Progreso MZ V LT 16 Asociación Sr de Los Milagros Sullana Sullana Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9146278,-80.7175017','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_6a35627a193f0d6e2a53f78861251a62.setContent(html_23b383b1f9f62412d26493c31bfe57cd);
+            
+        
+
+        marker_01833638dfab58e25890ffbeadd6d955.bindPopup(popup_6a35627a193f0d6e2a53f78861251a62)
+        ;
+
+        
+    
+    
+            marker_01833638dfab58e25890ffbeadd6d955.bindTooltip(
+                `<div>
+                     MARIA HAYDEE YARLEQUE MOGOLLON — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_01833638dfab58e25890ffbeadd6d955.setIcon(icon_144de608d91afc2e2225061754e7dbda);
+            
+    
+            var marker_49f050aab011f1f75dd230f1c83536da = L.marker(
+                [-4.8920557, -80.6831433],
+                {
+  "alt": "LLACSAHUANGA CHUMACERO OSCAR",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_99e97cd13fc50b3fac8b92975d7fcfc0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8228f0a7e17345b60622d6cd0e1727e1 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_6b61a5216c182c6aceaf18ea2e00c79b = $(`<div id="html_6b61a5216c182c6aceaf18ea2e00c79b" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">LLACSAHUANGA CHUMACERO OSCAR</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">LLACSAHUANGA CHUMACERO OSCAR</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE BERNARDO ALCEDO 221 Sullana Sullana Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8920557,-80.6831433','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_8228f0a7e17345b60622d6cd0e1727e1.setContent(html_6b61a5216c182c6aceaf18ea2e00c79b);
+            
+        
+
+        marker_49f050aab011f1f75dd230f1c83536da.bindPopup(popup_8228f0a7e17345b60622d6cd0e1727e1)
+        ;
+
+        
+    
+    
+            marker_49f050aab011f1f75dd230f1c83536da.bindTooltip(
+                `<div>
+                     LLACSAHUANGA CHUMACERO OSCAR — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_49f050aab011f1f75dd230f1c83536da.setIcon(icon_99e97cd13fc50b3fac8b92975d7fcfc0);
+            
+    
+            var marker_dd24bd97fd742add0b1475301c86bcbc = L.marker(
+                [-4.9003196, -80.8165181],
+                {
+  "alt": "Aquino bruno catalina",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_cc74ed09e2765ed969893dc3e65afc90 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e8b0919837a5fec0e7226920e598892b = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_98b6eb8e102ed2684a1731737c56a967 = $(`<div id="html_98b6eb8e102ed2684a1731737c56a967" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">Aquino bruno catalina</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">Aquino bruno catalina</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle Tacna por la cancha sojo Sullana  Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9003196,-80.8165181','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_e8b0919837a5fec0e7226920e598892b.setContent(html_98b6eb8e102ed2684a1731737c56a967);
+            
+        
+
+        marker_dd24bd97fd742add0b1475301c86bcbc.bindPopup(popup_e8b0919837a5fec0e7226920e598892b)
+        ;
+
+        
+    
+    
+            marker_dd24bd97fd742add0b1475301c86bcbc.bindTooltip(
+                `<div>
+                     Aquino bruno catalina — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dd24bd97fd742add0b1475301c86bcbc.setIcon(icon_cc74ed09e2765ed969893dc3e65afc90);
+            
+    
+            var marker_fc35718163908d18435012bd57241fc7 = L.marker(
+                [-4.8988789, -80.8159489],
+                {
+  "alt": "SOSA FLORES FAUSTINA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_a5bf958fce8b17d43727b60e2b982d12 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_df9ad24c8e56f80ad9ea9767d7d6c81f = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_ce2ae26268d70d99f2a376f51bb3dceb = $(`<div id="html_ce2ae26268d70d99f2a376f51bb3dceb" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SOSA FLORES FAUSTINA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SOSA FLORES FAUSTINA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>PSJ.SANTA ROSA 375 SOJO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8988789,-80.8159489','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_df9ad24c8e56f80ad9ea9767d7d6c81f.setContent(html_ce2ae26268d70d99f2a376f51bb3dceb);
+            
+        
+
+        marker_fc35718163908d18435012bd57241fc7.bindPopup(popup_df9ad24c8e56f80ad9ea9767d7d6c81f)
+        ;
+
+        
+    
+    
+            marker_fc35718163908d18435012bd57241fc7.bindTooltip(
+                `<div>
+                     SOSA FLORES FAUSTINA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fc35718163908d18435012bd57241fc7.setIcon(icon_a5bf958fce8b17d43727b60e2b982d12);
+            
+    
+            var marker_abbbfb1423828123d55c858aabfc2be5 = L.marker(
+                [-4.9001258, -80.8155336],
+                {
+  "alt": "LUIS FERNANDO CORNEJO ZAPATA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_fdf25dd9d8ace7e4a7d8072969e9014d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ab2f0176b828f8770387e677e2ccc7ec = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_614f5dbb18436eac1cdf8f7ef04f1c3a = $(`<div id="html_614f5dbb18436eac1cdf8f7ef04f1c3a" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">LUIS FERNANDO CORNEJO ZAPATA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">LUIS FERNANDO CORNEJO ZAPATA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CA LIZARDO OTERO ALCAS 630 SOJO - SULLANA Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9001258,-80.8155336','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_ab2f0176b828f8770387e677e2ccc7ec.setContent(html_614f5dbb18436eac1cdf8f7ef04f1c3a);
+            
+        
+
+        marker_abbbfb1423828123d55c858aabfc2be5.bindPopup(popup_ab2f0176b828f8770387e677e2ccc7ec)
+        ;
+
+        
+    
+    
+            marker_abbbfb1423828123d55c858aabfc2be5.bindTooltip(
+                `<div>
+                     LUIS FERNANDO CORNEJO ZAPATA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_abbbfb1423828123d55c858aabfc2be5.setIcon(icon_fdf25dd9d8ace7e4a7d8072969e9014d);
+            
+    
+            var marker_fc32595ab1cd50a765bcc4ee32b7b703 = L.marker(
+                [-4.8988807, -80.8144633],
+                {
+  "alt": "PE\u00d1A VILCHEZ KARINA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_d7ac240c3d7c93add93cde8b3e8bba44 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cce7761df7e2bd5b917acb90b7f43cee = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_ac1d5ddda01f7335c5e895093e0644ca = $(`<div id="html_ac1d5ddda01f7335c5e895093e0644ca" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">PEÑA VILCHEZ KARINA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">PEÑA VILCHEZ KARINA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CL LOS JAZMINES 60-05 CENTSOJO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8988807,-80.8144633','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_cce7761df7e2bd5b917acb90b7f43cee.setContent(html_ac1d5ddda01f7335c5e895093e0644ca);
+            
+        
+
+        marker_fc32595ab1cd50a765bcc4ee32b7b703.bindPopup(popup_cce7761df7e2bd5b917acb90b7f43cee)
+        ;
+
+        
+    
+    
+            marker_fc32595ab1cd50a765bcc4ee32b7b703.bindTooltip(
+                `<div>
+                     PEÑA VILCHEZ KARINA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fc32595ab1cd50a765bcc4ee32b7b703.setIcon(icon_d7ac240c3d7c93add93cde8b3e8bba44);
+            
+    
+            var marker_31c63725acb2dc69cc327ad5ccbf2ac4 = L.marker(
+                [-4.8981948, -80.8143044],
+                {
+  "alt": "CHINCHAY CORNEJO SANTIAGO",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_0b54b2154cb12565af5fe6774704c3eb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7d7abb8e6541c3a3898dfc8a63742346 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_98edfa1e26a16f5eb89c3c13c3414a61 = $(`<div id="html_98edfa1e26a16f5eb89c3c13c3414a61" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">CHINCHAY CORNEJO SANTIAGO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">CHINCHAY CORNEJO SANTIAGO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CHINCHAY CORNEJO SANTIAGO VALLE LOS JAZMINES 226 SOJO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8981948,-80.8143044','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_7d7abb8e6541c3a3898dfc8a63742346.setContent(html_98edfa1e26a16f5eb89c3c13c3414a61);
+            
+        
+
+        marker_31c63725acb2dc69cc327ad5ccbf2ac4.bindPopup(popup_7d7abb8e6541c3a3898dfc8a63742346)
+        ;
+
+        
+    
+    
+            marker_31c63725acb2dc69cc327ad5ccbf2ac4.bindTooltip(
+                `<div>
+                     CHINCHAY CORNEJO SANTIAGO — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_31c63725acb2dc69cc327ad5ccbf2ac4.setIcon(icon_0b54b2154cb12565af5fe6774704c3eb);
+            
+    
+            var marker_eb9f0020ccce33ce4150055e9d891da9 = L.marker(
+                [-4.8997894, -80.8139356],
+                {
+  "alt": "JUAREZ CHINCHAY CARMEN ROSA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_bd7e80a37c59efb48d724d9b30c89c59 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f1ed52d8deba26a3bb89765c58df92d5 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_a3f6f1015a7212772d923f9fa83835cd = $(`<div id="html_a3f6f1015a7212772d923f9fa83835cd" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JUAREZ CHINCHAY CARMEN ROSA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JUAREZ CHINCHAY CARMEN ROSA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JUAREZ CHINCHAY CARMEN ROSA AV.VICTORIA 504 SOJO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.8997894,-80.8139356','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_f1ed52d8deba26a3bb89765c58df92d5.setContent(html_a3f6f1015a7212772d923f9fa83835cd);
+            
+        
+
+        marker_eb9f0020ccce33ce4150055e9d891da9.bindPopup(popup_f1ed52d8deba26a3bb89765c58df92d5)
+        ;
+
+        
+    
+    
+            marker_eb9f0020ccce33ce4150055e9d891da9.bindTooltip(
+                `<div>
+                     JUAREZ CHINCHAY CARMEN ROSA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_eb9f0020ccce33ce4150055e9d891da9.setIcon(icon_bd7e80a37c59efb48d724d9b30c89c59);
+            
+    
+            var marker_68321467d22cfecb5b8900b2e754606f = L.marker(
+                [-4.9019314, -80.8146495],
+                {
+  "alt": "JASMIN BEATRIZ RODRIGUEZ CORNEJO",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_d01991af58c5e9962b742d9aab18b2d3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_74b0baeb287cb6727f5fa56e60eec8c4 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_9481284ddbdb9924f1031d441a69de58 = $(`<div id="html_9481284ddbdb9924f1031d441a69de58" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JASMIN BEATRIZ RODRIGUEZ CORNEJO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JASMIN BEATRIZ RODRIGUEZ CORNEJO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle la victoria sojo Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9019314,-80.8146495','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_74b0baeb287cb6727f5fa56e60eec8c4.setContent(html_9481284ddbdb9924f1031d441a69de58);
+            
+        
+
+        marker_68321467d22cfecb5b8900b2e754606f.bindPopup(popup_74b0baeb287cb6727f5fa56e60eec8c4)
+        ;
+
+        
+    
+    
+            marker_68321467d22cfecb5b8900b2e754606f.bindTooltip(
+                `<div>
+                     JASMIN BEATRIZ RODRIGUEZ CORNEJO — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_68321467d22cfecb5b8900b2e754606f.setIcon(icon_d01991af58c5e9962b742d9aab18b2d3);
+            
+    
+            var marker_a45e09ae16a3c86edd186da8c1d419f2 = L.marker(
+                [-4.9035677, -80.8152457],
+                {
+  "alt": "GONZALES COLMENARES JUAN JORGE",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_f981d83f397131b0a853378fd814cf02 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e0042408f3bb957ba60cfef1563fa179 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_077fe60d5c8b96fa1e5f65e24176fba9 = $(`<div id="html_077fe60d5c8b96fa1e5f65e24176fba9" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">GONZALES COLMENARES JUAN JORGE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">GONZALES COLMENARES JUAN JORGE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CALLE VICTORIA 181 CENTRO SOJO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9035677,-80.8152457','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_e0042408f3bb957ba60cfef1563fa179.setContent(html_077fe60d5c8b96fa1e5f65e24176fba9);
+            
+        
+
+        marker_a45e09ae16a3c86edd186da8c1d419f2.bindPopup(popup_e0042408f3bb957ba60cfef1563fa179)
+        ;
+
+        
+    
+    
+            marker_a45e09ae16a3c86edd186da8c1d419f2.bindTooltip(
+                `<div>
+                     GONZALES COLMENARES JUAN JORGE — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a45e09ae16a3c86edd186da8c1d419f2.setIcon(icon_f981d83f397131b0a853378fd814cf02);
+            
+    
+            var marker_1a002bf3f821380f37096f91410d1d95 = L.marker(
+                [-4.9040252, -80.815197],
+                {
+  "alt": "JULIA MARIA MONTERO SOJO",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_8d31ba78c09ff95fc7ba6d21ea77f8a9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4ec9d0f36fe839a8efee74896fe187fb = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_1a9a06a29007680c6638d027556781a2 = $(`<div id="html_1a9a06a29007680c6638d027556781a2" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JULIA MARIA MONTERO SOJO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JULIA MARIA MONTERO SOJO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JULIA MARIA MONTERO SOJO CAL LA VICTORIA NRO 150 CENT SOJO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9040252,-80.815197','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_4ec9d0f36fe839a8efee74896fe187fb.setContent(html_1a9a06a29007680c6638d027556781a2);
+            
+        
+
+        marker_1a002bf3f821380f37096f91410d1d95.bindPopup(popup_4ec9d0f36fe839a8efee74896fe187fb)
+        ;
+
+        
+    
+    
+            marker_1a002bf3f821380f37096f91410d1d95.bindTooltip(
+                `<div>
+                     JULIA MARIA MONTERO SOJO — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1a002bf3f821380f37096f91410d1d95.setIcon(icon_8d31ba78c09ff95fc7ba6d21ea77f8a9);
+            
+    
+            var marker_15254f5951d2d25410569a856b6a9772 = L.marker(
+                [-4.9073168, -80.7465694],
+                {
+  "alt": "MOSCOL TALLEDO DAVID",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_805417af31e638666ce96eb9c6cf06ce = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_51001d6f0e04582940b45f9496499c7a = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_a38a47436dc232bf45e289bde5a9c1ab = $(`<div id="html_a38a47436dc232bf45e289bde5a9c1ab" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MOSCOL TALLEDO DAVID</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MOSCOL TALLEDO DAVID</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CA.SAN VALENTIN MZ.116 LT.02 Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9073168,-80.7465694','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_51001d6f0e04582940b45f9496499c7a.setContent(html_a38a47436dc232bf45e289bde5a9c1ab);
+            
+        
+
+        marker_15254f5951d2d25410569a856b6a9772.bindPopup(popup_51001d6f0e04582940b45f9496499c7a)
+        ;
+
+        
+    
+    
+            marker_15254f5951d2d25410569a856b6a9772.bindTooltip(
+                `<div>
+                     MOSCOL TALLEDO DAVID — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_15254f5951d2d25410569a856b6a9772.setIcon(icon_805417af31e638666ce96eb9c6cf06ce);
+            
+    
+            var marker_a63bf4c1ece29456c3678c5b36e1365a = L.marker(
+                [-4.9072783, -80.7484136],
+                {
+  "alt": "NELIDA ROJAS ROMAN",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_c599866f5ccf75dd9581b19f27d1d19b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_095e7f10d82d43415291e8904d195f49 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_84ce0c27a5abfdfd8fe0b7014a38d09e = $(`<div id="html_84ce0c27a5abfdfd8fe0b7014a38d09e" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">NELIDA ROJAS ROMAN</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">NELIDA ROJAS ROMAN</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle San Valentín jibito Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9072783,-80.7484136','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_095e7f10d82d43415291e8904d195f49.setContent(html_84ce0c27a5abfdfd8fe0b7014a38d09e);
+            
+        
+
+        marker_a63bf4c1ece29456c3678c5b36e1365a.bindPopup(popup_095e7f10d82d43415291e8904d195f49)
+        ;
+
+        
+    
+    
+            marker_a63bf4c1ece29456c3678c5b36e1365a.bindTooltip(
+                `<div>
+                     NELIDA ROJAS ROMAN — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a63bf4c1ece29456c3678c5b36e1365a.setIcon(icon_c599866f5ccf75dd9581b19f27d1d19b);
+            
+    
+            var marker_ac3a0bdf54087467c7574ecc87c4ae9d = L.marker(
+                [-4.9079765, -80.7492284],
+                {
+  "alt": "JIMENEZ CORREA IRIS DEL PILAR",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_3b93fad41d863dbe3003d94c2639b423 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c24a5b08d9d4ff139f90b97b8f9495f3 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_2ad57b355fa10cc499041da98ef0ca6a = $(`<div id="html_2ad57b355fa10cc499041da98ef0ca6a" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JIMENEZ CORREA IRIS DEL PILAR</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JIMENEZ CORREA IRIS DEL PILAR</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>CA.SAN MARCOS 109 Sullana Sullana Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9079765,-80.7492284','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_c24a5b08d9d4ff139f90b97b8f9495f3.setContent(html_2ad57b355fa10cc499041da98ef0ca6a);
+            
+        
+
+        marker_ac3a0bdf54087467c7574ecc87c4ae9d.bindPopup(popup_c24a5b08d9d4ff139f90b97b8f9495f3)
+        ;
+
+        
+    
+    
+            marker_ac3a0bdf54087467c7574ecc87c4ae9d.bindTooltip(
+                `<div>
+                     JIMENEZ CORREA IRIS DEL PILAR — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ac3a0bdf54087467c7574ecc87c4ae9d.setIcon(icon_3b93fad41d863dbe3003d94c2639b423);
+            
+    
+            var marker_953565198779fbb41080eb02705f54ae = L.marker(
+                [-4.904165, -80.745038],
+                {
+  "alt": "SANDOVAL NU\u00d1EZ MARIA DEL C.",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_203dfeec87b1b007f3f956473adef097 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3e644588a7d4febaf9fe7230f99c4588 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_fc099fdef52970736a62cfe46e8a0652 = $(`<div id="html_fc099fdef52970736a62cfe46e8a0652" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">SANDOVAL NUÑEZ MARIA DEL C.</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">SANDOVAL NUÑEZ MARIA DEL C.</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>SAN HILARION Nª121 JIBITO Sullana Sullana Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.904165,-80.745038','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_3e644588a7d4febaf9fe7230f99c4588.setContent(html_fc099fdef52970736a62cfe46e8a0652);
+            
+        
+
+        marker_953565198779fbb41080eb02705f54ae.bindPopup(popup_3e644588a7d4febaf9fe7230f99c4588)
+        ;
+
+        
+    
+    
+            marker_953565198779fbb41080eb02705f54ae.bindTooltip(
+                `<div>
+                     SANDOVAL NUÑEZ MARIA DEL C. — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_953565198779fbb41080eb02705f54ae.setIcon(icon_203dfeec87b1b007f3f956473adef097);
+            
+    
+            var marker_6ec4b4794a21c801df69602d1e7a6999 = L.marker(
+                [-4.9066386, -80.7487517],
+                {
+  "alt": "MARIA MAGDALENA JIMENEZ SANDOVAL",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_e645809a59481b73a3d0f8315ff9ea65 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_da18e452869fa49148fbbdd3d4689745 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_5b0f54d693d8c7dc7421805f2c3f87c5 = $(`<div id="html_5b0f54d693d8c7dc7421805f2c3f87c5" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA MAGDALENA JIMENEZ SANDOVAL</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA MAGDALENA JIMENEZ SANDOVAL</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Av san luis jibito barrio santa rosa - 130 Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9066386,-80.7487517','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_da18e452869fa49148fbbdd3d4689745.setContent(html_5b0f54d693d8c7dc7421805f2c3f87c5);
+            
+        
+
+        marker_6ec4b4794a21c801df69602d1e7a6999.bindPopup(popup_da18e452869fa49148fbbdd3d4689745)
+        ;
+
+        
+    
+    
+            marker_6ec4b4794a21c801df69602d1e7a6999.bindTooltip(
+                `<div>
+                     MARIA MAGDALENA JIMENEZ SANDOVAL — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6ec4b4794a21c801df69602d1e7a6999.setIcon(icon_e645809a59481b73a3d0f8315ff9ea65);
+            
+    
+            var marker_16566c555067e5385d3765360657bf95 = L.marker(
+                [-4.9057378, -80.7477693],
+                {
+  "alt": "MARIA NERY JIMENEZ CORREA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_229fe5c2fb4d1392b696017058fead77 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f19f27174fb1de59c1fa13dc6ffb7243 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_1b4ed22f1e889572ec8ff2f35f7079b1 = $(`<div id="html_1b4ed22f1e889572ec8ff2f35f7079b1" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">MARIA NERY JIMENEZ CORREA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">MARIA NERY JIMENEZ CORREA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>MARIA NERY JIMENEZ CORREA CAL BOLIVAR NRO 327 CENT JIBITO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9057378,-80.7477693','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_f19f27174fb1de59c1fa13dc6ffb7243.setContent(html_1b4ed22f1e889572ec8ff2f35f7079b1);
+            
+        
+
+        marker_16566c555067e5385d3765360657bf95.bindPopup(popup_f19f27174fb1de59c1fa13dc6ffb7243)
+        ;
+
+        
+    
+    
+            marker_16566c555067e5385d3765360657bf95.bindTooltip(
+                `<div>
+                     MARIA NERY JIMENEZ CORREA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_16566c555067e5385d3765360657bf95.setIcon(icon_229fe5c2fb4d1392b696017058fead77);
+            
+    
+            var marker_ec8c2d706b1dbb5cbbd373850488e0d1 = L.marker(
+                [-4.904619, -80.7464236],
+                {
+  "alt": "RAQUEL MOGOLL\u00d3N SALDARRIAGA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_fdb8e8f035378c56fad75120bc5c2916 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_16ee5d6eb76d33d6264dc8f14f3a85eb = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_bc038d41b7829b6b9fb62644f9affdbc = $(`<div id="html_bc038d41b7829b6b9fb62644f9affdbc" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">RAQUEL MOGOLLÓN SALDARRIAGA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">RAQUEL MOGOLLÓN SALDARRIAGA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle San pedro/ jibito por la plaza, frente a la iglesia Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.904619,-80.7464236','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_16ee5d6eb76d33d6264dc8f14f3a85eb.setContent(html_bc038d41b7829b6b9fb62644f9affdbc);
+            
+        
+
+        marker_ec8c2d706b1dbb5cbbd373850488e0d1.bindPopup(popup_16ee5d6eb76d33d6264dc8f14f3a85eb)
+        ;
+
+        
+    
+    
+            marker_ec8c2d706b1dbb5cbbd373850488e0d1.bindTooltip(
+                `<div>
+                     RAQUEL MOGOLLÓN SALDARRIAGA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ec8c2d706b1dbb5cbbd373850488e0d1.setIcon(icon_fdb8e8f035378c56fad75120bc5c2916);
+            
+    
+            var marker_8b47b8daaaa3b9cdf87360b5554ce7f6 = L.marker(
+                [-4.9044354, -80.7464318],
+                {
+  "alt": "JIMENEZ SAAVEDRA SEVERA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_bfd86a410fb91c0d3210b6cb165af15b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9c658f1cb2914bd4ab11ef083c757547 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_331915cfa2a6c35aa66cbb3295269c58 = $(`<div id="html_331915cfa2a6c35aa66cbb3295269c58" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JIMENEZ SAAVEDRA SEVERA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JIMENEZ SAAVEDRA SEVERA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JIMENEZ SAAVEDRA SEVERA AV.MIGUEL GRAU 115 JIBITO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9044354,-80.7464318','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_9c658f1cb2914bd4ab11ef083c757547.setContent(html_331915cfa2a6c35aa66cbb3295269c58);
+            
+        
+
+        marker_8b47b8daaaa3b9cdf87360b5554ce7f6.bindPopup(popup_9c658f1cb2914bd4ab11ef083c757547)
+        ;
+
+        
+    
+    
+            marker_8b47b8daaaa3b9cdf87360b5554ce7f6.bindTooltip(
+                `<div>
+                     JIMENEZ SAAVEDRA SEVERA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8b47b8daaaa3b9cdf87360b5554ce7f6.setIcon(icon_bfd86a410fb91c0d3210b6cb165af15b);
+            
+    
+            var marker_d7966f99051c775a4deefc4b4374bd81 = L.marker(
+                [-4.9041502, -80.7454126],
+                {
+  "alt": "JOSE LUIS ROMAN QUISPE",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_3ce4616281428e00b26b03ba883e149a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2b50adb649b8cd69f038f13392085fcd = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_952ff48635aabc38bb1ace921908183a = $(`<div id="html_952ff48635aabc38bb1ace921908183a" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">JOSE LUIS ROMAN QUISPE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">JOSE LUIS ROMAN QUISPE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>JOSE LUIS ROMAN QUISPE PRO.BOLIVAR MZA. J2 LOTE. 09 C.P. J Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9041502,-80.7454126','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_2b50adb649b8cd69f038f13392085fcd.setContent(html_952ff48635aabc38bb1ace921908183a);
+            
+        
+
+        marker_d7966f99051c775a4deefc4b4374bd81.bindPopup(popup_2b50adb649b8cd69f038f13392085fcd)
+        ;
+
+        
+    
+    
+            marker_d7966f99051c775a4deefc4b4374bd81.bindTooltip(
+                `<div>
+                     JOSE LUIS ROMAN QUISPE — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d7966f99051c775a4deefc4b4374bd81.setIcon(icon_3ce4616281428e00b26b03ba883e149a);
+            
+    
+            var marker_2e43ea4186623de8218c4d2e9ca90c5c = L.marker(
+                [-4.9040248, -80.7445294],
+                {
+  "alt": "VASQUEZ CELIS GEORGINA",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_5ec87bb1b326400e0e6f65ec354921b2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_26626b0b52486d2b616285386d2b37c8 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_905390a8fc3f127395fa69ae1614ae66 = $(`<div id="html_905390a8fc3f127395fa69ae1614ae66" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">VASQUEZ CELIS GEORGINA</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">VASQUEZ CELIS GEORGINA</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>AV PERU LL 1-8 CENT JIBITO Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9040248,-80.7445294','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_26626b0b52486d2b616285386d2b37c8.setContent(html_905390a8fc3f127395fa69ae1614ae66);
+            
+        
+
+        marker_2e43ea4186623de8218c4d2e9ca90c5c.bindPopup(popup_26626b0b52486d2b616285386d2b37c8)
+        ;
+
+        
+    
+    
+            marker_2e43ea4186623de8218c4d2e9ca90c5c.bindTooltip(
+                `<div>
+                     VASQUEZ CELIS GEORGINA — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2e43ea4186623de8218c4d2e9ca90c5c.setIcon(icon_5ec87bb1b326400e0e6f65ec354921b2);
+            
+    
+            var marker_3807197136f2f53d4b969655d16200e1 = L.marker(
+                [-4.9042399, -80.7437565],
+                {
+  "alt": "HERNAN MORE ALVARADO",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_d560ba439d706bf77396cad5a272ce1e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7e0a7b0b4c609967492f22b267f16321 = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_23b24c5af9afe1b7f869f54cbc23fcad = $(`<div id="html_23b24c5af9afe1b7f869f54cbc23fcad" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">HERNAN MORE ALVARADO</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">HERNAN MORE ALVARADO</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>AV SANTO TOMAS 402 SULLANA-SULLANA Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9042399,-80.7437565','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_7e0a7b0b4c609967492f22b267f16321.setContent(html_23b24c5af9afe1b7f869f54cbc23fcad);
+            
+        
+
+        marker_3807197136f2f53d4b969655d16200e1.bindPopup(popup_7e0a7b0b4c609967492f22b267f16321)
+        ;
+
+        
+    
+    
+            marker_3807197136f2f53d4b969655d16200e1.bindTooltip(
+                `<div>
+                     HERNAN MORE ALVARADO — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3807197136f2f53d4b969655d16200e1.setIcon(icon_d560ba439d706bf77396cad5a272ce1e);
+            
+    
+            var marker_f9de4881f36f5337a76df462d705599d = L.marker(
+                [-4.9047258, -80.7438108],
+                {
+  "alt": "LEIDY YULIANA SANDOVAL YARLEQUE",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_d58cd4081f4aef3d13312048bd9fefcd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_33da2036c7f0f343f468e86c9e37e24d = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_62402be518f3b61ca7eb12066f9572ed = $(`<div id="html_62402be518f3b61ca7eb12066f9572ed" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">LEIDY YULIANA SANDOVAL YARLEQUE</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">LEIDY YULIANA SANDOVAL YARLEQUE</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>Calle santo tomas jibito Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9047258,-80.7438108','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_33da2036c7f0f343f468e86c9e37e24d.setContent(html_62402be518f3b61ca7eb12066f9572ed);
+            
+        
+
+        marker_f9de4881f36f5337a76df462d705599d.bindPopup(popup_33da2036c7f0f343f468e86c9e37e24d)
+        ;
+
+        
+    
+    
+            marker_f9de4881f36f5337a76df462d705599d.bindTooltip(
+                `<div>
+                     LEIDY YULIANA SANDOVAL YARLEQUE — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f9de4881f36f5337a76df462d705599d.setIcon(icon_d58cd4081f4aef3d13312048bd9fefcd);
+            
+    
+            var marker_302b1f805b5e895f416645f3eb894b2b = L.marker(
+                [-4.9065161, -80.7429232],
+                {
+  "alt": "CATALINA VILCHEZ CORREA DE MEJIAS",
+}
+            ).addTo(marker_cluster_113920710fc0bd317ddae24f29587caf);
+        
+    
+            var icon_889e1bc9baf5f7d617d29a0f89de7ca0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_eae6a2a1bf062a34ebc6491808d9ab6e = L.popup({
+  "maxWidth": 310,
+});
+
+        
+            
+                var html_f94b8af27365649a3c376f57f663ddde = $(`<div id="html_f94b8af27365649a3c376f57f663ddde" style="width: 100.0%; height: 100.0%;"> <div style="font-family:'Segoe UI',sans-serif;min-width:250px;padding:10px;border-radius:12px;background:white;">     <header style="border-bottom:2px solid red;margin-bottom:10px;padding-bottom:8px;">         <!-- hidden spans para JS -->         <span class="bodega-nombre" style="display:none;">CATALINA VILCHEZ CORREA DE MEJIAS</span>         <h4 style="margin:0;font-size:16px;font-weight:700;color:#333;">CATALINA VILCHEZ CORREA DE MEJIAS</h4>         <span style="color:red;font-size:12px;font-weight:600;text-transform:uppercase;">             Vendedor: JACIEL MOGOLLON ALVARADO         </span>     </header>      <p style="margin:0 0 12px;font-size:13px;color:#555;">         <strong>&#128205; Direccion:</strong><br>26 de enero/ jibito Miguel Checa Miguel Checa Piura Perú     </p>      <!-- Control de Entrega -->     <div style="background:#f0f7f4; padding:10px; border-radius:8px; border:1px solid #d4edda; margin-bottom:10px;">         <label style="display:flex; align-items:center; cursor:pointer; gap:10px; margin-bottom:10px;">             <input type="checkbox" class="chk-entregado" style="width:20px; height:20px; cursor:pointer;">             <span style="font-size:14px; font-weight:bold; color:#155724;">Estado: Entregado</span>         </label>         <button onclick="guardarEstadoEntrega(this)"                 class="btn-guardar"                 style="width:100%; padding:8px; border-radius:6px; border:none;                        background:#28a745; color:white;                        font-size:12px; font-weight:bold; cursor:pointer;                        box-shadow:0 2px 4px rgba(0,0,0,0.1);">             GUARDAR CAMBIO         </button>     </div>      <!-- Boton Google Maps -->     <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=-4.9065161,-80.7429232','_blank')"             style="width:100%;padding:10px;border-radius:8px;border:none;                    background:red;color:white;                    font-size:13px;font-weight:bold;cursor:pointer;                    box-shadow:0 3px 6px rgba(0,0,0,0.15);">         &#128640; COMO LLEGAR (GOOGLE MAPS)     </button> </div></div>`)[0];
+                popup_eae6a2a1bf062a34ebc6491808d9ab6e.setContent(html_f94b8af27365649a3c376f57f663ddde);
+            
+        
+
+        marker_302b1f805b5e895f416645f3eb894b2b.bindPopup(popup_eae6a2a1bf062a34ebc6491808d9ab6e)
+        ;
+
+        
+    
+    
+            marker_302b1f805b5e895f416645f3eb894b2b.bindTooltip(
+                `<div>
+                     CATALINA VILCHEZ CORREA DE MEJIAS — JACIEL MOGOLLON ALVARADO
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_302b1f805b5e895f416645f3eb894b2b.setIcon(icon_889e1bc9baf5f7d617d29a0f89de7ca0);
+            
+    
+            marker_cluster_113920710fc0bd317ddae24f29587caf.addTo(feature_group_c7dc7e27223471c47048d027be4a1d56);
+        
+    
+            feature_group_c7dc7e27223471c47048d027be4a1d56.addTo(map_946559d6018ca0b3f168212469a6c45f);
+        
+    
+        function geo_json_c13f5b7275ddbf627db061f1a570f1dd_pointToLayer(feature, latlng) {
+            var opts = {
+  "stroke": true,
+  "color": "transparent",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": false,
+  "fillColor": "transparent",
+  "fillOpacity": 0.2,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+};
+            
+            return new L.CircleMarker(latlng, opts)
+        }
+
+        function geo_json_c13f5b7275ddbf627db061f1a570f1dd_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_c13f5b7275ddbf627db061f1a570f1dd = L.geoJson(null, {
+                onEachFeature: geo_json_c13f5b7275ddbf627db061f1a570f1dd_onEachFeature,
+            
+                pointToLayer: geo_json_c13f5b7275ddbf627db061f1a570f1dd_pointToLayer,
+            ...{
+}
+        });
+
+        function geo_json_c13f5b7275ddbf627db061f1a570f1dd_add (data) {
+            geo_json_c13f5b7275ddbf627db061f1a570f1dd
+                .addData(data);
+        }
+            geo_json_c13f5b7275ddbf627db061f1a570f1dd_add({"features": [{"geometry": {"coordinates": [-80.8146495, -4.9019314], "type": "Point"}, "properties": {"name": "JASMIN BEATRIZ RODRIGUEZ CORNEJO", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7465694, -4.9073168], "type": "Point"}, "properties": {"name": "MOSCOL TALLEDO DAVID", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.678827, -4.9152949], "type": "Point"}, "properties": {"name": "VASQUEZ REYES YESSICA PATRICIA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6828445, -4.8945854], "type": "Point"}, "properties": {"name": "ABARROTES Y SERV.CHINININ SAC", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.722761, -4.913728], "type": "Point"}, "properties": {"name": "KARLA ELIZABETH GONZALES OLIVOS", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7175017, -4.9146278], "type": "Point"}, "properties": {"name": "MARIA HAYDEE YARLEQUE MOGOLLON", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.6831433, -4.8920557], "type": "Point"}, "properties": {"name": "LLACSAHUANGA CHUMACERO OSCAR", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8165181, -4.9003196], "type": "Point"}, "properties": {"name": "Aquino bruno catalina", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8159489, -4.8988789], "type": "Point"}, "properties": {"name": "SOSA FLORES FAUSTINA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8155336, -4.9001258], "type": "Point"}, "properties": {"name": "LUIS FERNANDO CORNEJO ZAPATA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8144633, -4.8988807], "type": "Point"}, "properties": {"name": "PE\u00d1A VILCHEZ KARINA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8143044, -4.8981948], "type": "Point"}, "properties": {"name": "CHINCHAY CORNEJO SANTIAGO", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8139356, -4.8997894], "type": "Point"}, "properties": {"name": "JUAREZ CHINCHAY CARMEN ROSA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8146495, -4.9019314], "type": "Point"}, "properties": {"name": "JASMIN BEATRIZ RODRIGUEZ CORNEJO", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.8152457, -4.9035677], "type": "Point"}, "properties": {"name": "GONZALES COLMENARES JUAN JORGE", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.815197, -4.9040252], "type": "Point"}, "properties": {"name": "JULIA MARIA MONTERO SOJO", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7465694, -4.9073168], "type": "Point"}, "properties": {"name": "MOSCOL TALLEDO DAVID", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7484136, -4.9072783], "type": "Point"}, "properties": {"name": "NELIDA ROJAS ROMAN", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7492284, -4.9079765], "type": "Point"}, "properties": {"name": "JIMENEZ CORREA IRIS DEL PILAR", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.745038, -4.904165], "type": "Point"}, "properties": {"name": "SANDOVAL NU\u00d1EZ MARIA DEL C.", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7487517, -4.9066386], "type": "Point"}, "properties": {"name": "MARIA MAGDALENA JIMENEZ SANDOVAL", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7477693, -4.9057378], "type": "Point"}, "properties": {"name": "MARIA NERY JIMENEZ CORREA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7464236, -4.904619], "type": "Point"}, "properties": {"name": "RAQUEL MOGOLL\u00d3N SALDARRIAGA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7464318, -4.9044354], "type": "Point"}, "properties": {"name": "JIMENEZ SAAVEDRA SEVERA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7454126, -4.9041502], "type": "Point"}, "properties": {"name": "JOSE LUIS ROMAN QUISPE", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7445294, -4.9040248], "type": "Point"}, "properties": {"name": "VASQUEZ CELIS GEORGINA", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7437565, -4.9042399], "type": "Point"}, "properties": {"name": "HERNAN MORE ALVARADO", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7438108, -4.9047258], "type": "Point"}, "properties": {"name": "LEIDY YULIANA SANDOVAL YARLEQUE", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}, {"geometry": {"coordinates": [-80.7429232, -4.9065161], "type": "Point"}, "properties": {"name": "CATALINA VILCHEZ CORREA DE MEJIAS", "vendedor": "JACIEL MOGOLLON ALVARADO"}, "type": "Feature"}], "type": "FeatureCollection"});
+        geo_json_c13f5b7275ddbf627db061f1a570f1dd.setStyle(function(feature) {return feature.properties.style;});
+
+        
+    
+    geo_json_c13f5b7275ddbf627db061f1a570f1dd.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create('div');
+    
+    let handleObject = feature => {
+        if (feature === null) {
+            return '';
+        } else if (typeof(feature)=='object') {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = ["name", "vendedor"];
+    let aliases = ["Cliente:", "Vendedor:"];
+    let table = '<table>' +
+        String(
+        fields.map(
+        (v,i)=>
+        `<tr>
+            <th>${aliases[i]}</th>
+            
+            <td>${handleObject(layer.feature.properties[v])}</td>
+        </tr>`).join(''))
+    +'</table>';
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  "sticky": true,
+  "className": "foliumtooltip",
+});
+                     
+    
+            geo_json_c13f5b7275ddbf627db061f1a570f1dd.addTo(map_946559d6018ca0b3f168212469a6c45f);
+        
+    
+            var geo_json_c13f5b7275ddbf627db061f1a570f1ddsearchControl = new L.Control.Search({
+                layer: geo_json_c13f5b7275ddbf627db061f1a570f1dd,
+                
+                propertyName: 'name',
+                
+                collapsed: false,
+                textPlaceholder: '🔍 Buscar cliente o bodega...',
+                position:'topleft',
+            
+                initial: false,
+                
+                zoom: 18,
+                
+                hideMarkerOnCollapse: true
+            
+                });
+                geo_json_c13f5b7275ddbf627db061f1a570f1ddsearchControl.on('search:locationfound', function(e) {
+                    geo_json_c13f5b7275ddbf627db061f1a570f1dd.setStyle(function(feature){
+                        return feature.properties.style
+                    })
+                    
+                    e.layer.setStyle({
+  "weight": 3,
+  "searchAtStart": false,
+  "minLength": 1,
+  "autoCollapse": false,
+  "autoType": true,
+});
+                    
+                    if(e.layer._popup)
+                        e.layer.openPopup();
+                })
+                geo_json_c13f5b7275ddbf627db061f1a570f1ddsearchControl.on('search:collapsed', function(e) {
+                        geo_json_c13f5b7275ddbf627db061f1a570f1dd.setStyle(function(feature){
+                            return feature.properties.style
+                    });
+                });
+            map_946559d6018ca0b3f168212469a6c45f.addControl( geo_json_c13f5b7275ddbf627db061f1a570f1ddsearchControl );
+
+        
+    
+            var layer_control_e4753c395d8c313837994db776249feb_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_65437004ef3ed677dfe01c09f1ac5f4c,
+                },
+                overlays :  {
+                    "JACIEL MOGOLLON ALVARADO (29)" : feature_group_c7dc7e27223471c47048d027be4a1d56,
+                },
+            };
+            let layer_control_e4753c395d8c313837994db776249feb = L.control.layers(
+                layer_control_e4753c395d8c313837994db776249feb_layers.base_layers,
+                layer_control_e4753c395d8c313837994db776249feb_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_946559d6018ca0b3f168212469a6c45f);
+
+        
+    
+            var locate_control_6b2288ced53206fe18d680b97a415fb1 = L.control.locate(
+                {"flyTo": true, "keepCurrentZoomLevel": true, "locateOptions": {"enableHighAccuracy": true, "maxZoom": 16}, "strings": {"popup": "Estas aqui!", "title": "Mi ubicacion"}}
+            ).addTo(map_946559d6018ca0b3f168212469a6c45f);
+            
+                locate_control_6b2288ced53206fe18d680b97a415fb1.start();
+            
+        
+</script>
+</html>
